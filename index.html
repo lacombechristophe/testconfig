@@ -1,710 +1,1531 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Configurateur Piscine — Diskoov</title>
-<meta name="description" content="Configurez votre couverture automatique ou abri télescopique Diskoov et obtenez un devis gratuit sous 48h.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Configurateur Piscine — Diskoov</title>
+  <meta name="description"
+    content="Configurez votre couverture automatique ou abri télescopique Diskoov et obtenez un devis gratuit sous 48h.">
 
-<!-- Open Graph -->
-<meta property="og:title" content="Configurateur Piscine — Diskoov">
-<meta property="og:description" content="Couverture automatique 4 saisons · Abri télescopique · Devis gratuit sous 48h">
-<meta property="og:url" content="https://configurateur.diskoov.fr">
-<meta property="og:type" content="website">
-<!-- ⚠️ Créer un screenshot 1200×630 du configurateur et l'uploader dans /public/ -->
-<meta property="og:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Configurateur Piscine — Diskoov">
-<meta name="twitter:description" content="Couverture automatique · Abri télescopique · Devis gratuit 48h">
-<meta name="twitter:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Configurateur Piscine — Diskoov">
+  <meta property="og:description"
+    content="Couverture automatique 4 saisons · Abri télescopique · Devis gratuit sous 48h">
+  <meta property="og:url" content="https://configurateur.diskoov.fr">
+  <meta property="og:type" content="website">
+  <!-- ⚠️ Créer un screenshot 1200×630 du configurateur et l'uploader dans /public/ -->
+  <meta property="og:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Configurateur Piscine — Diskoov">
+  <meta name="twitter:description" content="Couverture automatique · Abri télescopique · Devis gratuit 48h">
+  <meta name="twitter:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
 
-<link rel="canonical" href="https://configurateur.diskoov.fr">
-<meta name="theme-color" content="#111111">
-<!-- Robots : indexer la page mais pas les données de formulaire -->
-<meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://configurateur.diskoov.fr">
+  <meta name="theme-color" content="#111111">
+  <!-- Robots : indexer la page mais pas les données de formulaire -->
+  <meta name="robots" content="index, follow">
 
-<!-- Preload image hero (LCP) — ⚠️ mettre à jour src après upload des vraies photos -->
-<link rel="preload" as="image" href="/pool-diskoov.webp" type="image/webp" id="preload-hero" fetchpriority="high">
+  <!-- Preload image hero (LCP) — ⚠️ mettre à jour src après upload des vraies photos -->
+  <link rel="preload" as="image" href="/pool-diskoov.webp" type="image/webp" id="preload-hero" fetchpriority="high">
 
-<!-- Fonts : Inter via Google Fonts (standalone). Pour conformité RGPD totale : npm i @fontsource/inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fonts : Inter via Google Fonts (standalone). Pour conformité RGPD totale : npm i @fontsource/inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-/* ─────────────────────────────────────────────────────────
+  <style>
+    /* ─────────────────────────────────────────────────────────
    RESET & VARIABLES
 ───────────────────────────────────────────────────────── */
-.diskoov-root *,.diskoov-root *::before,.diskoov-root *::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --ink:#111111;
-  --mid:#666666;
-  --faint:#b0b0b0;
-  --line:#e6e6e6;
-  --bg:#f5f5f5;
-  --w:#ffffff;
-  --gold:#c9a96e;
-  --r:5px;
-  /* Focus ring partagé */
-  --focus-ring:0 0 0 3px rgba(17,17,17,.18);
-}
-html{font-size:14px}
-html.diskoov-standalone{height:100%}
-body{
-  font-family:'Inter',sans-serif;color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  /* Prevent pull-to-refresh on iOS qui casse le layout svh */
-  overscroll-behavior:none;
-}
-body.diskoov-standalone{overflow:hidden;height:100%}
+    .diskoov-root *,
+    .diskoov-root *::before,
+    .diskoov-root *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ─────────────────────────────────────────────────────────
+    :root {
+      --ink: #111111;
+      --mid: #666666;
+      --faint: #b0b0b0;
+      --line: #e6e6e6;
+      --bg: #f5f5f5;
+      --w: #ffffff;
+      --gold: #c9a96e;
+      --r: 5px;
+      /* Focus ring partagé */
+      --focus-ring: 0 0 0 3px rgba(17, 17, 17, .18);
+    }
+
+    html {
+      font-size: 14px
+    }
+
+    html.diskoov-standalone {
+      height: 100%
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      /* Prevent pull-to-refresh on iOS qui casse le layout svh */
+      overscroll-behavior: none;
+    }
+
+    body.diskoov-standalone {
+      overflow: hidden;
+      height: 100%
+    }
+
+    /* ─────────────────────────────────────────────────────────
    ROOT LAYOUT
 ───────────────────────────────────────────────────────── */
-.root{
-  display:flex;
-  height:100svh;
-  overflow:hidden;
-  isolation:isolate; /* crée un stacking context pour que les tooltips fixed restent au-dessus */
-}
+    .root {
+      display: flex;
+      height: 100svh;
+      overflow: hidden;
+      isolation: isolate;
+      /* crée un stacking context pour que les tooltips fixed restent au-dessus */
+    }
 
-/* ─────────────────────────────────────────────────────────
+    /* ─────────────────────────────────────────────────────────
    VISUAL (left, immovable)
 ───────────────────────────────────────────────────────── */
-.vis{
-  flex:1;
-  position:relative;
-  overflow:hidden;
-  background:#0e1a0d;
-}
-.vi{
-  position:absolute;inset:0;
-  width:100%;height:100%;object-fit:cover;
-  opacity:1;transition:opacity .6s ease;
-  pointer-events:none;
-}
-.vi.off{opacity:0}
+    .vis {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #0e1a0d;
+    }
 
-.vi-demo{
-  position:absolute;inset:0;
-  background:#0c1a10;
-  opacity:0;transition:opacity .6s ease;
-  pointer-events:none;overflow:hidden;
-}
-.vi-demo.on{opacity:1}
-.vi-demo.on iframe{opacity:1}
-.demo-fallback{
-  position:absolute;inset:0;
-  background:#0e1a0d;
-  background-size:cover;background-position:center;
-}
+    .vi {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: opacity .6s ease;
+      pointer-events: none;
+    }
 
-/* Vignette droite */
-.vi-gr{
-  position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(90deg,transparent 65%,rgba(0,0,0,.25));
-}
-/* Logo sur vis */
-.vi-logo{
-  position:absolute;top:24px;left:26px;
-  display:flex;align-items:center;gap:9px;text-decoration:none;z-index:5;
-}
-.vi-logo-img{
-  height:30px;width:auto;max-width:140px;
-  object-fit:contain;object-position:left center;
-  filter:brightness(0) invert(1);
-  display:block;
-}
-.vi-mark{
-  width:30px;height:30px;background:var(--gold);border-radius:6px;
-  display:grid;place-items:center;
-  font-size:13px;font-weight:800;color:var(--ink);letter-spacing:-.02em;
-}
-.vi-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.02em}
+    .vi.off {
+      opacity: 0
+    }
 
-/* Badge "Vidéo en cours" sur le visuel couverture */
-.vi-badge{
-  position:absolute;bottom:20px;left:20px;z-index:5;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
-  color:#fff;font-size:11px;font-weight:600;
-  padding:5px 10px;border-radius:20px;
-  display:none;align-items:center;gap:5px;
-  border:1px solid rgba(255,255,255,.15);
-}
-.vi-badge.on{display:flex}
-.vi-badge-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:#ef4444;
-  animation:blink 1.4s ease-in-out infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .vi-demo {
+      position: absolute;
+      inset: 0;
+      background: #0c1a10;
+      opacity: 0;
+      transition: opacity .6s ease;
+      pointer-events: none;
+      overflow: hidden;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .vi-demo.on {
+      opacity: 1
+    }
+
+    .vi-demo.on iframe {
+      opacity: 1
+    }
+
+    .demo-fallback {
+      position: absolute;
+      inset: 0;
+      background: #0e1a0d;
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Vignette droite */
+    .vi-gr {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent 65%, rgba(0, 0, 0, .25));
+    }
+
+    /* Logo sur vis */
+    .vi-logo {
+      position: absolute;
+      top: 24px;
+      left: 26px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      z-index: 5;
+    }
+
+    .vi-logo-img {
+      height: 30px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      object-position: left center;
+      filter: brightness(0) invert(1);
+      display: block;
+    }
+
+    .vi-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--gold);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.02em;
+    }
+
+    .vi-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em
+    }
+
+    /* Badge "Vidéo en cours" sur le visuel couverture */
+    .vi-badge {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 5;
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(255, 255, 255, .15);
+    }
+
+    .vi-badge.on {
+      display: flex
+    }
+
+    .vi-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    /* ─────────────────────────────────────────────────────────
    PANEL (right, independently scrollable)
 ───────────────────────────────────────────────────────── */
-.panel{
-  width:360px;flex-shrink:0;
-  display:flex;flex-direction:column;
-  height:100svh;
-  /* PAS overflow:hidden ici — laisserait clipper les tooltips position:fixed */
-  border-left:1px solid var(--line);
-  background:var(--w);
-}
+    .panel {
+      width: 360px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100svh;
+      /* PAS overflow:hidden ici — laisserait clipper les tooltips position:fixed */
+      border-left: 1px solid var(--line);
+      background: var(--w);
+    }
 
-/* Brand header */
-.p-hd{
-  padding:17px 24px 0;flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-/* Logo panel header */
-.ph-brand{
-  display:flex;align-items:center;gap:8px;text-decoration:none;
-  border-radius:4px;
-}
-.ph-brand:focus-visible{box-shadow:var(--focus-ring);outline:none}
-.ph-logo-img{
-  height:26px;width:auto;max-width:120px;
-  object-fit:contain;object-position:left center;
-  display:block;
-}
-.ph-mark{
-  width:26px;height:26px;background:var(--gold);border-radius:5px;
-  display:grid;place-items:center;
-  font-size:12px;font-weight:800;color:var(--ink);
-}
-.ph-name{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.03em}
-.ph-sum{
-  font-size:11.5px;font-weight:500;color:var(--faint);
-  text-align:right;line-height:1.4;max-width:160px;
-  transition:opacity .2s;
-}
+    /* Brand header */
+    .p-hd {
+      padding: 17px 24px 0;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* Scrollable content */
-.p-bd{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:0 24px;
-  /* Scroll momentum iOS */
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
-  /* WCAG 2.2 §2.4.11 Focus Not Obscured — évite que le footer sticky masque l'élément focalisé */
-  scroll-padding-bottom:90px;
-  /* Isole les reflows au panel (CLS) */
-  contain:layout;
-}
-.p-bd::-webkit-scrollbar{width:3px}
-.p-bd::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+    /* Logo panel header */
+    .ph-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      border-radius: 4px;
+    }
 
-/* Barre de progression en haut du panel */
-.progress-bar{
-  height:2px;background:var(--line);flex-shrink:0;
-}
-.progress-fill{
-  height:100%;background:var(--gold);
-  transition:width .35s cubic-bezier(.4,0,.2,1);
-  width:0%;
-}
+    .ph-brand:focus-visible {
+      box-shadow: var(--focus-ring);
+      outline: none
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .ph-logo-img {
+      height: 26px;
+      width: auto;
+      max-width: 120px;
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+
+    .ph-mark {
+      width: 26px;
+      height: 26px;
+      background: var(--gold);
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .ph-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.03em
+    }
+
+    .ph-sum {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--faint);
+      text-align: right;
+      line-height: 1.4;
+      max-width: 160px;
+      transition: opacity .2s;
+    }
+
+    /* Scrollable content */
+    .p-bd {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 24px;
+      /* Scroll momentum iOS */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+      /* WCAG 2.2 §2.4.11 Focus Not Obscured — évite que le footer sticky masque l'élément focalisé */
+      scroll-padding-bottom: 90px;
+      /* Isole les reflows au panel (CLS) */
+      contain: layout;
+    }
+
+    .p-bd::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .p-bd::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border-radius: 2px
+    }
+
+    /* Barre de progression en haut du panel */
+    .progress-bar {
+      height: 2px;
+      background: var(--line);
+      flex-shrink: 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width .35s cubic-bezier(.4, 0, .2, 1);
+      width: 0%;
+    }
+
+    /* ─────────────────────────────────────────────────────────
    SECTIONS
 ───────────────────────────────────────────────────────── */
-.s{
-  padding:20px 0;
-  border-bottom:1px solid var(--line);
-}
-.s:last-child{border-bottom:none}
-.s.hide{display:none}
-.s.show{display:block;animation:rfade .2s ease-out}
-@keyframes rfade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+    .s {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--line);
+    }
 
-/* Section header */
-.sh{
-  display:flex;align-items:baseline;
-  justify-content:space-between;
-  margin-bottom:14px;gap:8px;
-}
-.sl{
-  font-size:13.5px;font-weight:800;color:var(--ink);
-  letter-spacing:-.02em;display:flex;align-items:center;gap:4px;
-  flex-wrap:wrap;row-gap:2px;
-}
-.sl-val{font-weight:400;color:var(--mid);font-size:12.5px;margin-left:4px}
+    .s:last-child {
+      border-bottom: none
+    }
 
-/* ── TOOLTIP GLOBAL (portal dans body) ──────────────
+    .s.hide {
+      display: none
+    }
+
+    .s.show {
+      display: block;
+      animation: rfade .2s ease-out
+    }
+
+    @keyframes rfade {
+      from {
+        opacity: 0;
+        transform: translateY(7px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* Section header */
+    .sh {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+
+    .sl {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.02em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      row-gap: 2px;
+    }
+
+    .sl-val {
+      font-weight: 400;
+      color: var(--mid);
+      font-size: 12.5px;
+      margin-left: 4px
+    }
+
+    /* ── TOOLTIP GLOBAL (portal dans body) ──────────────
    Un seul élément #dk-tip dans le DOM, positionné
    via getBoundingClientRect() au moment du survol.
    Jamais attaché à une section cachée.
 ─────────────────────────────────────────────────── */
-#dk-tip{
-  position:fixed;
-  background:var(--ink);color:#fff;
-  font-size:12px;font-weight:400;line-height:1.55;
-  padding:9px 13px;border-radius:7px;
-  width:220px;max-width:calc(100vw - 28px);
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .15s;
-  z-index:99999;
-  white-space:normal;
-  font-style:normal;letter-spacing:0;
-  box-sizing:border-box;
-  /* Caché par défaut */
-  top:-9999px;left:-9999px;
-}
-#dk-tip.on{opacity:1}
-#dk-tip::after{
-  content:'';position:absolute;
-  left:var(--ax,14px);
-  border:5px solid transparent;
-}
-#dk-tip.tip-above::after{
-  top:100%;border-top-color:var(--ink);
-}
-#dk-tip.tip-below::after{
-  bottom:100%;border-bottom-color:var(--ink);
-}
-/* Icône info */
-.ic{
-  width:16px;height:16px;border-radius:50%;
-  border:1px solid var(--faint);
-  display:inline-grid;place-items:center;
-  font-size:9px;font-weight:700;font-style:normal;color:var(--faint);
-  cursor:default;flex-shrink:0;
-  transition:border-color .12s,color .12s;
-}
-.tip-wrap{ position:relative;display:inline-flex;align-items:center; }
-.tip-wrap:hover .ic,.tip-wrap:focus-within .ic{ border-color:var(--ink);color:var(--ink); }
-/* Les .tip sont des sources de texte — cachées visuellement, lues par le JS */
-.tip{ display:none; }
-/* Valeur droite */
-.sr{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap}
+    #dk-tip {
+      position: fixed;
+      background: var(--ink);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.55;
+      padding: 9px 13px;
+      border-radius: 7px;
+      width: 220px;
+      max-width: calc(100vw - 28px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      z-index: 99999;
+      white-space: normal;
+      font-style: normal;
+      letter-spacing: 0;
+      box-sizing: border-box;
+      /* Caché par défaut */
+      top: -9999px;
+      left: -9999px;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    #dk-tip.on {
+      opacity: 1
+    }
+
+    #dk-tip::after {
+      content: '';
+      position: absolute;
+      left: var(--ax, 14px);
+      border: 5px solid transparent;
+    }
+
+    #dk-tip.tip-above::after {
+      top: 100%;
+      border-top-color: var(--ink);
+    }
+
+    #dk-tip.tip-below::after {
+      bottom: 100%;
+      border-bottom-color: var(--ink);
+    }
+
+    /* Icône info */
+    .ic {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--faint);
+      display: inline-grid;
+      place-items: center;
+      font-size: 9px;
+      font-weight: 700;
+      font-style: normal;
+      color: var(--faint);
+      cursor: default;
+      flex-shrink: 0;
+      transition: border-color .12s, color .12s;
+    }
+
+    .tip-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .tip-wrap:hover .ic,
+    .tip-wrap:focus-within .ic {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* Les .tip sont des sources de texte — cachées visuellement, lues par le JS */
+    .tip {
+      display: none;
+    }
+
+    /* Valeur droite */
+    .sr {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap
+    }
+
+    /* ─────────────────────────────────────────────────────────
    TOGGLE BUTTONS
 ───────────────────────────────────────────────────────── */
-.tg{
-  display:flex;
-  border:1px solid var(--line);border-radius:var(--r);
-  overflow:hidden;
-}
-.tg.g4{flex-wrap:wrap}
-.tb{
-  flex:1;min-width:0;
-  padding:11px 6px;border:none;
-  background:var(--w);
-  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
-  color:var(--mid);cursor:pointer;text-align:center;
-  transition:background .12s,color .12s;
-  white-space:nowrap;
-  border-right:1px solid var(--line);
-  /* Focus visible sans outline par défaut (design custom) */
-}
-.tg.g4 .tb{flex:0 0 50%;border-bottom:1px solid var(--line)}
-.tg.g4 .tb:nth-child(2n){border-right:none}
-.tg.g4 .tb:nth-last-child(-n+2){border-bottom:none}
-.tb:last-child{border-right:none}
-.tb:hover:not(.on){color:var(--ink);background:#fafafa}
-.tb.on{background:var(--ink);color:#fff}
-.tb:focus-visible{outline:none;box-shadow:inset var(--focus-ring)}
+    .tg {
+      display: flex;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .tg.g4 {
+      flex-wrap: wrap
+    }
+
+    .tb {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 6px;
+      border: none;
+      background: var(--w);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mid);
+      cursor: pointer;
+      text-align: center;
+      transition: background .12s, color .12s;
+      white-space: nowrap;
+      border-right: 1px solid var(--line);
+      /* Focus visible sans outline par défaut (design custom) */
+    }
+
+    .tg.g4 .tb {
+      flex: 0 0 50%;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .tg.g4 .tb:nth-child(2n) {
+      border-right: none
+    }
+
+    .tg.g4 .tb:nth-last-child(-n+2) {
+      border-bottom: none
+    }
+
+    .tb:last-child {
+      border-right: none
+    }
+
+    .tb:hover:not(.on) {
+      color: var(--ink);
+      background: #fafafa
+    }
+
+    .tb.on {
+      background: var(--ink);
+      color: #fff
+    }
+
+    .tb:focus-visible {
+      outline: none;
+      box-shadow: inset var(--focus-ring)
+    }
+
+    /* ─────────────────────────────────────────────────────────
    DIMENSION INPUTS
 ───────────────────────────────────────────────────────── */
-.dr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:13px 0;border-bottom:1px solid var(--line);
-}
-.s .dr:first-child{border-top:1px solid var(--line)}
-.dl{font-size:13.5px;color:var(--ink)}
-.dinr{display:flex;align-items:center;gap:7px}
-/* Boutons +/- autour du champ — 36×36 px (WCAG 2.2 §2.5.8 Target Size : min 24×24 px) */
-.d-btn{
-  width:36px;height:36px;border:1px solid var(--line);border-radius:6px;
-  background:var(--bg);cursor:pointer;
-  display:grid;place-items:center;
-  font-size:18px;font-weight:400;color:var(--mid);
-  line-height:1;user-select:none;
-  transition:background .1s,color .1s;
-  flex-shrink:0;
-}
-.d-btn:hover{background:var(--line);color:var(--ink)}
-.d-btn:active{transform:scale(.93)}
-.d-btn:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-.di{
-  width:58px;padding:7px 9px;
-  border:1px solid var(--line);border-radius:var(--r);
-  background:var(--bg);
-  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
-  color:var(--ink);text-align:center;outline:none;
-  -moz-appearance:textfield;transition:border-color .12s;
-}
-.di:focus{border-color:var(--ink);box-shadow:var(--focus-ring)}
-.di::-webkit-inner-spin-button,.di::-webkit-outer-spin-button{-webkit-appearance:none}
-.du{font-size:13px;color:var(--mid)}
+    .dr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .s .dr:first-child {
+      border-top: 1px solid var(--line)
+    }
+
+    .dl {
+      font-size: 13.5px;
+      color: var(--ink)
+    }
+
+    .dinr {
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    /* Boutons +/- autour du champ — 36×36 px (WCAG 2.2 §2.5.8 Target Size : min 24×24 px) */
+    .d-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--bg);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--mid);
+      line-height: 1;
+      user-select: none;
+      transition: background .1s, color .1s;
+      flex-shrink: 0;
+    }
+
+    .d-btn:hover {
+      background: var(--line);
+      color: var(--ink)
+    }
+
+    .d-btn:active {
+      transform: scale(.93)
+    }
+
+    .d-btn:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring)
+    }
+
+    .di {
+      width: 58px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+      transition: border-color .12s;
+    }
+
+    .di:focus {
+      border-color: var(--ink);
+      box-shadow: var(--focus-ring)
+    }
+
+    .di::-webkit-inner-spin-button,
+    .di::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .du {
+      font-size: 13px;
+      color: var(--mid)
+    }
+
+    /* ─────────────────────────────────────────────────────────
    PRODUCT CARDS
 ───────────────────────────────────────────────────────── */
-.pcs{display:flex;flex-direction:column;gap:7px}
-.pc{
-  padding:13px 14px;border:1.5px solid var(--line);border-radius:var(--r);
-  cursor:pointer;transition:border-color .12s,background .12s,transform .08s;
-  /* Keyboard focusable */
-  outline:none;
-}
-.pc:hover{border-color:#999}
-.pc:focus-visible{box-shadow:var(--focus-ring);border-color:var(--ink)}
-.pc:active{transform:scale(0.985)}
-.pc.on{border-color:var(--ink);border-width:2px;background:var(--bg)}
-.pc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.pc-n{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.35}
-.pc-p{font-size:12.5px;color:var(--mid);white-space:nowrap;flex-shrink:0;margin-top:1px}
-.pc-s{font-size:12px;color:var(--mid);margin-top:5px;line-height:1.5}
+    .pcs {
+      display: flex;
+      flex-direction: column;
+      gap: 7px
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .pc {
+      padding: 13px 14px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: border-color .12s, background .12s, transform .08s;
+      /* Keyboard focusable */
+      outline: none;
+    }
+
+    .pc:hover {
+      border-color: #999
+    }
+
+    .pc:focus-visible {
+      box-shadow: var(--focus-ring);
+      border-color: var(--ink)
+    }
+
+    .pc:active {
+      transform: scale(0.985)
+    }
+
+    .pc.on {
+      border-color: var(--ink);
+      border-width: 2px;
+      background: var(--bg)
+    }
+
+    .pc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .pc-n {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.35
+    }
+
+    .pc-p {
+      font-size: 12.5px;
+      color: var(--mid);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .pc-s {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 5px;
+      line-height: 1.5
+    }
+
+    /* ─────────────────────────────────────────────────────────
    COLOR SWATCHES
 ───────────────────────────────────────────────────────── */
-.swat{display:flex;gap:9px;flex-wrap:wrap;padding:1px 0}
-.sw{
-  width:34px;height:34px;border-radius:50%;cursor:pointer;
-  border:2.5px solid transparent;
-  outline:2.5px solid transparent;outline-offset:2.5px;
-  position:relative;flex-shrink:0;
-  transition:outline-color .12s,transform .12s;
-}
-.sw:hover{transform:scale(1.1)}
-.sw.on{outline-color:var(--ink)}
-/* sw-tt masqués — #dk-tip portal gère leur tooltip */
-.sw-tt{display:none!important}
-.sw:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-.sw-lbl{font-size:12px;color:var(--mid);margin-top:9px}
+    .swat {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      padding: 1px 0
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .sw {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      outline: 2.5px solid transparent;
+      outline-offset: 2.5px;
+      position: relative;
+      flex-shrink: 0;
+      transition: outline-color .12s, transform .12s;
+    }
+
+    .sw:hover {
+      transform: scale(1.1)
+    }
+
+    .sw.on {
+      outline-color: var(--ink)
+    }
+
+    /* sw-tt masqués — #dk-tip portal gère leur tooltip */
+    .sw-tt {
+      display: none !important
+    }
+
+    .sw:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 3px
+    }
+
+    .sw-lbl {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 9px
+    }
+
+    /* ─────────────────────────────────────────────────────────
    OPTION TOGGLE ROWS
 ───────────────────────────────────────────────────────── */
-.or{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 0;border-bottom:1px solid var(--line);gap:14px;
-}
-.s>.or:first-child,.opts>.or:first-child{border-top:1px solid var(--line)}
-.ol{font-size:13.5px;font-weight:500;color:var(--ink)}
-.tog{
-  width:40px;height:22px;border-radius:11px;
-  background:var(--line);border:none;cursor:pointer;
-  position:relative;flex-shrink:0;transition:background .18s;
-}
-.tog.on{background:var(--ink)}
-.tog::after{
-  content:'';position:absolute;top:2px;left:2px;
-  width:18px;height:18px;border-radius:50%;background:var(--w);
-  box-shadow:0 1px 3px rgba(0,0,0,.22);transition:transform .18s;
-}
-.tog.on::after{transform:translateX(18px)}
-.tog:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+    .or {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      gap: 14px;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .s>.or:first-child,
+    .opts>.or:first-child {
+      border-top: 1px solid var(--line)
+    }
+
+    .ol {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--ink)
+    }
+
+    .tog {
+      width: 40px;
+      height: 22px;
+      border-radius: 11px;
+      background: var(--line);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: background .18s;
+    }
+
+    .tog.on {
+      background: var(--ink)
+    }
+
+    .tog::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--w);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .22);
+      transition: transform .18s;
+    }
+
+    .tog.on::after {
+      transform: translateX(18px)
+    }
+
+    .tog:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring)
+    }
+
+    /* ─────────────────────────────────────────────────────────
    HEIGHT CARDS (abri)
 ───────────────────────────────────────────────────────── */
-.hcs{display:flex;flex-direction:column;gap:6px}
-.hc{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 13px;border:1.5px solid var(--line);border-radius:var(--r);
-  cursor:pointer;transition:border-color .12s,background .12s,transform .08s;
-  outline:none;
-}
-.hc:hover{border-color:#999}
-.hc:focus-visible{box-shadow:var(--focus-ring);border-color:var(--ink)}
-.hc:active{transform:scale(0.985)}
-.hc.on{border-color:var(--ink);border-width:2px;background:var(--bg)}
-.hbw{width:18px;display:flex;align-items:flex-end;height:34px;flex-shrink:0}
-.hb{width:7px;border-radius:2px 2px 0 0;background:var(--line);transition:background .12s}
-.hc.on .hb{background:var(--ink)}
-.hci{flex:1}
-.hcn{font-size:13.5px;font-weight:700;color:var(--ink)}
-.hcd{font-size:12px;color:var(--mid);margin-top:2px}
-.hcr{text-align:right;flex-shrink:0}
-.hcp{font-size:12.5px;font-weight:600;color:var(--ink)}
-.hch{font-size:11px;color:var(--faint);margin-top:2px}
+    .hcs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .hc {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 13px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: border-color .12s, background .12s, transform .08s;
+      outline: none;
+    }
+
+    .hc:hover {
+      border-color: #999
+    }
+
+    .hc:focus-visible {
+      box-shadow: var(--focus-ring);
+      border-color: var(--ink)
+    }
+
+    .hc:active {
+      transform: scale(0.985)
+    }
+
+    .hc.on {
+      border-color: var(--ink);
+      border-width: 2px;
+      background: var(--bg)
+    }
+
+    .hbw {
+      width: 18px;
+      display: flex;
+      align-items: flex-end;
+      height: 34px;
+      flex-shrink: 0
+    }
+
+    .hb {
+      width: 7px;
+      border-radius: 2px 2px 0 0;
+      background: var(--line);
+      transition: background .12s
+    }
+
+    .hc.on .hb {
+      background: var(--ink)
+    }
+
+    .hci {
+      flex: 1
+    }
+
+    .hcn {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink)
+    }
+
+    .hcd {
+      font-size: 12px;
+      color: var(--mid);
+      margin-top: 2px
+    }
+
+    .hcr {
+      text-align: right;
+      flex-shrink: 0
+    }
+
+    .hcp {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink)
+    }
+
+    .hch {
+      font-size: 11px;
+      color: var(--faint);
+      margin-top: 2px
+    }
+
+    /* ─────────────────────────────────────────────────────────
    FORM FIELDS
 ───────────────────────────────────────────────────────── */
-.flds{display:flex;flex-direction:column;gap:10px}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fl label{
-  display:block;font-size:11.5px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.05em;
-  color:var(--mid);margin-bottom:5px;
-}
-.fl input,.fl select,.fl textarea{
-  width:100%;padding:10px 12px;
-  border:1px solid var(--line);border-radius:var(--r);
-  font-family:'Inter',sans-serif;font-size:13.5px;color:var(--ink);
-  background:var(--w);outline:none;
-  -webkit-appearance:none;appearance:none;
-  transition:border-color .12s,box-shadow .12s;
-}
-.fl input:focus,.fl select:focus,.fl textarea:focus{
-  border-color:var(--ink);
-  box-shadow:var(--focus-ring);
-}
-.fl input::placeholder,.fl textarea::placeholder{color:var(--faint)}
-.fl textarea{resize:vertical;min-height:72px}
-.cbr{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
-.cbr input{
-  width:16px;height:16px;flex-shrink:0;margin-top:2px;
-  cursor:pointer;accent-color:var(--ink);
-  /* Améliore la visibilité focus checkbox */
-}
-.cbr input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-/* Compteur caractères textarea */
-.char-count{font-size:11px;color:var(--faint);text-align:right;margin-top:3px}
-/* Notice RGPD — Art. 13 */
-.rgpd-notice{
-  display:flex;gap:7px;align-items:flex-start;
-  font-size:11px;color:var(--mid);line-height:1.6;
-  padding:10px 12px;
-  background:#f8f8f6;border-radius:var(--r);
-  border-left:2.5px solid var(--line);
-  margin-top:2px;
-}
-/* Field states */
-.fl input.err,.fl select.err{border-color:#dc2626}
-.ferr{font-size:11.5px;color:#dc2626;margin-top:4px;display:none}
-.ferr.on{display:block}
-.fl input.ok{border-color:#16a34a}
-.cbr span{font-size:13px;color:var(--ink);line-height:1.55}
-/* Select arrow custom */
-.fl select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;
-  background-position:right 12px center;
-  padding-right:32px;
-}
+    .flds {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
 
-/* ── MICRO-ANIMATIONS ───────────────────────────────
-   1. Shake CTA désactivé quand cliqué
-   2. Scale cartes à la sélection
-   3. Badge "Dernière étape" section coordonnées
-─────────────────────────────────────────────────── */
-@keyframes ctashake{
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-5px)}
-  40%{transform:translateX(5px)}
-  60%{transform:translateX(-3px)}
-  80%{transform:translateX(3px)}
-}
-.cta.shake{animation:ctashake .35s ease-out}
+    .frow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
 
-@keyframes cardsel{
-  0%{transform:scale(1)}50%{transform:scale(.982)}100%{transform:scale(1)}
-}
-.pc.on{border-color:var(--ink);border-width:2px;background:var(--bg);animation:cardsel .15s ease-out}
-.hc.on{border-color:var(--ink);border-width:2px;background:var(--bg);animation:cardsel .15s ease-out}
+    .fl label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--mid);
+      margin-bottom: 5px;
+    }
 
-.frm-title{
-  font-size:13.5px;font-weight:800;color:var(--ink);
-  letter-spacing:-.02em;display:flex;align-items:center;gap:8px;
-}
-.frm-title::after{
-  content:'Dernière étape';
-  font-size:10px;font-weight:600;color:var(--gold);
-  background:rgba(201,169,110,.13);
-  padding:2px 9px;border-radius:20px;letter-spacing:.02em;
-}
+    .fl input,
+    .fl select,
+    .fl textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      color: var(--ink);
+      background: var(--w);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color .12s, box-shadow .12s;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .fl input:focus,
+    .fl select:focus,
+    .fl textarea:focus {
+      border-color: var(--ink);
+      box-shadow: var(--focus-ring);
+    }
+
+    .fl input::placeholder,
+    .fl textarea::placeholder {
+      color: var(--faint)
+    }
+
+    .fl textarea {
+      resize: vertical;
+      min-height: 72px
+    }
+
+    .cbr {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      cursor: pointer
+    }
+
+    .cbr input {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: var(--ink);
+      /* Améliore la visibilité focus checkbox */
+    }
+
+    .cbr input:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px
+    }
+
+    /* Compteur caractères textarea */
+    .char-count {
+      font-size: 11px;
+      color: var(--faint);
+      text-align: right;
+      margin-top: 3px
+    }
+
+    /* Notice RGPD — Art. 13 */
+    .rgpd-notice {
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+      font-size: 11px;
+      color: var(--mid);
+      line-height: 1.6;
+      padding: 10px 12px;
+      background: #f8f8f6;
+      border-radius: var(--r);
+      border-left: 2.5px solid var(--line);
+      margin-top: 2px;
+    }
+
+    /* Field states */
+    .fl input.err,
+    .fl select.err {
+      border-color: #dc2626
+    }
+
+    .ferr {
+      font-size: 11.5px;
+      color: #dc2626;
+      margin-top: 4px;
+      display: none
+    }
+
+    .ferr.on {
+      display: block
+    }
+
+    .fl input.ok {
+      border-color: #16a34a
+    }
+
+    .cbr span {
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.55
+    }
+
+    /* Select arrow custom */
+    .fl select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    /* ─────────────────────────────────────────────────────────
    NOTICES
 ───────────────────────────────────────────────────────── */
-.ntc{
-  font-size:12px;line-height:1.55;margin-top:10px;padding:9px 12px;
-  border-left:2.5px solid;border-radius:0 4px 4px 0;
-}
-.ntc.inf{background:#eff5ff;border-color:#5280e9;color:#1a3a6b}
-.ntc.wrn{background:#fef9ec;border-color:#d98a00;color:#7a4f00}
+    .ntc {
+      font-size: 12px;
+      line-height: 1.55;
+      margin-top: 10px;
+      padding: 9px 12px;
+      border-left: 2.5px solid;
+      border-radius: 0 4px 4px 0;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .ntc.inf {
+      background: #eff5ff;
+      border-color: #5280e9;
+      color: #1a3a6b
+    }
+
+    .ntc.wrn {
+      background: #fef9ec;
+      border-color: #d98a00;
+      color: #7a4f00
+    }
+
+    /* ─────────────────────────────────────────────────────────
    PRICE FOOTER
 ───────────────────────────────────────────────────────── */
-.pfoot{
-  border-top:1px solid var(--line);
-  padding:16px 24px 22px;
-  padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));
-  flex-shrink:0;background:var(--w);
-}
-.pf-row{
-  display:flex;align-items:flex-end;justify-content:space-between;
-  margin-bottom:13px;
-}
-.pfl{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
-.pfs{font-size:11.5px;color:var(--faint);margin-top:3px}
-.pfv{
-  font-size:22px;font-weight:800;color:var(--ink);
-  letter-spacing:-.04em;line-height:1;
-  transition:opacity .15s;
-}
-.pfv.na{font-size:13px;font-weight:500;color:var(--faint);letter-spacing:0}
-/* CTA button */
-.cta{
-  display:block;width:100%;padding:13px;border:none;border-radius:var(--r);
-  background:var(--ink);color:#fff;
-  font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
-  cursor:pointer;letter-spacing:-.01em;
-  transition:opacity .15s,transform .1s;
-}
-.cta:disabled{background:var(--bg);color:var(--faint);cursor:not-allowed}
-.cta:not(:disabled):hover{opacity:.82}
-.cta:not(:disabled):active{opacity:.95;transform:scale(.99)}
-.cta:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-.cta.spin{position:relative;color:transparent;pointer-events:none}
-.cta.spin::after{
-  content:'';position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:18px;height:18px;
-  border:2px solid rgba(255,255,255,.25);border-top-color:#fff;
-  border-radius:50%;animation:rot .7s linear infinite;
-}
-@keyframes rot{to{transform:translate(-50%,-50%) rotate(360deg)}}
-@keyframes ppulse{
-  0%{transform:scale(1)}
-  40%{transform:scale(1.06)}
-  100%{transform:scale(1)}
-}
-.pfv.pulse{animation:ppulse .22s ease-out}
-.priv{font-size:11px;color:var(--faint);text-align:center;margin-top:9px;line-height:1.6}
+    .pfoot {
+      border-top: 1px solid var(--line);
+      padding: 16px 24px 22px;
+      padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+      flex-shrink: 0;
+      background: var(--w);
+    }
 
-/* ─────────────────────────────────────────────────────────
+    .pf-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .pfl {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -.01em
+    }
+
+    .pfs {
+      font-size: 11.5px;
+      color: var(--faint);
+      margin-top: 3px
+    }
+
+    .pfv {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.04em;
+      line-height: 1;
+      transition: opacity .15s;
+    }
+
+    .pfv.na {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--faint);
+      letter-spacing: 0
+    }
+
+    /* CTA button */
+    .cta {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: var(--r);
+      background: var(--ink);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: -.01em;
+      transition: opacity .15s, transform .1s;
+    }
+
+    .cta:disabled {
+      background: var(--bg);
+      color: var(--faint);
+      cursor: not-allowed
+    }
+
+    .cta:not(:disabled):hover {
+      opacity: .82
+    }
+
+    .cta:not(:disabled):active {
+      opacity: .95;
+      transform: scale(.99)
+    }
+
+    .cta:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring)
+    }
+
+    .cta.spin {
+      position: relative;
+      color: transparent;
+      pointer-events: none
+    }
+
+    .cta.spin::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, .25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rot .7s linear infinite;
+    }
+
+    @keyframes rot {
+      to {
+        transform: translate(-50%, -50%) rotate(360deg)
+      }
+    }
+
+    @keyframes ppulse {
+      0% {
+        transform: scale(1)
+      }
+
+      40% {
+        transform: scale(1.06)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .pfv.pulse {
+      animation: ppulse .22s ease-out
+    }
+
+    .priv {
+      font-size: 11px;
+      color: var(--faint);
+      text-align: center;
+      margin-top: 9px;
+      line-height: 1.6
+    }
+
+    /* ─────────────────────────────────────────────────────────
    TOAST (notification réseau)
 ───────────────────────────────────────────────────────── */
-#dk-toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(16px);
-  color:#fff;font-size:12.5px;font-weight:500;line-height:1.5;
-  padding:10px 18px;border-radius:8px;
-  max-width:320px;width:calc(100% - 48px);text-align:center;
-  opacity:0;pointer-events:none;
-  transition:opacity .25s,transform .25s;
-  z-index:9999;
-  box-shadow:0 4px 20px rgba(0,0,0,.25);
-}
-#dk-toast.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+    #dk-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1.5;
+      padding: 10px 18px;
+      border-radius: 8px;
+      max-width: 320px;
+      width: calc(100% - 48px);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    }
 
-/* ─────────────────────────────────────────────────────────
+    #dk-toast.on {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto
+    }
+
+    /* ─────────────────────────────────────────────────────────
    SUCCESS SCREEN
 ───────────────────────────────────────────────────────── */
-#suc{
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:40px 28px;flex:1;overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-}
-#suc.on{display:flex;animation:rfade .32s ease-out}
-#suc.on .sico{animation:scaleIn .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes scaleIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.sico{
-  width:52px;height:52px;border-radius:50%;
-  background:#e8f5e9;display:grid;place-items:center;margin-bottom:20px;
-  flex-shrink:0;
-}
-.check-path{stroke-dasharray:22;stroke-dashoffset:22}
-#suc.on .check-path{animation:draw .45s cubic-bezier(.4,0,.2,1) .15s forwards}
-@keyframes draw{to{stroke-dashoffset:0}}
-.st{font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.04em;margin-bottom:9px}
-.sb{font-size:13.5px;color:var(--mid);line-height:1.75;max-width:270px}
-.sbox{
-  margin:22px auto;border:1px solid var(--line);border-radius:var(--r);
-  padding:14px 22px;max-width:240px;width:100%;
-}
-.sbl{font-size:11.5px;color:var(--faint)}
-.sph{
-  font-size:20px;font-weight:800;color:var(--ink);
-  letter-spacing:-.03em;margin-top:4px;display:block;
-  text-decoration:none;
-}
-a.sph:hover{color:var(--mid)}
-.slnk{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:11px 20px;border:1px solid var(--line);border-radius:var(--r);
-  text-decoration:none;font-size:13px;font-weight:600;color:var(--ink);
-  transition:border-color .12s;margin-top:6px;
-}
-.slnk:hover{border-color:var(--ink)}
-.slnk:focus-visible{outline:none;box-shadow:var(--focus-ring)}
-/* Trust badges sur l'écran succès */
-.trust-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 auto 18px;max-width:300px}
-.tb-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+    #suc {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 28px;
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-/* ─────────────────────────────────────────────────────────
+    #suc.on {
+      display: flex;
+      animation: rfade .32s ease-out
+    }
+
+    #suc.on .sico {
+      animation: scaleIn .3s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .sico {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: grid;
+      place-items: center;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .check-path {
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22
+    }
+
+    #suc.on .check-path {
+      animation: draw .45s cubic-bezier(.4, 0, .2, 1) .15s forwards
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0
+      }
+    }
+
+    .st {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.04em;
+      margin-bottom: 9px
+    }
+
+    .sb {
+      font-size: 13.5px;
+      color: var(--mid);
+      line-height: 1.75;
+      max-width: 270px
+    }
+
+    .sbox {
+      margin: 22px auto;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 14px 22px;
+      max-width: 240px;
+      width: 100%;
+    }
+
+    .sbl {
+      font-size: 11.5px;
+      color: var(--faint)
+    }
+
+    .sph {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -.03em;
+      margin-top: 4px;
+      display: block;
+      text-decoration: none;
+    }
+
+    a.sph:hover {
+      color: var(--mid)
+    }
+
+    .slnk {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      transition: border-color .12s;
+      margin-top: 6px;
+    }
+
+    .slnk:hover {
+      border-color: var(--ink)
+    }
+
+    .slnk:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring)
+    }
+
+    /* Trust badges sur l'écran succès */
+    .trust-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 auto 18px;
+      max-width: 300px
+    }
+
+    .tb-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px
+    }
+
+    /* ─────────────────────────────────────────────────────────
    MOBILE  ≤ 820px
 ───────────────────────────────────────────────────────── */
-@media(max-width:820px){
-  .root{flex-direction:column;height:100svh;overflow:hidden}
-  .vis{height:38svh;flex:none;width:100%}
-  .vi-logo{top:14px;left:16px}
-  .vi-name{font-size:14px}
-  .panel{flex:1;width:100%;height:0;border-left:none;border-top:1px solid var(--line);overflow:hidden}
-  .p-bd{overflow-y:auto;overflow-x:hidden;padding:0 18px}
-  .p-hd{padding:14px 18px 0}
-  .pfoot{
-    padding:12px 18px 20px;
-    padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
-    border-top:1px solid var(--line);
-    box-shadow:0 -4px 20px rgba(0,0,0,.06);
-  }
-  .frow{grid-template-columns:1fr}
-  /* CTA plus grand au touch */
-  .cta{padding:15px}
-  /* Masquer badge vidéo sur mobile (pas de place) */
-  .vi-badge{display:none!important}
-}
+    @media(max-width:820px) {
+      .root {
+        flex-direction: column;
+        height: 100svh;
+        overflow: hidden
+      }
 
-/* ─────────────────────────────────────────────────────────
+      .vis {
+        height: 38svh;
+        flex: none;
+        width: 100%
+      }
+
+      .vi-logo {
+        top: 14px;
+        left: 16px
+      }
+
+      .vi-name {
+        font-size: 14px
+      }
+
+      .panel {
+        flex: 1;
+        width: 100%;
+        height: 0;
+        border-left: none;
+        border-top: 1px solid var(--line);
+        overflow: hidden
+      }
+
+      .p-bd {
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0 18px
+      }
+
+      .p-hd {
+        padding: 14px 18px 0
+      }
+
+      .pfoot {
+        padding: 12px 18px 20px;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, .06);
+      }
+
+      .frow {
+        grid-template-columns: 1fr
+      }
+
+      /* CTA plus grand au touch */
+      .cta {
+        padding: 15px
+      }
+
+      /* Masquer badge vidéo sur mobile (pas de place) */
+      .vi-badge {
+        display: none !important
+      }
+    }
+
+    /* ─────────────────────────────────────────────────────────
    REDUCED MOTION
 ───────────────────────────────────────────────────────── */
-@media(prefers-reduced-motion:reduce){
-  *{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
-  .vi{transition:none}
-  .progress-fill{transition:none}
-}
-</style>
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important
+      }
 
-<noscript>
-  <style>.root{display:none}</style>
-  <div style="font-family:sans-serif;text-align:center;padding:60px 20px;max-width:480px;margin:0 auto">
-    <strong style="font-size:18px">JavaScript requis</strong>
-    <p style="margin:12px 0 24px;color:#666;line-height:1.6">Ce configurateur nécessite JavaScript.<br>Obtenez votre devis directement sur le site Diskoov.</p>
-    <a href="https://diskoov.fr#devis" rel="noopener noreferrer" style="display:inline-block;background:#111;color:#fff;padding:13px 28px;border-radius:5px;text-decoration:none;font-weight:700">Demander un devis → diskoov.fr</a>
-  </div>
-</noscript>
+      .vi {
+        transition: none
+      }
+
+      .progress-fill {
+        transition: none
+      }
+    }
+  </style>
+
+  <noscript>
+    <style>
+      .root {
+        display: none
+      }
+    </style>
+    <div style="font-family:sans-serif;text-align:center;padding:60px 20px;max-width:480px;margin:0 auto">
+      <strong style="font-size:18px">JavaScript requis</strong>
+      <p style="margin:12px 0 24px;color:#666;line-height:1.6">Ce configurateur nécessite JavaScript.<br>Obtenez votre
+        devis directement sur le site Diskoov.</p>
+      <a href="https://diskoov.fr#devis" rel="noopener noreferrer"
+        style="display:inline-block;background:#111;color:#fff;padding:13px 28px;border-radius:5px;text-decoration:none;font-weight:700">Demander
+        un devis → diskoov.fr</a>
+    </div>
+  </noscript>
 </head>
+
 <body>
-<main class="root diskoov-root" id="app" role="main">
+  <main class="root diskoov-root" id="app" role="main">
 
-<!-- ══ VISUAL (left — immovable) ══════════════════════════ -->
-<div class="vis" role="img" aria-label="Visualisation du produit sélectionné">
+    <!-- ══ VISUAL (left — immovable) ══════════════════════════ -->
+    <div class="vis" role="img" aria-label="Visualisation du produit sélectionné">
 
-  <!--
+      <!--
     ⚠️ PHOTOS OBLIGATOIRES AVANT MISE EN PROD
     Format : WebP, 1920×1080 min, < 400 Ko.
     Uploader dans /public/ sur Vercel.
     Le onerror maintient Unsplash comme fallback dev uniquement.
   -->
-  <img class="vi" id="vi-pool"
-    src="/pool-diskoov.webp"
-    onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=1600&q=85'}"
-    alt="Piscine avec couverture automatique Diskoov"
-    width="1600" height="900"
-    fetchpriority="high"
-    decoding="async">
-  <img class="vi off" id="vi-shl" loading="lazy"
-    src="/abri-telescopique-diskoov.webp"
-    onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://images.unsplash.com/photo-1596878479736-65891a56db4c?auto=format&fit=crop&w=1600&q=85'}"
-    alt="Abri télescopique Master Diskoov"
-    width="1600" height="900"
-    decoding="async">
+      <img class="vi" id="vi-pool" src="/pool-diskoov.webp"
+        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=1600&q=85'}"
+        alt="Piscine avec couverture automatique Diskoov" width="1600" height="900" fetchpriority="high"
+        decoding="async">
+      <img class="vi off" id="vi-shl" loading="lazy" src="/abri-telescopique-diskoov.webp"
+        onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='https://images.unsplash.com/photo-1596878479736-65891a56db4c?auto=format&fit=crop&w=1600&q=85'}"
+        alt="Abri télescopique Master Diskoov" width="1600" height="900" decoding="async">
 
-  <!--
+      <!--
     ⚠️ COUVERTURE — Option A (recommandée) : remplacer l'iframe YouTube par :
       <video class="vi off" id="vi-demo" autoplay loop muted playsinline poster="/couverture-poster.webp">
         <source src="/couverture-diskoov.mp4" type="video/mp4">
@@ -712,1314 +1533,1382 @@ a.sph:hover{color:var(--mid)}
       Puis dans showDemo() : remplacer le corps par showImg('vi-demo')
     Option B (actuelle) : YouTube embed ci-dessous.
   -->
-  <div class="vi-demo" id="vi-demo">
-    <div class="demo-fallback" id="demo-fallback"></div>
-    <div id="yt-play" role="button" tabindex="0" aria-label="Lire la vidéo de démonstration"
-      onclick="loadYT()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();loadYT()}"
-      style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;background:rgba(0,0,0,.15);transition:background .2s;">
-      <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="#111" aria-hidden="true"><polygon points="6,3 17,10 6,17"/></svg>
-      </div>
-    </div>
-    <!-- ⚠️ Vérifier que VBytJ5-paDc est toujours en ligne -->
-    <iframe
-      id="yt-frame"
-      src=""
-      data-src="https://www.youtube.com/embed/VBytJ5-paDc?autoplay=1&mute=1&loop=1&playlist=VBytJ5-paDc&controls=0&modestbranding=1&rel=0"
-      title="Démonstration couverture automatique Diskoov"
-      allow="autoplay; encrypted-media"
-      loading="lazy"
-      style="position:absolute;inset:0;width:100%;height:100%;border:none;opacity:0;transition:opacity .6s;z-index:1"
-    ></iframe>
-  </div>
-
-  <div class="vi-gr" aria-hidden="true"></div>
-
-  <!-- Badge "En cours de lecture" -->
-  <div class="vi-badge" id="vi-badge" aria-hidden="true">
-    <div class="vi-badge-dot"></div>
-    Vidéo en direct
-  </div>
-
-  <a href="https://diskoov.fr" rel="noopener noreferrer" class="vi-logo" aria-label="Retour au site Diskoov">
-    <!-- ⚠️ LOGO : uploader /public/logo-diskoov.svg (fond transparent, rendu blanc automatiquement) -->
-    <img src="/logo-diskoov.svg" onerror="logoFallback(this,'vi')"
-      alt="Diskoov" height="30" class="vi-logo-img" style="width:auto;max-width:140px">
-  </a>
-
-</div><!-- /vis -->
-
-<!-- ══ PANEL (right — independent scroll) ════════════════ -->
-<div class="panel" role="complementary" aria-label="Configurateur">
-
-  <div class="p-hd">
-    <a href="https://diskoov.fr" rel="noopener noreferrer" class="ph-brand" aria-label="Diskoov — retour au site">
-      <!-- ⚠️ LOGO : même fichier /public/logo-diskoov.svg -->
-      <img src="/logo-diskoov.svg" onerror="logoFallback(this,'ph')"
-        alt="Diskoov" height="26" class="ph-logo-img" style="width:auto;max-width:120px">
-    </a>
-    <span class="ph-sum" id="ph-sum" aria-live="polite" aria-label="Résumé de votre configuration"></span>
-  </div>
-
-  <!-- Barre de progression -->
-  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progression de la configuration" id="prog-bar">
-    <div class="progress-fill" id="prog-fill"></div>
-  </div>
-
-  <!-- ── SCROLLABLE SECTIONS ────────────────────── -->
-  <div class="p-bd" id="pbdy">
-
-    <!-- DIMENSIONS -->
-    <div class="s" role="group" aria-labelledby="lbl-dim">
-      <div class="sh">
-        <span class="sl" id="lbl-dim">Dimensions
-          <span class="tip-wrap">
-            <i class="ic" tabindex="0" role="button" aria-label="Information sur les dimensions">i</i>
-            <span class="tip" role="tooltip">Mesures intérieures nettes du bassin, hors margelles</span>
-          </span>
-        </span>
-      </div>
-      <div class="dr">
-        <label class="dl" for="d-l">Longueur intérieure</label>
-        <div class="dinr">
-          <button type="button" class="d-btn" aria-label="Réduire longueur" onclick="stepD('d-l',-0.5,3,20)">−</button>
-          <input class="di" type="number" id="d-l" name="longueur" value="8" min="3" max="20" step="0.5"
-            inputmode="decimal" aria-label="Longueur intérieure en mètres"
-            oninput="updD()" onblur="fixD('d-l',3,20)">
-          <button type="button" class="d-btn" aria-label="Augmenter longueur" onclick="stepD('d-l',+0.5,3,20)">+</button>
-          <span class="du" aria-hidden="true">m</span>
-        </div>
-      </div>
-      <div class="dr">
-        <label class="dl" for="d-w">Largeur intérieure</label>
-        <div class="dinr">
-          <button type="button" class="d-btn" aria-label="Réduire largeur" onclick="stepD('d-w',-0.5,3,12)">−</button>
-          <input class="di" type="number" id="d-w" name="largeur" value="4" min="3" max="12" step="0.5"
-            inputmode="decimal" aria-label="Largeur intérieure en mètres"
-            oninput="updD()" onblur="fixD('d-w',3,12)">
-          <button type="button" class="d-btn" aria-label="Augmenter largeur" onclick="stepD('d-w',+0.5,3,12)">+</button>
-          <span class="du" aria-hidden="true">m</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ÉQUIPEMENT -->
-    <div class="s" role="group" aria-labelledby="lbl-eq">
-      <div class="sh"><span class="sl" id="lbl-eq">Équipement</span></div>
-      <div class="pcs" role="radiogroup" aria-labelledby="lbl-eq">
-        <div class="pc" id="eq-cov" role="radio" aria-checked="false" tabindex="0"
-          onclick="selEq('cov')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('cov')}">
-          <div class="pc-top">
-            <span class="pc-n">Couverture automatique Coverseal</span>
-            <span class="pc-p">dès 11 000 €</span>
-          </div>
-          <div class="pc-s">Sécurité enfants homologuée · baignade en 30 sec, à toute heure · pose par techniciens fabricant</div>
-        </div>
-        <div class="pc" id="eq-shl" role="radio" aria-checked="false" tabindex="0"
-          onclick="selEq('shl')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('shl')}">
-          <div class="pc-top">
-            <span class="pc-n">Abri télescopique Master</span>
-            <span class="pc-p">dès 7 000 €</span>
-          </div>
-          <div class="pc-s">Baignade toute l'année · 5 hauteurs disponibles · prix direct usine</div>
-        </div>
-        <div class="pc" id="eq-oth" role="radio" aria-checked="false" tabindex="0"
-          onclick="selEq('oth')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('oth')}">
-          <div class="pc-top">
-            <span class="pc-n">Volet · Bâche · MasterDeck</span>
-            <span class="pc-p">Sur devis</span>
-          </div>
-          <div class="pc-s">Volet immergé ou hors-sol · bâche 4 saisons · terrasse mobile</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODÈLE COUVERTURE -->
-    <div class="s hide" id="s-cm">
-      <div class="sh">
-        <span class="sl">Modèle
-          <span class="tip-wrap">
-            <i class="ic" tabindex="0" role="button" aria-label="Information sur l'installation">i</i>
-            <span class="tip" role="tooltip">Visite technique réalisée par l'équipe Diskoov. Installation assurée par les techniciens salariés du fabricant.</span>
-          </span>
-        </span>
-        <span class="sr" id="cm-p">–</span>
-      </div>
-      <div class="tg" style="margin-bottom:8px" role="radiogroup" aria-label="Type de couverture">
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="b-auto" onclick="selCM('auto')">Automatique</button>
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="b-semi" onclick="selCM('semi')">Semi-automatique</button>
-      </div>
-      <div class="pc" id="b-ore" role="radio" aria-checked="false" tabindex="0"
-        onclick="selCM('ore')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selCM('ore')}"
-        style="margin-bottom:6px">
-        <div class="pc-top">
-          <span class="pc-n">Oré</span>
-          <span class="pc-p">Sur devis</span>
-        </div>
-        <div class="pc-s">Formes libres · sans raccordement · max 10×5 m · 1 min chrono</div>
-      </div>
-      <div class="pc" id="b-eden" role="radio" aria-checked="false" tabindex="0"
-        onclick="selCM('eden')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selCM('eden')}">
-        <div class="pc-top">
-          <span class="pc-n">Eden</span>
-          <span class="pc-p">Sur devis</span>
-        </div>
-        <div class="pc-s">Matériaux haut de gamme · isolation thermique renforcée · toutes formes</div>
-      </div>
-    </div>
-
-    <!-- MEMBRANE -->
-    <div class="s hide" id="s-mem">
-      <div class="sh">
-        <span class="sl">
-          Membrane
-          <span class="tip-wrap">
-            <i class="ic" tabindex="0" role="button" aria-label="Information sur la membrane">i</i>
-            <span class="tip" role="tooltip">Membrane PVC armé Serge Ferrari — résistance UV, durée de vie 20+ ans</span>
-          </span>
-          <span class="sl-val" id="mem-ral">RAL 7037</span>
-        </span>
-        <span class="sr" id="mem-dp">+ 0 €</span>
-      </div>
-      <div class="swat" id="g-mem" role="radiogroup" aria-label="Couleur de membrane"></div>
-      <div class="sw-lbl" id="mem-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
-    </div>
-
-    <!-- HABILLAGE -->
-    <div class="s hide" id="s-hab">
-      <div class="sh">
-        <span class="sl">
-          Habillage
-          <span class="tip-wrap">
-            <i class="ic" tabindex="0" role="button" aria-label="Information sur l'habillage">i</i>
-            <span class="tip" role="tooltip">Couleur du caisson en aluminium thermolaqué contenant la couverture enroulée</span>
-          </span>
-          <span class="sl-val" id="hab-ral">RAL 7037</span>
-        </span>
-      </div>
-      <div class="swat" id="g-hab" role="radiogroup" aria-label="Couleur d'habillage"></div>
-      <div class="sw-lbl" id="hab-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
-    </div>
-
-    <!-- OPTIONS COUVERTURE -->
-    <div class="s hide" id="s-co">
-      <div class="sh">
-        <span class="sl">Options</span>
-        <span class="sr" id="co-dp">+ 0 €</span>
-      </div>
-      <div class="or">
-        <div>
-          <span class="ol">Motorisation solaire autonome</span>
-          <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Incluse · 2 panneaux photovoltaïques · 60 sec pour 13 m</div>
-        </div>
-        <button type="button" class="tog on" role="switch" aria-pressed="true" aria-label="Motorisation solaire autonome" id="t-sol" onclick="togOpt('sol',this)"></button>
-      </div>
-      <div class="or">
-        <div>
-          <span class="ol">Rail tout-terrain</span>
-          <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Pour margelles en pierre naturelle ou irrégulières</div>
-        </div>
-        <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Rail tout-terrain" id="t-rtt" onclick="togOpt('rtt',this)"></button>
-      </div>
-    </div>
-
-    <!-- HAUTEUR ABRI -->
-    <div class="s hide" id="s-sm">
-      <div class="sh"><span class="sl">Hauteur</span></div>
-      <div class="hcs" role="radiogroup" aria-label="Hauteur de l'abri">
-        <div class="hc" id="h-ul" role="radio" aria-checked="false" tabindex="0"
-          onclick="selSM('ul')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('ul')}">
-          <div class="hbw" aria-hidden="true"><div class="hb" style="height:9px"></div></div>
-          <div class="hci"><div class="hcn">Ultra Bas · Neo</div><div class="hcd">Discret · protection thermique</div></div>
-          <div class="hcr"><div class="hcp">dès 7 000 €</div><div class="hch">&lt; 60 cm</div></div>
-        </div>
-        <div class="hc" id="h-m18" role="radio" aria-checked="false" tabindex="0"
-          onclick="selSM('m18')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m18')}">
-          <div class="hbw" aria-hidden="true"><div class="hb" style="height:16px"></div></div>
-          <div class="hci"><div class="hcn">Master 18</div><div class="hcd">Design épuré · accès facilité</div></div>
-          <div class="hcr"><div class="hcp">dès 8 500 €</div><div class="hch">~ 80 cm</div></div>
-        </div>
-        <div class="hc" id="h-m30" role="radio" aria-checked="false" tabindex="0"
-          onclick="selSM('m30')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m30')}">
-          <div class="hbw" aria-hidden="true"><div class="hb" style="height:23px"></div></div>
-          <div class="hci"><div class="hcn">Master 30</div><div class="hcd">Nage possible · abri coulissant</div></div>
-          <div class="hcr"><div class="hcp">dès 10 920 €</div><div class="hch">~ 1,20 m</div></div>
-        </div>
-        <div class="hc" id="h-m50" role="radio" aria-checked="false" tabindex="0"
-          onclick="selSM('m50')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m50')}">
-          <div class="hbw" aria-hidden="true"><div class="hb" style="height:30px"></div></div>
-          <div class="hci"><div class="hcn">Master 50</div><div class="hcd">Nage abri fermé · confort annuel</div></div>
-          <div class="hcr"><div class="hcp">dès 11 760 €</div><div class="hch">~ 1,60 m</div></div>
-        </div>
-        <div class="hc" id="h-mid" role="radio" aria-checked="false" tabindex="0"
-          onclick="selSM('mid')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('mid')}">
-          <div class="hbw" aria-hidden="true"><div class="hb" style="height:26px"></div></div>
-          <div class="hci"><div class="hcn">Mi-haut</div><div class="hcd">Entre discrétion et hauteur</div></div>
-          <div class="hcr"><div class="hcp">Sur devis</div><div class="hch">1,20–1,80 m</div></div>
-        </div>
-      </div>
-      <div class="ntc wrn" role="note">Les abris dépassant 1,80 m peuvent nécessiter une déclaration préalable de travaux.</div>
-    </div>
-
-    <!-- OPTIONS ABRI -->
-    <div class="s hide" id="s-so">
-      <div class="sh">
-        <span class="sl">Options</span>
-        <span class="sr" id="so-dp">+ 0 €</span>
-      </div>
-      <div class="or">
-        <div>
-          <span class="ol">Motorisation</span>
-          <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Ouverture et fermeture motorisées de l'abri</div>
-        </div>
-        <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Motorisation de l'abri" id="t-sm" onclick="togOpt('sm',this)"></button>
-      </div>
-      <div class="or">
-        <div>
-          <span class="ol">Rail au sol</span>
-          <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Guidage et stabilité latérale de l'abri</div>
-        </div>
-        <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Rail au sol" id="t-gr" onclick="togOpt('gr',this)"></button>
-      </div>
-      <div class="fl" style="margin-top:11px">
-        <label for="strucCol">Couleur structure (RAL)</label>
-        <input type="text" id="strucCol" name="couleur_structure" placeholder="Par défaut : RAL 9016 Blanc"
-          maxlength="30" autocomplete="off"
-          oninput="S.strucCol=this.value.trim()">
-      </div>
-    </div>
-
-    <!-- DÉLAI -->
-    <div class="s hide" id="s-tl" role="group" aria-labelledby="lbl-tl">
-      <div class="sh"><span class="sl" id="lbl-tl">Délai souhaité</span></div>
-      <div class="tg g4" role="radiogroup" aria-labelledby="lbl-tl">
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-ete" onclick="selTL('urg',this)">Avant l'été</button>
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-6m" onclick="selTL('6m',this)">6 mois</button>
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-1a" onclick="selTL('1a',this)">1 an</button>
-        <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-ref" onclick="selTL('ref',this)">En réflexion</button>
-      </div>
-    </div>
-
-    <!-- COORDONNÉES -->
-    <div class="s hide" id="s-frm">
-      <div class="sh"><span class="frm-title">Vos coordonnées</span></div>
-      <form class="flds" novalidate autocomplete="on" onsubmit="return false">
-        <div class="frow">
-          <div class="fl">
-            <label for="fn">Prénom *</label>
-            <input type="text" id="fn" name="given-name" placeholder="Jean"
-              autocomplete="given-name" maxlength="100"
-              oninput="if(!S.fn)track('form_start',{});S.fn=this.value.trim();chk()">
-          </div>
-          <div class="fl">
-            <label for="ln">Nom *</label>
-            <input type="text" id="ln" name="family-name" placeholder="Dupont"
-              autocomplete="family-name" maxlength="100"
-              oninput="S.ln=this.value.trim();chk()">
+      <div class="vi-demo" id="vi-demo">
+        <div class="demo-fallback" id="demo-fallback"></div>
+        <div id="yt-play" role="button" tabindex="0" aria-label="Lire la vidéo de démonstration" onclick="loadYT()"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();loadYT()}"
+          style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;background:rgba(0,0,0,.15);transition:background .2s;">
+          <div
+            style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="#111" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
           </div>
         </div>
-        <div class="fl">
-          <label for="em">Email *</label>
-          <input type="email" id="em" name="email" placeholder="jean@email.com"
-            autocomplete="email" maxlength="254" inputmode="email"
-            oninput="S.em=this.value.trim();validateEmail(this);chk()">
-          <p class="ferr" id="em-err" role="alert">Adresse email invalide</p>
-        </div>
-        <div class="fl">
-          <label for="ph">Téléphone *</label>
-          <input type="tel" id="ph" name="tel" placeholder="06 XX XX XX XX"
-            autocomplete="tel" maxlength="14" inputmode="tel"
-            oninput="fmtPhone(this);S.ph=this.value;chk()">
-          <p class="ferr" id="ph-err" role="alert">Numéro invalide (ex : 06 12 34 56 78)</p>
-        </div>
-        <div class="fl">
-          <label for="dept">Département *</label>
-          <select id="dept" name="departement" autocomplete="address-level2"
-            onchange="S.dept=this.value;chk()">
-            <option value="">Sélectionner...</option>
-          </select>
-        </div>
-        <div class="fl">
-          <label for="loc-sel">Type de piscine</label>
-          <select id="loc-sel" name="emplacement" onchange="S.loc=this.value">
-            <option value="ext">Extérieure (jardin, terrasse)</option>
-            <option value="int">Intérieure (véranda, SPA)</option>
-          </select>
-        </div>
-        <div class="fl">
-          <label for="src">Comment avez-vous connu Diskoov ?</label>
-          <select id="src" name="source" onchange="S.src=this.value">
-            <option value="">–</option>
-            <option value="Google">Google</option>
-            <option value="Recommandation">Recommandation</option>
-            <option value="Réseaux sociaux">Réseaux sociaux</option>
-            <option value="Salon / Foire">Salon / Foire</option>
-            <option value="Panneau signalétique">Panneau signalétique</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </div>
-        <div class="fl">
-          <label for="note">Informations complémentaires</label>
-          <textarea id="note" name="commentaire" rows="3" maxlength="800"
-            placeholder="Type de margelles, travaux à prévoir (électricité, terrassement), accès particulier..."
-            oninput="S.note=this.value;updCharCount(this,'note-count',800)"></textarea>
-          <div class="char-count" id="note-count" aria-live="polite">800 caractères restants</div>
-        </div>
-        <!-- Honeypot anti-bot — caché CSS + aria -->
-        <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
-          <input type="text" id="hp" name="website" tabindex="-1" autocomplete="off">
-        </div>
-
-        <!-- Consentement principal (traitement du devis) -->
-        <label class="cbr">
-          <input type="checkbox" id="ok" name="consentement" onchange="S.ok=this.checked;chk()">
-          <span>Je souhaite recevoir mon devis personnalisé de Diskoov *</span>
-        </label>
-
-        <!-- Consentement optionnel relances (base légale distincte — CNIL) -->
-        <label class="cbr" style="margin-top:2px">
-          <input type="checkbox" id="ok2" name="consentement_relances" onchange="S.ok2=this.checked">
-          <span style="color:var(--mid)">J'accepte d'être recontacté par Diskoov pour des offres futures (facultatif)</span>
-        </label>
-
-        <!-- Mention légale RGPD Art. 13 — obligatoire CNIL -->
-        <div class="rgpd-notice" role="note" aria-label="Information sur la protection de vos données">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true" style="flex-shrink:0;margin-top:1px"><circle cx="6" cy="6" r="5.5" stroke="currentColor" stroke-width="1"/><path d="M6 5.5v3M6 3.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-          <span>Vos données (nom, email, téléphone, département) sont collectées par Diskoov pour traiter votre demande de devis, sur la base de votre consentement. Elles sont conservées 3 ans. Vous disposez d'un droit d'accès, de rectification et d'effacement en écrivant à <a href="mailto:contact@diskoov.fr" style="color:var(--ink);text-decoration:underline">contact@diskoov.fr</a>. En savoir plus : <a href="https://diskoov.fr/privacy-policy" target="_blank" rel="noopener noreferrer" style="color:var(--ink);text-decoration:underline">politique de confidentialité</a>.</span>
-        </div>
-      </form>
-    </div>
-
-    <div style="height:8px"></div>
-  </div><!-- /p-bd -->
-
-  <!-- SUCCESS (remplace p-bd) -->
-  <div id="suc" role="status" aria-live="polite">
-    <div class="sico">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline class="check-path" points="20 6 9 17 4 12"/>
-      </svg>
-    </div>
-    <div class="st" id="suc-t">Merci !</div>
-    <p class="sb" id="suc-b"></p>
-    <div id="suc-recap" style="background:#f8f8f6;border-radius:7px;padding:14px 18px;margin:16px auto;max-width:300px;width:100%;text-align:left;display:none">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#aaa;margin:0 0 10px">Votre configuration</p>
-      <div id="suc-recap-rows"></div>
-    </div>
-    <div class="sbox">
-      <div class="sbl">Une question urgente ?</div>
-      <a id="suc-phone" class="sph"></a>
-    </div>
-    <div class="trust-badges">
-      <span class="tb-badge" style="background:#f0f9f0;color:#166534">15 ans d'expertise</span>
-      <span class="tb-badge" style="background:#f8f8f6;color:#555">Pose par techniciens fabricant</span>
-      <span class="tb-badge" style="background:#f8f8f6;color:#555">Visite technique offerte</span>
-    </div>
-    <a href="https://diskoov.fr" rel="noopener noreferrer" class="slnk">← diskoov.fr</a>
-    <button type="button" onclick="resetForm()"
-      style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--faint);margin-top:12px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:3px">
-      Nouvelle configuration
-    </button>
-  </div>
-
-  <!-- PRICE FOOTER -->
-  <div class="pfoot" id="pfoot">
-    <div class="pf-row">
-      <div>
-        <div class="pfl">Prix estimatif TTC</div>
-        <div class="pfs">Livraison et installation incluses</div>
+        <!-- ⚠️ Vérifier que VBytJ5-paDc est toujours en ligne -->
+        <iframe id="yt-frame" src=""
+          data-src="https://www.youtube.com/embed/VBytJ5-paDc?autoplay=1&mute=1&loop=1&playlist=VBytJ5-paDc&controls=0&modestbranding=1&rel=0"
+          title="Démonstration couverture automatique Diskoov" allow="autoplay; encrypted-media" loading="lazy"
+          style="position:absolute;inset:0;width:100%;height:100%;border:none;opacity:0;transition:opacity .6s;z-index:1"></iframe>
       </div>
-      <div class="pfv na" id="pfv" aria-live="polite" aria-label="Prix estimatif">–</div>
-    </div>
-    <button class="cta" id="cta" type="button" disabled
-      onclick="doSubmit()"
-      onmousedown="if(this.disabled){var b=this;b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');setTimeout(function(){b.classList.remove('shake');},400);}"
-      aria-live="polite">
-      Obtenir mon devis gratuit
-    </button>
-    <div class="priv">* Champs requis · Xavier vous répond sous 48h · Données confidentielles</div>
-  </div>
 
-</div><!-- /panel -->
-</main><!-- /root -->
+      <div class="vi-gr" aria-hidden="true"></div>
 
-<!-- Tooltip global portal — positionné par JS, hors de tout contexte -->
-<div id="dk-tip" role="tooltip" aria-hidden="true"></div>
+      <!-- Badge "En cours de lecture" -->
+      <div class="vi-badge" id="vi-badge" aria-hidden="true">
+        <div class="vi-badge-dot"></div>
+        Vidéo en direct
+      </div>
 
-<!-- Toast notification réseau -->
-<div id="dk-toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+      <a href="https://diskoov.fr" rel="noopener noreferrer" class="vi-logo" aria-label="Retour au site Diskoov">
+        <!-- ⚠️ LOGO : uploader /public/logo-diskoov.svg (fond transparent, rendu blanc automatiquement)
+         Si le fichier est absent, le fallback "D · Diskoov" s'affiche. -->
+        <img src="/logo-diskoov.svg"
+          onerror="this.outerHTML='<span class=\'vi-mark\' aria-hidden=\'true\'>D</span><span class=\'vi-name\'>Diskoov</span>'"
+          alt="Diskoov" height="30" class="vi-logo-img" style="width:auto;max-width:140px">
+      </a>
 
-<script>
-/* ─────────────────────────────────────────────────────────
-  MISE EN PROD — checklist :
-  1. Uploader /pool-diskoov.webp, /abri-telescopique-diskoov.webp, /couverture-diskoov.webp
-  2. Créer og-configurateur.jpg (1200×630) et le déposer dans /public/
-  3. Webhook Make.com/Zapier — coller dans WP AVANT l'iframe :
-       window.DISKOOV_WEBHOOK = 'https://hook.eu1.make.com/XXXX';
-  4. GTM / GA4 : ajouter dans <head> pour activer le tracking automatique
-───────────────────────────────────────────────────────── */
-var PHONE_DISPLAY = '06 20 54 25 04';
-var PHONE_TEL     = 'tel:0620542504';
-var XAVIER_NAME   = 'Xavier Dispot';
+    </div><!-- /vis -->
 
-var PNMS = {
-  auto:'Coverseal Automatique', semi:'Coverseal Semi-Automatique',
-  ore:'Couverture Oré', eden:'Couverture Eden',
-  ul:'Abri Ultra Bas / Neo', m18:'Abri Master 18', m30:'Abri Master 30',
-  m50:'Abri Master 50', mid:'Abri Mi-haut', oth:'Volet / Bâche / MasterDeck'
-};
+    <!-- ══ PANEL (right — independent scroll) ════════════════ -->
+    <div class="panel" role="complementary" aria-label="Configurateur">
 
-/* ── PALETTES ─────────────────────────────────────── */
-var MEM = [
-  {h:'#898176',r:'RAL 7037',l:'Gris poussière'},
-  {h:'#C4C4C4',r:'RAL 7035',l:'Gris clair'},
-  {h:'#E8DEBA',r:'RAL 1015',l:'Ivoire clair'},
-  {h:'#9E8B69',r:'RAL 1019',l:'Beige gris'},
-  {h:'#1F78B4',r:'RAL 5015',l:'Bleu ciel'},
-  {h:'#003591',r:'RAL 5002',l:'Bleu cobalt'},
-  {h:'#86A47C',r:'RAL 6021',l:'Vert pâle'},
-  {h:'#006B54',r:'RAL 6026',l:'Vert opale'},
-  {h:'#0A0A0A',r:'RAL 9005',l:'Noir pur'}
-];
-var HAB = [
-  {h:'#898176',r:'RAL 7037',l:'Gris poussière'},
-  {h:'#C4C4C4',r:'RAL 7035',l:'Gris clair'},
-  {h:'#E8DEBA',r:'RAL 1015',l:'Ivoire clair'},
-  {h:'#9E8B69',r:'RAL 1019',l:'Beige gris'},
-  {h:'#D95B1A',r:'RAL 2004',l:'Orange'},
-  {h:'#7A1C20',r:'RAL 3004',l:'Bordeaux'},
-  {h:'#4A5568',r:'RAL 7016',l:'Anthracite'},
-  {h:'#2C3E50',r:'RAL 5011',l:'Bleu nuit'},
-  {h:'#3E5C36',r:'RAL 6009',l:'Vert sapin'},
-  {h:'#0A0A0A',r:'RAL 9005',l:'Noir pur'}
-];
-var DEPTS = ['01 — Ain','02 — Aisne','03 — Allier','04 — Alpes-de-Haute-Provence','05 — Hautes-Alpes','06 — Alpes-Maritimes','07 — Ardèche','08 — Ardennes','09 — Ariège','10 — Aube','11 — Aude','12 — Aveyron','13 — Bouches-du-Rhône','14 — Calvados','15 — Cantal','16 — Charente','17 — Charente-Maritime','18 — Cher','19 — Corrèze','2A — Corse-du-Sud','2B — Haute-Corse','21 — Côte-d\'Or','22 — Côtes-d\'Armor','23 — Creuse','24 — Dordogne','25 — Doubs','26 — Drôme','27 — Eure','28 — Eure-et-Loir','29 — Finistère','30 — Gard','31 — Haute-Garonne','32 — Gers','33 — Gironde','34 — Hérault','35 — Ille-et-Vilaine','36 — Indre','37 — Indre-et-Loire','38 — Isère','39 — Jura','40 — Landes','41 — Loir-et-Cher','42 — Loire','43 — Haute-Loire','44 — Loire-Atlantique','45 — Loiret','46 — Lot','47 — Lot-et-Garonne','48 — Lozère','49 — Maine-et-Loire','50 — Manche','51 — Marne','52 — Haute-Marne','53 — Mayenne','54 — Meurthe-et-Moselle','55 — Meuse','56 — Morbihan','57 — Moselle','58 — Nièvre','59 — Nord','60 — Oise','61 — Orne','62 — Pas-de-Calais','63 — Puy-de-Dôme','64 — Pyrénées-Atlantiques','65 — Hautes-Pyrénées','66 — Pyrénées-Orientales','67 — Bas-Rhin','68 — Haut-Rhin','69 — Rhône','70 — Haute-Saône','71 — Saône-et-Loire','72 — Sarthe','73 — Savoie','74 — Haute-Savoie','75 — Paris','76 — Seine-Maritime','77 — Seine-et-Marne','78 — Yvelines','79 — Deux-Sèvres','80 — Somme','81 — Tarn','82 — Tarn-et-Garonne','83 — Var','84 — Vaucluse','85 — Vendée','86 — Vienne','87 — Haute-Vienne','88 — Vosges','89 — Yonne','90 — Territoire de Belfort','91 — Essonne','92 — Hauts-de-Seine','93 — Seine-Saint-Denis','94 — Val-de-Marne','95 — Val-d\'Oise','971 — Guadeloupe','972 — Martinique','973 — Guyane','974 — La Réunion','976 — Mayotte'];
+      <div class="p-hd">
+        <a href="https://diskoov.fr" rel="noopener noreferrer" class="ph-brand" aria-label="Diskoov — retour au site">
+          <!-- ⚠️ LOGO : même fichier /public/logo-diskoov.svg -->
+          <img src="/logo-diskoov.svg"
+            onerror="this.outerHTML='<span class=\'ph-mark\' aria-hidden=\'true\'>D</span><span class=\'ph-name\'>Diskoov</span>'"
+            alt="Diskoov" height="26" class="ph-logo-img" style="width:auto;max-width:120px">
+        </a>
+        <span class="ph-sum" id="ph-sum" aria-live="polite" aria-label="Résumé de votre configuration"></span>
+      </div>
 
-/* ── PRICES ────────────────────────────────────────── */
-var BP        = {auto:13890,semi:11490,ul:7000,m18:8500,m30:10920,m50:11760};
-var MEM_DELTA = {'RAL 7037':0,'RAL 7035':0,'RAL 1015':459,'RAL 1019':459,'RAL 5015':459,'RAL 5002':459,'RAL 6021':459,'RAL 6026':459,'RAL 9005':459};
-var OPT_P     = {rtt:800,shlMotor:650,gr:400};
+      <!-- Barre de progression -->
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+        aria-label="Progression de la configuration" id="prog-bar">
+        <div class="progress-fill" id="prog-fill"></div>
+      </div>
 
-/* ── STATE ─────────────────────────────────────────── */
-var S = {
-  loc:'ext', len:8, wid:4,
-  eq:'', cm:'', sm:'',
-  mRal:'RAL 7037', mLbl:'Gris poussière',
-  hRal:'RAL 7037', hLbl:'Gris poussière',
-  sol:true, rtt:false, shlMotor:false, gr:false, strucCol:'',
-  tl:'',
-  fn:'', ln:'', em:'', ph:'', dept:'', src:'', note:'', ok:false, ok2:false
-};
+      <!-- ── SCROLLABLE SECTIONS ────────────────────── -->
+      <div class="p-bd" id="pbdy">
 
-/* ── HELPERS ────────────────────────────────────────── */
-function el(id){ return document.getElementById(id); }
+        <!-- DIMENSIONS -->
+        <div class="s" role="group" aria-labelledby="lbl-dim">
+          <div class="sh">
+            <span class="sl" id="lbl-dim">Dimensions
+              <span class="tip-wrap">
+                <i class="ic" tabindex="0" role="button" aria-label="Information sur les dimensions">i</i>
+                <span class="tip" role="tooltip">Mesures intérieures nettes du bassin, hors margelles</span>
+              </span>
+            </span>
+          </div>
+          <div class="dr">
+            <label class="dl" for="d-l">Longueur intérieure</label>
+            <div class="dinr">
+              <button type="button" class="d-btn" aria-label="Réduire longueur"
+                onclick="stepD('d-l',-0.5,3,20)">−</button>
+              <input class="di" type="number" id="d-l" name="longueur" value="8" min="3" max="20" step="0.5"
+                inputmode="decimal" aria-label="Longueur intérieure en mètres" oninput="updD()"
+                onblur="fixD('d-l',3,20)">
+              <button type="button" class="d-btn" aria-label="Augmenter longueur"
+                onclick="stepD('d-l',+0.5,3,20)">+</button>
+              <span class="du" aria-hidden="true">m</span>
+            </div>
+          </div>
+          <div class="dr">
+            <label class="dl" for="d-w">Largeur intérieure</label>
+            <div class="dinr">
+              <button type="button" class="d-btn" aria-label="Réduire largeur"
+                onclick="stepD('d-w',-0.5,3,12)">−</button>
+              <input class="di" type="number" id="d-w" name="largeur" value="4" min="3" max="12" step="0.5"
+                inputmode="decimal" aria-label="Largeur intérieure en mètres" oninput="updD()"
+                onblur="fixD('d-w',3,12)">
+              <button type="button" class="d-btn" aria-label="Augmenter largeur"
+                onclick="stepD('d-w',+0.5,3,12)">+</button>
+              <span class="du" aria-hidden="true">m</span>
+            </div>
+          </div>
+        </div>
 
-/* Fallback logo : remplace l'img par le monogramme D si le fichier SVG est absent */
-function logoFallback(img, ctx){
-  var parent = img.parentNode;
-  if(!parent) return;
-  img.parentNode.removeChild(img);
-  var mark = document.createElement('span');
-  var name = document.createElement('span');
-  if(ctx === 'vi'){
-    mark.className = 'vi-mark'; mark.setAttribute('aria-hidden','true'); mark.textContent = 'D';
-    name.className = 'vi-name'; name.textContent = 'Diskoov';
-  } else {
-    mark.className = 'ph-mark'; mark.setAttribute('aria-hidden','true'); mark.textContent = 'D';
-    name.className = 'ph-name'; name.textContent = 'Diskoov';
-  }
-  parent.appendChild(mark);
-  parent.appendChild(name);
-}
+        <!-- ÉQUIPEMENT -->
+        <div class="s" role="group" aria-labelledby="lbl-eq">
+          <div class="sh"><span class="sl" id="lbl-eq">Équipement</span></div>
+          <div class="pcs" role="radiogroup" aria-labelledby="lbl-eq">
+            <div class="pc" id="eq-cov" role="radio" aria-checked="false" tabindex="0" onclick="selEq('cov')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('cov')}">
+              <div class="pc-top">
+                <span class="pc-n">Couverture automatique Coverseal</span>
+                <span class="pc-p">dès 11 000 €</span>
+              </div>
+              <div class="pc-s">Sécurité enfants homologuée · baignade en 30 sec, à toute heure · pose par techniciens
+                fabricant</div>
+            </div>
+            <div class="pc" id="eq-shl" role="radio" aria-checked="false" tabindex="0" onclick="selEq('shl')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('shl')}">
+              <div class="pc-top">
+                <span class="pc-n">Abri télescopique Master</span>
+                <span class="pc-p">dès 7 000 €</span>
+              </div>
+              <div class="pc-s">Baignade toute l'année · 5 hauteurs disponibles · prix direct usine</div>
+            </div>
+            <div class="pc" id="eq-oth" role="radio" aria-checked="false" tabindex="0" onclick="selEq('oth')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('oth')}">
+              <div class="pc-top">
+                <span class="pc-n">Volet · Bâche · MasterDeck</span>
+                <span class="pc-p">Sur devis</span>
+              </div>
+              <div class="pc-s">Volet immergé ou hors-sol · bâche 4 saisons · terrasse mobile</div>
+            </div>
+          </div>
+        </div>
 
-function esc(s){
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+        <!-- MODÈLE COUVERTURE -->
+        <div class="s hide" id="s-cm">
+          <div class="sh">
+            <span class="sl">Modèle
+              <span class="tip-wrap">
+                <i class="ic" tabindex="0" role="button" aria-label="Information sur l'installation">i</i>
+                <span class="tip" role="tooltip">Visite technique réalisée par l'équipe Diskoov. Installation assurée
+                  par les techniciens salariés du fabricant.</span>
+              </span>
+            </span>
+            <span class="sr" id="cm-p">–</span>
+          </div>
+          <div class="tg" style="margin-bottom:8px" role="radiogroup" aria-label="Type de couverture">
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="b-auto"
+              onclick="selCM('auto')">Automatique</button>
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="b-semi"
+              onclick="selCM('semi')">Semi-automatique</button>
+          </div>
+          <div class="pc" id="b-ore" role="radio" aria-checked="false" tabindex="0" onclick="selCM('ore')"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selCM('ore')}"
+            style="margin-bottom:6px">
+            <div class="pc-top">
+              <span class="pc-n">Oré</span>
+              <span class="pc-p">Sur devis</span>
+            </div>
+            <div class="pc-s">Formes libres · sans raccordement · max 10×5 m · 1 min chrono</div>
+          </div>
+          <div class="pc" id="b-eden" role="radio" aria-checked="false" tabindex="0" onclick="selCM('eden')"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selCM('eden')}">
+            <div class="pc-top">
+              <span class="pc-n">Eden</span>
+              <span class="pc-p">Sur devis</span>
+            </div>
+            <div class="pc-s">Matériaux haut de gamme · isolation thermique renforcée · toutes formes</div>
+          </div>
+        </div>
 
-function fmtDelta(n){ return n ? '+ ' + n.toLocaleString('fr-FR') + ' €' : '+ 0 €'; }
+        <!-- MEMBRANE -->
+        <div class="s hide" id="s-mem">
+          <div class="sh">
+            <span class="sl">
+              Membrane
+              <span class="tip-wrap">
+                <i class="ic" tabindex="0" role="button" aria-label="Information sur la membrane">i</i>
+                <span class="tip" role="tooltip">Membrane PVC armé Serge Ferrari — résistance UV, durée de vie 20+
+                  ans</span>
+              </span>
+              <span class="sl-val" id="mem-ral">RAL 7037</span>
+            </span>
+            <span class="sr" id="mem-dp">+ 0 €</span>
+          </div>
+          <div class="swat" id="g-mem" role="radiogroup" aria-label="Couleur de membrane"></div>
+          <div class="sw-lbl" id="mem-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
+        </div>
 
-/* ── COMPTEUR CARACTÈRES ─────────────────────────── */
-function updCharCount(textarea, countId, max){
-  var remaining = max - textarea.value.length;
-  var el2 = el(countId);
-  if(el2) el2.textContent = remaining + ' caractère' + (remaining !== 1 ? 's' : '') + ' restant' + (remaining !== 1 ? 's' : '');
-}
+        <!-- HABILLAGE -->
+        <div class="s hide" id="s-hab">
+          <div class="sh">
+            <span class="sl">
+              Habillage
+              <span class="tip-wrap">
+                <i class="ic" tabindex="0" role="button" aria-label="Information sur l'habillage">i</i>
+                <span class="tip" role="tooltip">Couleur du caisson en aluminium thermolaqué contenant la couverture
+                  enroulée</span>
+              </span>
+              <span class="sl-val" id="hab-ral">RAL 7037</span>
+            </span>
+          </div>
+          <div class="swat" id="g-hab" role="radiogroup" aria-label="Couleur d'habillage"></div>
+          <div class="sw-lbl" id="hab-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
+        </div>
 
-/* ── VALIDATION ─────────────────────────────────────── */
-var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-/* Numéros FR : mobile 06/07, fixe 01-05, VoIP 09 — 10 chiffres commençant par 0 */
-var PHONE_RE = /^0[1-9](\s?\d{2}){4}$/;
+        <!-- OPTIONS COUVERTURE -->
+        <div class="s hide" id="s-co">
+          <div class="sh">
+            <span class="sl">Options</span>
+            <span class="sr" id="co-dp">+ 0 €</span>
+          </div>
+          <div class="or">
+            <div>
+              <span class="ol">Motorisation solaire autonome</span>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Incluse · 2 panneaux photovoltaïques · 60
+                sec pour 13 m</div>
+            </div>
+            <button type="button" class="tog on" role="switch" aria-pressed="true"
+              aria-label="Motorisation solaire autonome" id="t-sol" onclick="togOpt('sol',this)"></button>
+          </div>
+          <div class="or">
+            <div>
+              <span class="ol">Rail tout-terrain</span>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Pour margelles en pierre naturelle ou
+                irrégulières</div>
+            </div>
+            <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Rail tout-terrain"
+              id="t-rtt" onclick="togOpt('rtt',this)"></button>
+          </div>
+        </div>
 
-/* ── BARRE DE PROGRESSION ─────────────────────────── */
-function updProgress(){
-  var steps = 0, done = 0;
-  /* Dimensions — toujours remplies avec valeur par défaut */
-  steps += 1; done += 1;
-  /* Équipement */
-  steps += 1; if(S.eq) done += 1;
-  /* Sous-choix produit */
-  if(S.eq === 'cov'){ steps += 1; if(S.cm) done += 1; }
-  if(S.eq === 'shl'){ steps += 1; if(S.sm) done += 1; }
-  /* Délai */
-  steps += 1; if(S.tl) done += 1;
-  /* Formulaire = 5 champs obligatoires */
-  steps += 5;
-  if(S.fn) done += 1;
-  if(S.ln) done += 1;
-  if(S.em && EMAIL_RE.test(S.em)) done += 1;
-  if(S.ph) done += 1;
-  if(S.dept) done += 1;
-  /* Consentement */
-  steps += 1; if(S.ok) done += 1;
+        <!-- HAUTEUR ABRI -->
+        <div class="s hide" id="s-sm">
+          <div class="sh"><span class="sl">Hauteur</span></div>
+          <div class="hcs" role="radiogroup" aria-label="Hauteur de l'abri">
+            <div class="hc" id="h-ul" role="radio" aria-checked="false" tabindex="0" onclick="selSM('ul')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('ul')}">
+              <div class="hbw" aria-hidden="true">
+                <div class="hb" style="height:9px"></div>
+              </div>
+              <div class="hci">
+                <div class="hcn">Ultra Bas · Neo</div>
+                <div class="hcd">Discret · protection thermique</div>
+              </div>
+              <div class="hcr">
+                <div class="hcp">dès 7 000 €</div>
+                <div class="hch">&lt; 60 cm</div>
+              </div>
+            </div>
+            <div class="hc" id="h-m18" role="radio" aria-checked="false" tabindex="0" onclick="selSM('m18')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m18')}">
+              <div class="hbw" aria-hidden="true">
+                <div class="hb" style="height:16px"></div>
+              </div>
+              <div class="hci">
+                <div class="hcn">Master 18</div>
+                <div class="hcd">Design épuré · accès facilité</div>
+              </div>
+              <div class="hcr">
+                <div class="hcp">dès 8 500 €</div>
+                <div class="hch">~ 80 cm</div>
+              </div>
+            </div>
+            <div class="hc" id="h-m30" role="radio" aria-checked="false" tabindex="0" onclick="selSM('m30')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m30')}">
+              <div class="hbw" aria-hidden="true">
+                <div class="hb" style="height:23px"></div>
+              </div>
+              <div class="hci">
+                <div class="hcn">Master 30</div>
+                <div class="hcd">Nage possible · abri coulissant</div>
+              </div>
+              <div class="hcr">
+                <div class="hcp">dès 10 920 €</div>
+                <div class="hch">~ 1,20 m</div>
+              </div>
+            </div>
+            <div class="hc" id="h-m50" role="radio" aria-checked="false" tabindex="0" onclick="selSM('m50')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('m50')}">
+              <div class="hbw" aria-hidden="true">
+                <div class="hb" style="height:30px"></div>
+              </div>
+              <div class="hci">
+                <div class="hcn">Master 50</div>
+                <div class="hcd">Nage abri fermé · confort annuel</div>
+              </div>
+              <div class="hcr">
+                <div class="hcp">dès 11 760 €</div>
+                <div class="hch">~ 1,60 m</div>
+              </div>
+            </div>
+            <div class="hc" id="h-mid" role="radio" aria-checked="false" tabindex="0" onclick="selSM('mid')"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('mid')}">
+              <div class="hbw" aria-hidden="true">
+                <div class="hb" style="height:26px"></div>
+              </div>
+              <div class="hci">
+                <div class="hcn">Mi-haut</div>
+                <div class="hcd">Entre discrétion et hauteur</div>
+              </div>
+              <div class="hcr">
+                <div class="hcp">Sur devis</div>
+                <div class="hch">1,20–1,80 m</div>
+              </div>
+            </div>
+          </div>
+          <div class="ntc wrn" role="note">Les abris dépassant 1,80 m peuvent nécessiter une déclaration préalable de
+            travaux.</div>
+        </div>
 
-  var pct = Math.round((done / steps) * 100);
-  var fill = el('prog-fill');
-  var bar  = el('prog-bar');
-  if(fill) fill.style.width = pct + '%';
-  if(bar)  bar.setAttribute('aria-valuenow', pct);
-}
+        <!-- OPTIONS ABRI -->
+        <div class="s hide" id="s-so">
+          <div class="sh">
+            <span class="sl">Options</span>
+            <span class="sr" id="so-dp">+ 0 €</span>
+          </div>
+          <div class="or">
+            <div>
+              <span class="ol">Motorisation</span>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Ouverture et fermeture motorisées de
+                l'abri</div>
+            </div>
+            <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Motorisation de l'abri"
+              id="t-sm" onclick="togOpt('sm',this)"></button>
+          </div>
+          <div class="or">
+            <div>
+              <span class="ol">Rail au sol</span>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Guidage et stabilité latérale de l'abri
+              </div>
+            </div>
+            <button type="button" class="tog" role="switch" aria-pressed="false" aria-label="Rail au sol" id="t-gr"
+              onclick="togOpt('gr',this)"></button>
+          </div>
+          <div class="fl" style="margin-top:11px">
+            <label for="strucCol">Couleur structure (RAL)</label>
+            <input type="text" id="strucCol" name="couleur_structure" placeholder="Par défaut : RAL 9016 Blanc"
+              maxlength="30" autocomplete="off" oninput="S.strucCol=this.value.trim()">
+          </div>
+        </div>
 
-/* ── ANALYTICS ─────────────────────────────────────── */
-function track(event, params){
-  try{
-    if(window.dataLayer){
-      var p = Object.assign({event: event}, params || {});
-      window.dataLayer.push(p);
-    }
-    if(window.gtag) window.gtag('event', event, params || {});
-  }catch(e){}
-}
+        <!-- DÉLAI -->
+        <div class="s hide" id="s-tl" role="group" aria-labelledby="lbl-tl">
+          <div class="sh"><span class="sl" id="lbl-tl">Délai souhaité</span></div>
+          <div class="tg g4" role="radiogroup" aria-labelledby="lbl-tl">
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-ete"
+              onclick="selTL('urg',this)">Avant l'été <span aria-label="urgent"></span></button>
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-6m" onclick="selTL('6m',this)">6
+              mois</button>
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-1a" onclick="selTL('1a',this)">1
+              an</button>
+            <button type="button" class="tb" role="radio" aria-pressed="false" id="tl-ref"
+              onclick="selTL('ref',this)">En réflexion</button>
+          </div>
+        </div>
 
-/* ── INIT ──────────────────────────────────────────── */
-function init(){
-  /* Standalone detection */
-  if(window.self === window.top){
-    document.documentElement.classList.add('diskoov-standalone');
-    document.body.classList.add('diskoov-standalone');
-  }
-  /* Synchronise le preload hero */
-  var heroImg = el('vi-pool');
-  var preload = document.getElementById('preload-hero');
-  if(heroImg && preload) preload.href = heroImg.src;
-  /* Phone link */
-  var ph = el('suc-phone');
-  if(ph){ ph.href = PHONE_TEL; ph.textContent = PHONE_DISPLAY; }
-  /* Departments */
-  var ds = el('dept');
-  var frag = document.createDocumentFragment();
-  DEPTS.forEach(function(v){
-    var o = document.createElement('option');
-    o.value = v; o.textContent = v;
-    frag.appendChild(o);
-  });
-  ds.appendChild(frag);
-  /* Color swatches */
-  buildSW('g-mem', MEM, 'm', function(c){
-    S.mRal = c.r; S.mLbl = c.l;
-    el('mem-ral').textContent = c.r;
-    el('mem-lbl').textContent = c.l + ' — ' + c.r;
-    el('mem-dp').textContent  = fmtDelta(MEM_DELTA[c.r] !== undefined ? MEM_DELTA[c.r] : 459);
-    updP();
-  });
-  buildSW('g-hab', HAB, 'h', function(c){
-    S.hRal = c.r; S.hLbl = c.l;
-    el('hab-ral').textContent = c.r;
-    el('hab-lbl').textContent = c.l + ' — ' + c.r;
-    updP();
-  });
-  selSW('g-mem','m','RAL-7037');
-  selSW('g-hab','h','RAL-7037');
-  /* WCAG 2.4.3 Focus Order : s'assurer que les éléments dans les sections masquées
-     sont hors du tab-order dès le chargement de la page */
-  ['s-cm','s-mem','s-hab','s-co','s-sm','s-so','s-tl','s-frm'].forEach(function(id){ conceal(id); });
-  updCTA();
-  updProgress();
-}
+        <!-- COORDONNÉES -->
+        <div class="s hide" id="s-frm">
+          <div class="sh"><span class="sl">Vos coordonnées</span></div>
+          <form class="flds" novalidate autocomplete="on" onsubmit="return false">
+            <div class="frow">
+              <div class="fl">
+                <label for="fn">Prénom *</label>
+                <input type="text" id="fn" name="given-name" placeholder="Jean" autocomplete="given-name"
+                  maxlength="100" oninput="if(!S.fn)track('form_start',{});S.fn=this.value.trim();chk()">
+              </div>
+              <div class="fl">
+                <label for="ln">Nom *</label>
+                <input type="text" id="ln" name="family-name" placeholder="Dupont" autocomplete="family-name"
+                  maxlength="100" oninput="S.ln=this.value.trim();chk()">
+              </div>
+            </div>
+            <div class="fl">
+              <label for="em">Email *</label>
+              <input type="email" id="em" name="email" placeholder="jean@email.com" autocomplete="email" maxlength="254"
+                inputmode="email" oninput="S.em=this.value.trim();validateEmail(this);chk()">
+              <p class="ferr" id="em-err" role="alert">Adresse email invalide</p>
+            </div>
+            <div class="fl">
+              <label for="ph">Téléphone *</label>
+              <input type="tel" id="ph" name="tel" placeholder="06 XX XX XX XX" autocomplete="tel" maxlength="14"
+                inputmode="tel" oninput="fmtPhone(this);S.ph=this.value;chk()">
+              <p class="ferr" id="ph-err" role="alert">Numéro invalide (ex : 06 12 34 56 78)</p>
+            </div>
+            <div class="fl">
+              <label for="dept">Département *</label>
+              <select id="dept" name="departement" autocomplete="address-level2" onchange="S.dept=this.value;chk()">
+                <option value="">Sélectionner...</option>
+              </select>
+            </div>
+            <div class="fl">
+              <label for="loc-sel">Type de piscine</label>
+              <select id="loc-sel" name="emplacement" onchange="S.loc=this.value">
+                <option value="ext">Extérieure (jardin, terrasse)</option>
+                <option value="int">Intérieure (véranda, SPA)</option>
+              </select>
+            </div>
+            <div class="fl">
+              <label for="src">Comment avez-vous connu Diskoov ?</label>
+              <select id="src" name="source" onchange="S.src=this.value">
+                <option value="">–</option>
+                <option value="Google">Google</option>
+                <option value="Recommandation">Recommandation</option>
+                <option value="Réseaux sociaux">Réseaux sociaux</option>
+                <option value="Salon / Foire">Salon / Foire</option>
+                <option value="Panneau signalétique">Panneau signalétique</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div class="fl">
+              <label for="note">Informations complémentaires</label>
+              <textarea id="note" name="commentaire" rows="3" maxlength="800"
+                placeholder="Type de margelles, travaux à prévoir (électricité, terrassement), accès particulier..."
+                oninput="S.note=this.value;updCharCount(this,'note-count',800)"></textarea>
+              <div class="char-count" id="note-count" aria-live="polite">800 caractères restants</div>
+            </div>
+            <!-- Honeypot anti-bot — caché CSS + aria -->
+            <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
+              <input type="text" id="hp" name="website" tabindex="-1" autocomplete="off">
+            </div>
 
-/* ── STEP DIM BUTTONS (+/-) ───────────────────────── */
-function stepD(id, delta, mn, mx){
-  var inp = el(id);
-  var v = (parseFloat(inp.value) || mn) + delta;
-  v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
-  inp.value = v;
-  if(id === 'd-l') S.len = v; else S.wid = v;
-  updSummary(); updP();
-}
+            <!-- Consentement principal (traitement du devis) -->
+            <label class="cbr">
+              <input type="checkbox" id="ok" name="consentement" onchange="S.ok=this.checked;chk()">
+              <span>Je souhaite recevoir mon devis personnalisé de Diskoov *</span>
+            </label>
 
-/* ── SWATCHES ──────────────────────────────────────── */
-function buildSW(gid, palette, pfx, cb){
-  var g = el(gid);
-  var frag = document.createDocumentFragment();
-  palette.forEach(function(c){
-    var k = c.r.replace(/ /g,'-');
-    var d = document.createElement('div');
-    d.className = 'sw';
-    d.id = 'sw-' + pfx + '-' + k;
-    d.style.background = c.h;
-    d.setAttribute('role','radio');
-    d.setAttribute('tabindex','0');
-    d.setAttribute('aria-checked','false');
-    d.setAttribute('aria-label', c.l + ' — ' + c.r);
-    d.innerHTML = '<span class="sw-tt" aria-hidden="true">' + esc(c.l) + '<br><span style="opacity:.65">' + esc(c.r) + '</span></span>';
-    d.onclick = function(){ selColor(g, d, c, cb); };
-    d.onkeydown = function(e){
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); }
+            <!-- Consentement optionnel relances (base légale distincte — CNIL) -->
+            <label class="cbr" style="margin-top:2px">
+              <input type="checkbox" id="ok2" name="consentement_relances" onchange="S.ok2=this.checked">
+              <span style="color:var(--mid)">J'accepte d'être recontacté par Diskoov pour des offres futures
+                (facultatif)</span>
+            </label>
+
+            <!-- Mention légale RGPD Art. 13 — obligatoire CNIL -->
+            <div class="rgpd-notice" role="note" aria-label="Information sur la protection de vos données">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"
+                style="flex-shrink:0;margin-top:1px">
+                <circle cx="6" cy="6" r="5.5" stroke="currentColor" stroke-width="1" />
+                <path d="M6 5.5v3M6 3.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+              </svg>
+              <span>Vos données (nom, email, téléphone, département) sont collectées par Diskoov pour traiter votre
+                demande de devis, sur la base de votre consentement. Elles sont conservées 3 ans. Vous disposez d'un
+                droit d'accès, de rectification et d'effacement en écrivant à <a href="mailto:contact@diskoov.fr"
+                  style="color:var(--ink);text-decoration:underline">contact@diskoov.fr</a>. En savoir plus : <a
+                  href="https://diskoov.fr/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
+                  style="color:var(--ink);text-decoration:underline">politique de confidentialité</a>.</span>
+            </div>
+          </form>
+        </div>
+
+        <div style="height:8px"></div>
+      </div><!-- /p-bd -->
+
+      <!-- SUCCESS (remplace p-bd) -->
+      <div id="suc" role="status" aria-live="polite">
+        <div class="sico">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline class="check-path" points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <div class="st" id="suc-t">Merci !</div>
+        <p class="sb" id="suc-b"></p>
+        <div id="suc-recap"
+          style="background:#f8f8f6;border-radius:7px;padding:14px 18px;margin:16px auto;max-width:300px;width:100%;text-align:left;display:none">
+          <p
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#aaa;margin:0 0 10px">
+            Votre configuration</p>
+          <div id="suc-recap-rows"></div>
+        </div>
+        <div class="sbox">
+          <div class="sbl">Une question urgente ?</div>
+          <a id="suc-phone" class="sph"></a>
+        </div>
+        <div class="trust-badges">
+          <span class="tb-badge" style="background:#f0f9f0;color:#166534">15 ans d'expertise</span>
+          <span class="tb-badge" style="background:#f8f8f6;color:#555">Pose par techniciens fabricant</span>
+          <span class="tb-badge" style="background:#f8f8f6;color:#555">Visite technique offerte</span>
+        </div>
+        <a href="https://diskoov.fr" rel="noopener noreferrer" class="slnk">← diskoov.fr</a>
+        <button type="button" onclick="resetForm()"
+          style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--faint);margin-top:12px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:3px">
+          Nouvelle configuration
+        </button>
+      </div>
+
+      <!-- PRICE FOOTER -->
+      <div class="pfoot" id="pfoot">
+        <div class="pf-row">
+          <div>
+            <div class="pfl">Prix estimatif TTC</div>
+            <div class="pfs">Livraison et installation incluses</div>
+          </div>
+          <div class="pfv na" id="pfv" aria-live="polite" aria-label="Prix estimatif">–</div>
+        </div>
+        <button class="cta" id="cta" type="button" disabled onclick="doSubmit()" aria-live="polite">
+          Obtenir mon devis gratuit
+        </button>
+        <div class="priv">* Champs requis · Xavier vous répond sous 48h · Données confidentielles</div>
+      </div>
+
+    </div><!-- /panel -->
+  </main><!-- /root -->
+
+  <!-- Tooltip global portal — positionné par JS, hors de tout contexte -->
+  <div id="dk-tip" role="tooltip" aria-hidden="true"></div>
+
+  <!-- Toast notification réseau -->
+  <div id="dk-toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  <script>
+    /* ─────────────────────────────────────────────────────────
+      MISE EN PROD — checklist :
+      1. Uploader /pool-diskoov.webp, /abri-telescopique-diskoov.webp, /couverture-diskoov.webp
+      2. Créer og-configurateur.jpg (1200×630) et le déposer dans /public/
+      3. Webhook Make.com/Zapier — coller dans WP AVANT l'iframe :
+           window.DISKOOV_WEBHOOK = 'https://hook.eu1.make.com/XXXX';
+      4. GTM / GA4 : ajouter dans <head> pour activer le tracking automatique
+    ───────────────────────────────────────────────────────── */
+    var PHONE_DISPLAY = '06 20 54 25 04';
+    var PHONE_TEL = 'tel:0620542504';
+    var XAVIER_NAME = 'Xavier Dispot';
+
+    var PNMS = {
+      auto: 'Coverseal Automatique', semi: 'Coverseal Semi-Automatique',
+      ore: 'Couverture Oré', eden: 'Couverture Eden',
+      ul: 'Abri Ultra Bas / Neo', m18: 'Abri Master 18', m30: 'Abri Master 30',
+      m50: 'Abri Master 50', mid: 'Abri Mi-haut', oth: 'Volet / Bâche / MasterDeck'
     };
-    frag.appendChild(d);
-  });
-  g.appendChild(frag);
-}
 
-function selColor(grid, dot, c, cb){
-  grid.querySelectorAll('.sw').forEach(function(s){
-    s.classList.remove('on');
-    s.setAttribute('aria-checked','false');
-  });
-  dot.classList.add('on');
-  dot.setAttribute('aria-checked','true');
-  cb(c);
-}
+    /* ── PALETTES ─────────────────────────────────────── */
+    var MEM = [
+      { h: '#898176', r: 'RAL 7037', l: 'Gris poussière' },
+      { h: '#C4C4C4', r: 'RAL 7035', l: 'Gris clair' },
+      { h: '#E8DEBA', r: 'RAL 1015', l: 'Ivoire clair' },
+      { h: '#9E8B69', r: 'RAL 1019', l: 'Beige gris' },
+      { h: '#1F78B4', r: 'RAL 5015', l: 'Bleu ciel' },
+      { h: '#003591', r: 'RAL 5002', l: 'Bleu cobalt' },
+      { h: '#86A47C', r: 'RAL 6021', l: 'Vert pâle' },
+      { h: '#006B54', r: 'RAL 6026', l: 'Vert opale' },
+      { h: '#0A0A0A', r: 'RAL 9005', l: 'Noir pur' }
+    ];
+    var HAB = [
+      { h: '#898176', r: 'RAL 7037', l: 'Gris poussière' },
+      { h: '#C4C4C4', r: 'RAL 7035', l: 'Gris clair' },
+      { h: '#E8DEBA', r: 'RAL 1015', l: 'Ivoire clair' },
+      { h: '#9E8B69', r: 'RAL 1019', l: 'Beige gris' },
+      { h: '#D95B1A', r: 'RAL 2004', l: 'Orange' },
+      { h: '#7A1C20', r: 'RAL 3004', l: 'Bordeaux' },
+      { h: '#4A5568', r: 'RAL 7016', l: 'Anthracite' },
+      { h: '#2C3E50', r: 'RAL 5011', l: 'Bleu nuit' },
+      { h: '#3E5C36', r: 'RAL 6009', l: 'Vert sapin' },
+      { h: '#0A0A0A', r: 'RAL 9005', l: 'Noir pur' }
+    ];
+    var DEPTS = ['01 — Ain', '02 — Aisne', '03 — Allier', '04 — Alpes-de-Haute-Provence', '05 — Hautes-Alpes', '06 — Alpes-Maritimes', '07 — Ardèche', '08 — Ardennes', '09 — Ariège', '10 — Aube', '11 — Aude', '12 — Aveyron', '13 — Bouches-du-Rhône', '14 — Calvados', '15 — Cantal', '16 — Charente', '17 — Charente-Maritime', '18 — Cher', '19 — Corrèze', '2A — Corse-du-Sud', '2B — Haute-Corse', '21 — Côte-d\'Or', '22 — Côtes-d\'Armor', '23 — Creuse', '24 — Dordogne', '25 — Doubs', '26 — Drôme', '27 — Eure', '28 — Eure-et-Loir', '29 — Finistère', '30 — Gard', '31 — Haute-Garonne', '32 — Gers', '33 — Gironde', '34 — Hérault', '35 — Ille-et-Vilaine', '36 — Indre', '37 — Indre-et-Loire', '38 — Isère', '39 — Jura', '40 — Landes', '41 — Loir-et-Cher', '42 — Loire', '43 — Haute-Loire', '44 — Loire-Atlantique', '45 — Loiret', '46 — Lot', '47 — Lot-et-Garonne', '48 — Lozère', '49 — Maine-et-Loire', '50 — Manche', '51 — Marne', '52 — Haute-Marne', '53 — Mayenne', '54 — Meurthe-et-Moselle', '55 — Meuse', '56 — Morbihan', '57 — Moselle', '58 — Nièvre', '59 — Nord', '60 — Oise', '61 — Orne', '62 — Pas-de-Calais', '63 — Puy-de-Dôme', '64 — Pyrénées-Atlantiques', '65 — Hautes-Pyrénées', '66 — Pyrénées-Orientales', '67 — Bas-Rhin', '68 — Haut-Rhin', '69 — Rhône', '70 — Haute-Saône', '71 — Saône-et-Loire', '72 — Sarthe', '73 — Savoie', '74 — Haute-Savoie', '75 — Paris', '76 — Seine-Maritime', '77 — Seine-et-Marne', '78 — Yvelines', '79 — Deux-Sèvres', '80 — Somme', '81 — Tarn', '82 — Tarn-et-Garonne', '83 — Var', '84 — Vaucluse', '85 — Vendée', '86 — Vienne', '87 — Haute-Vienne', '88 — Vosges', '89 — Yonne', '90 — Territoire de Belfort', '91 — Essonne', '92 — Hauts-de-Seine', '93 — Seine-Saint-Denis', '94 — Val-de-Marne', '95 — Val-d\'Oise', '971 — Guadeloupe', '972 — Martinique', '973 — Guyane', '974 — La Réunion', '976 — Mayotte'];
 
-function selSW(gid, pfx, ral){
-  var g = el(gid);
-  if(!g) return;
-  var d = el('sw-' + pfx + '-' + ral);
-  if(d){
-    g.querySelectorAll('.sw').forEach(function(s){
-      s.classList.remove('on');
-      s.setAttribute('aria-checked','false');
-    });
-    d.classList.add('on');
-    d.setAttribute('aria-checked','true');
-  }
-}
+    /* ── PRICES ────────────────────────────────────────── */
+    var BP = { auto: 13890, semi: 11490, ul: 7000, m18: 8500, m30: 10920, m50: 11760 };
+    var MEM_DELTA = { 'RAL 7037': 0, 'RAL 7035': 0, 'RAL 1015': 459, 'RAL 1019': 459, 'RAL 5015': 459, 'RAL 5002': 459, 'RAL 6021': 459, 'RAL 6026': 459, 'RAL 9005': 459 };
+    var OPT_P = { rtt: 800, shlMotor: 650, gr: 400 };
 
-/* ── SECTIONS REVEAL ───────────────────────────────── */
-function reveal(id){
-  var e = el(id);
-  e.classList.remove('hide');
-  e.classList.add('show');
-  /* WCAG 2.4.3 Focus Order : rétablir tabindex sur les éléments interactifs enfants */
-  e.querySelectorAll('[data-ti]').forEach(function(node){
-    node.setAttribute('tabindex', node.getAttribute('data-ti'));
-    node.removeAttribute('data-ti');
-  });
-}
-function revealTo(id){
-  reveal(id);
-  requestAnimationFrame(function(){
-    el(id).scrollIntoView({behavior:'smooth', block:'nearest'});
-  });
-}
-function conceal(id){
-  var e = el(id);
-  e.classList.add('hide');
-  e.classList.remove('show');
-  /* WCAG 2.4.3 Focus Order : retirer du tab-order les éléments dans les sections cachées */
-  e.querySelectorAll('[tabindex="0"]').forEach(function(node){
-    node.setAttribute('data-ti','0');
-    node.setAttribute('tabindex','-1');
-  });
-}
+    /* ── STATE ─────────────────────────────────────────── */
+    var S = {
+      loc: 'ext', len: 8, wid: 4,
+      eq: '', cm: '', sm: '',
+      mRal: 'RAL 7037', mLbl: 'Gris poussière',
+      hRal: 'RAL 7037', hLbl: 'Gris poussière',
+      sol: true, rtt: false, shlMotor: false, gr: false, strucCol: '',
+      tl: '',
+      fn: '', ln: '', em: '', ph: '', dept: '', src: '', note: '', ok: false, ok2: false
+    };
 
-/* ── SELECTIONS ─────────────────────────────────────── */
-function selLoc(v){
-  S.loc = v;
-  /* Synchroniser le select si présent */
-  var sel = el('loc-sel');
-  if(sel) sel.value = v;
-  requestAnimationFrame(function(){ updProgress(); });
-}
+    /* ── HELPERS ────────────────────────────────────────── */
+    function el(id) { return document.getElementById(id); }
 
-function updD(){
-  S.len = parseFloat(el('d-l').value) || 8;
-  S.wid = parseFloat(el('d-w').value) || 4;
-  updSummary(); updP();
-}
-function fixD(id, mn, mx){
-  var e = el(id);
-  var v = parseFloat(e.value) || mn;
-  v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
-  e.value = v;
-  if(id === 'd-l') S.len = v; else S.wid = v;
-  updSummary(); updP();
-}
-
-function selEq(v){
-  S.eq = v; S.cm = ''; S.sm = '';
-  ['auto','semi'].forEach(function(k){ el('b-'+k).classList.remove('on'); el('b-'+k).setAttribute('aria-pressed','false'); });
-  ['b-ore','b-eden'].forEach(function(id){ el(id).classList.remove('on'); el(id).setAttribute('aria-checked','false'); });
-  ['ul','m18','m30','m50','mid'].forEach(function(k){ el('h-'+k).classList.remove('on'); el('h-'+k).setAttribute('aria-checked','false'); });
-  el('cm-p').textContent = '–';
-  ['cov','shl','oth'].forEach(function(k){
-    el('eq-'+k).classList.remove('on');
-    el('eq-'+k).setAttribute('aria-checked','false');
-  });
-  el('eq-'+v).classList.add('on');
-  el('eq-'+v).setAttribute('aria-checked','true');
-  track('config_equipment', {equipment: v});
-  /* Sections + visuel — critique pour le paint immédiat */
-  if(v === 'cov'){
-    revealTo('s-cm');
-    conceal('s-mem'); conceal('s-hab'); conceal('s-co');
-    conceal('s-sm');  conceal('s-so');
-    conceal('s-tl');  conceal('s-frm');
-    showDemo();
-  } else if(v === 'shl'){
-    conceal('s-cm');  conceal('s-mem'); conceal('s-hab'); conceal('s-co');
-    revealTo('s-sm'); reveal('s-so');
-    conceal('s-tl');  conceal('s-frm');
-    showImg('vi-shl');
-  } else {
-    conceal('s-cm');  conceal('s-mem'); conceal('s-hab'); conceal('s-co');
-    conceal('s-sm');  conceal('s-so');
-    revealTo('s-tl'); reveal('s-frm');
-    showImg('vi-pool');
-  }
-  updP(); chk();
-  /* INP : différer les mises à jour non-critiques après le paint (libère le thread principal) */
-  requestAnimationFrame(function(){ updSummary(); updProgress(); });
-}
-
-function selCM(v){
-  S.cm = v;
-  ['auto','semi'].forEach(function(k){ el('b-'+k).classList.remove('on'); el('b-'+k).setAttribute('aria-pressed','false'); });
-  el('b-ore').classList.remove('on'); el('b-ore').setAttribute('aria-checked','false');
-  el('b-eden').classList.remove('on'); el('b-eden').setAttribute('aria-checked','false');
-  if(v === 'auto' || v === 'semi'){
-    el('b-'+v).classList.add('on');
-    el('b-'+v).setAttribute('aria-pressed','true');
-  } else if(v === 'ore'){
-    el('b-ore').classList.add('on'); el('b-ore').setAttribute('aria-checked','true');
-  } else if(v === 'eden'){
-    el('b-eden').classList.add('on'); el('b-eden').setAttribute('aria-checked','true');
-  }
-  var isCS = (v === 'auto' || v === 'semi');
-  if(isCS){ revealTo('s-mem'); reveal('s-hab'); reveal('s-co'); }
-  else     { conceal('s-mem'); conceal('s-hab'); conceal('s-co'); }
-  var pm = {auto:'13 890 €', semi:'11 490 €', ore:'Sur devis', eden:'Sur devis'};
-  el('cm-p').textContent = pm[v] || '–';
-  track('config_model', {model: v, category: 'cover'});
-  reveal('s-tl'); reveal('s-frm');
-  if(!isCS) revealTo('s-tl');
-  updP(); chk();
-  requestAnimationFrame(function(){ updSummary(); updProgress(); });
-}
-
-function selSM(v){
-  S.sm = v;
-  ['ul','m18','m30','m50','mid'].forEach(function(k){
-    el('h-'+k).classList.remove('on');
-    el('h-'+k).setAttribute('aria-checked','false');
-  });
-  el('h-'+v).classList.add('on');
-  el('h-'+v).setAttribute('aria-checked','true');
-  track('config_model', {model: v, category: 'shelter'});
-  revealTo('s-tl'); reveal('s-frm');
-  updP(); chk();
-  requestAnimationFrame(function(){ updSummary(); updProgress(); });
-}
-
-function selTL(v, btn){
-  S.tl = v;
-  ['tl-ete','tl-6m','tl-1a','tl-ref'].forEach(function(id){
-    el(id).classList.remove('on');
-    el(id).setAttribute('aria-pressed','false');
-  });
-  btn.classList.add('on');
-  btn.setAttribute('aria-pressed','true');
-  /* S'assurer que le formulaire est visible (cas où on arrive depuis selEq('oth')) */
-  reveal('s-frm');
-  chk();
-  requestAnimationFrame(function(){ updProgress(); });
-}
-
-function togOpt(k, btn){
-  if(k === 'sol')      { S.sol       = !S.sol;       btn.classList.toggle('on', S.sol); }
-  else if(k === 'rtt') { S.rtt       = !S.rtt;       btn.classList.toggle('on', S.rtt); }
-  else if(k === 'sm')  { S.shlMotor  = !S.shlMotor;  btn.classList.toggle('on', S.shlMotor); }
-  else if(k === 'gr')  { S.gr        = !S.gr;        btn.classList.toggle('on', S.gr); }
-  btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
-  var codp = el('co-dp'); if(codp) codp.textContent = fmtDelta(S.rtt ? OPT_P.rtt : 0);
-  var sodp = el('so-dp'); if(sodp) sodp.textContent = fmtDelta((S.shlMotor ? OPT_P.shlMotor : 0) + (S.gr ? OPT_P.gr : 0));
-  updP();
-}
-
-/* ── PRICE ──────────────────────────────────────────── */
-function updP(){
-  var eq = S.eq, cm = S.cm, sm = S.sm, base = 0;
-  if(eq === 'cov'){
-    if(!cm){ setP('–', true); return; }
-    if(cm === 'ore' || cm === 'eden'){ setP('Sur devis', true); return; }
-    base = BP[cm] || 0;
-    base += (MEM_DELTA[S.mRal] !== undefined ? MEM_DELTA[S.mRal] : 459);
-    if(S.rtt) base += OPT_P.rtt;
-  } else if(eq === 'shl'){
-    if(!sm){ setP('–', true); return; }
-    if(sm === 'mid'){ setP('Sur devis', true); return; }
-    base = BP[sm] || 0;
-    if(S.shlMotor) base += OPT_P.shlMotor;
-    if(S.gr)       base += OPT_P.gr;
-  } else if(eq === 'oth'){
-    setP('Sur devis', true); return;
-  } else {
-    setP('Sélectionnez un équipement', true); return;
-  }
-  if(!base){ setP('–', true); return; }
-  setP('dès ' + base.toLocaleString('fr-FR') + ' €', false);
-}
-
-var ptimer = null;
-var pLast  = '';   /* dernière valeur affichée — pas d'animation si inchangée */
-
-function setP(txt, na){
-  var e = el('pfv');
-  clearTimeout(ptimer);
-
-  /* Même valeur qu'avant : juste synchroniser la classe, pas de flash ni de pulse */
-  if(txt === pLast){
-    e.classList.toggle('na', na);
-    return;
-  }
-
-  /* Nouvelle valeur : flash d'opacité + pulse si prix numérique */
-  e.classList.toggle('na', na);
-  e.style.opacity = '.35';
-  ptimer = setTimeout(function(){
-    e.textContent = txt;
-    e.setAttribute('aria-label', na ? txt : 'Prix estimatif : ' + txt);
-    e.style.opacity = '1';
-    pLast = txt;
-    if(!na){
-      e.classList.remove('pulse');
-      requestAnimationFrame(function(){ e.classList.add('pulse'); });
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-  }, 130);
-}
 
-/* ── LIVE SUMMARY ─────────────────────────────────── */
-function updSummary(){
-  var e = el('ph-sum');
-  if(!e) return;
-  var PSHORT = {
-    auto:'Coverseal Auto', semi:'Coverseal Semi', ore:'Oré', eden:'Eden',
-    ul:'Ultra Bas', m18:'Master 18', m30:'Master 30', m50:'Master 50', mid:'Mi-haut'
-  };
-  var parts = [];
-  var prod = S.cm || S.sm;
-  if(prod && PSHORT[prod])    parts.push(PSHORT[prod]);
-  else if(S.eq === 'oth')     parts.push('Volet / Bâche');
-  if(S.eq && S.len && S.wid)  parts.push(S.len.toFixed(1).replace('.',',') + '×' + S.wid.toFixed(1).replace('.',',') + ' m');
-  if((S.cm === 'auto' || S.cm === 'semi') && S.mLbl) parts.push(S.mLbl);
-  var summary = parts.join(' · ');
-  e.textContent = summary;
-  e.setAttribute('aria-label', summary ? 'Configuration : ' + summary : '');
-  /* Mise à jour du titre de l'onglet pour les comparaisons multi-onglets */
-  document.title = summary ? summary + ' — Diskoov' : 'Configurateur Piscine — Diskoov';
-}
+    function fmtDelta(n) { return n ? '+ ' + n.toLocaleString('fr-FR') + ' €' : '+ 0 €'; }
 
-/* ── CTA LABEL ─────────────────────────────────────── */
-function updCTA(){
-  var btn = el('cta');
-  if(!btn) return;
-  var lbl = '';
-  var phoneDigits = (S.ph || '').replace(/\s/g,'');
-  var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
-  if(!S.eq)                        lbl = 'Choisissez un équipement';
-  else if(S.eq === 'cov' && !S.cm) lbl = 'Choisissez un modèle';
-  else if(S.eq === 'shl' && !S.sm) lbl = 'Choisissez une hauteur';
-  else if(!S.tl)                   lbl = 'Indiquez votre délai';
-  else if(!S.fn||!S.ln||!S.em||!S.ph||!S.dept) lbl = 'Complétez vos coordonnées';
-  else if(S.ph && !phoneOk)        lbl = 'Numéro de téléphone invalide';
-  else if(!S.ok)                   lbl = 'Cochez le consentement';
-  else                             lbl = 'Obtenir mon devis gratuit';
-  btn.textContent = lbl;
-}
-
-/* ── VALIDATION ─────────────────────────────────────── */
-function chk(){
-  var emailOk = !S.em || EMAIL_RE.test(S.em);
-  var phoneDigits = (S.ph || '').replace(/\s/g,'');
-  var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
-  var ok = !!(S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && S.dept && S.ok && S.tl);
-  el('cta').disabled = !ok;
-  updCTA();
-  updProgress();
-}
-
-function validateEmail(inp){
-  var v = inp.value.trim();
-  var valid = !v || EMAIL_RE.test(v);
-  inp.classList.toggle('err', !!v && !valid);
-  inp.classList.toggle('ok',  !!v && valid);
-  var errEl = el('em-err');
-  if(errEl) errEl.classList.toggle('on', !!v && !valid);
-}
-
-function fmtPhone(inp){
-  var v = inp.value.replace(/\D/g,'').slice(0,10);
-  if(v.length > 0) v = v.match(/.{1,2}/g).join(' ');
-  inp.value = v;
-  /* Validation visuelle dès 10 chiffres saisis */
-  var digits = inp.value.replace(/\s/g,'');
-  if(digits.length === 10){
-    var valid = PHONE_RE.test(inp.value);
-    inp.classList.toggle('err', !valid);
-    inp.classList.toggle('ok',   valid);
-    var errEl = el('ph-err');
-    if(errEl) errEl.classList.toggle('on', !valid);
-  } else {
-    inp.classList.remove('err','ok');
-    var errEl2 = el('ph-err');
-    if(errEl2) errEl2.classList.remove('on');
-  }
-}
-
-/* ── VISUAL ─────────────────────────────────────────── */
-function showImg(id){
-  ['vi-pool','vi-shl'].forEach(function(i){ el(i).classList.add('off'); });
-  el('vi-demo').classList.remove('on');
-  var badge = el('vi-badge');
-  if(badge) badge.classList.remove('on');
-  el(id).classList.remove('off');
-}
-function showDemo(){
-  ['vi-pool','vi-shl'].forEach(function(i){ el(i).classList.add('off'); });
-  el('vi-demo').classList.add('on');
-  /* Lazy-load fallback photo */
-  var fb = el('demo-fallback');
-  if(fb && !fb.style.backgroundImage){
-    fb.style.backgroundImage = "url('/couverture-diskoov.webp')";
-  }
-  if(window.innerWidth > 820) loadYT();
-}
-function loadYT(){
-  var yt = el('yt-frame');
-  if(yt && !yt.src){
-    yt.src = yt.dataset.src;
-    yt.style.opacity = '1';
-  }
-  var play = el('yt-play');
-  if(play) play.style.display = 'none';
-  /* Afficher le badge "en direct" */
-  var badge = el('vi-badge');
-  if(badge) badge.classList.add('on');
-}
-
-/* ── TOAST ──────────────────────────────────────────── */
-function showToast(msg, isError){
-  var t = el('dk-toast');
-  if(!t) return;
-  t.textContent = msg;
-  t.style.background = isError ? '#7f1d1d' : '#14532d';
-  t.classList.add('on');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(function(){ t.classList.remove('on'); }, 6000);
-}
-
-/* ── SUBMIT ─────────────────────────────────────────── */
-function doSubmit(){
-  var hp = el('hp');
-  if(hp && hp.value){ showSuccess('votre projet'); return; }
-
-  var btn = el('cta');
-  btn.disabled = true;
-  btn.classList.add('spin');
-
-  var TLS = {urg:"Avant l'été (URGENT)", '6m':'Dans les 6 mois', '1a':"Dans l'année", ref:'En réflexion'};
-  var payload = {
-    prenom:   S.fn.trim(), nom: S.ln.trim(),
-    email:    S.em.trim().toLowerCase(), tel: S.ph,
-    categorie: S.eq,
-    produit:   S.cm || S.sm || S.eq,
-    produit_label: PNMS[S.cm || S.sm || S.eq] || '',
-    longueur: parseFloat(S.len) || 0,
-    largeur:  parseFloat(S.wid) || 0,
-    surface:  parseFloat((S.len * S.wid).toFixed(1)),
-    emplacement: S.loc === 'ext' ? 'Extérieur' : 'Intérieur',
-    membrane_ral:   S.mRal || '', membrane_label: S.mLbl || '',
-    habillage_ral:  S.hRal || '', habillage_label: S.hLbl || '',
-    option_motorisation_solaire: !!S.sol,
-    option_rail_tout_terrain:    !!S.rtt,
-    option_motorisation_abri:    !!S.shlMotor,
-    option_rail_sol:             !!S.gr,
-    couleur_structure: S.strucCol || '',
-    departement: S.dept,
-    delai:    TLS[S.tl] || S.tl,
-    commentaire: S.note || '',
-    source:   S.src || '',
-    priorite: S.tl === 'urg' ? 'URGENT' : 'NORMAL',
-    consentement_relances: !!S.ok2,
-    timestamp: new Date().toISOString()
-  };
-
-  /* Sauvegarde locale avant tout envoi réseau */
-  try{ sessionStorage.setItem('dk_last_lead', JSON.stringify(payload)); }catch(e){}
-
-  var withTimeout = function(p, ms){
-    return Promise.race([p, new Promise(function(_,r){
-      setTimeout(function(){ r(new Error('timeout')); }, ms || 10000);
-    })]);
-  };
-
-  var tasks = [
-    withTimeout(fetch('/api/send-email', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
-    }))
-  ];
-  if(window.DISKOOV_WEBHOOK){
-    tasks.push(withTimeout(fetch(window.DISKOOV_WEBHOOK, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
-    })));
-  }
-
-  Promise.allSettled(tasks).then(function(results){
-    var emailOk = results[0].status === 'fulfilled';
-    results.forEach(function(r,i){ if(r.status === 'rejected') console.error('[Diskoov] Send error #'+i, r.reason); });
-    track('lead_submitted', {
-      equipment: S.eq, model: S.cm||S.sm||'',
-      department: S.dept, timeline: S.tl,
-      priority: payload.priorite, email_sent: emailOk
-    });
-    var pname = PNMS[S.cm || S.sm || S.eq] || 'votre projet';
-    showSuccess(pname);
-    if(!emailOk){
-      showToast('Votre demande est bien sauvegardée. Xavier vous contactera sous 48h.', true);
+    /* ── COMPTEUR CARACTÈRES ─────────────────────────── */
+    function updCharCount(textarea, countId, max) {
+      var remaining = max - textarea.value.length;
+      var el2 = el(countId);
+      if (el2) el2.textContent = remaining + ' caractère' + (remaining !== 1 ? 's' : '') + ' restant' + (remaining !== 1 ? 's' : '');
     }
-  });
-}
 
-function showSuccess(pname){
-  buildSucRecap();
-  el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
-  el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> est entre les mains de ' + esc(XAVIER_NAME) + '.<br><br>Il vous rappelle sous 48h au <strong>' + esc(S.ph) + '</strong>.';
-  el('pbdy').style.display = 'none';
-  el('pfoot').style.display = 'none';
-  el('suc').classList.add('on');
-  /* Mettre le focus sur le titre pour les lecteurs d'écran */
-  requestAnimationFrame(function(){ var t = el('suc-t'); if(t) t.focus(); });
-}
+    /* ── VALIDATION ─────────────────────────────────────── */
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    /* Numéros FR : mobile 06/07, fixe 01-05, VoIP 09 — 10 chiffres commençant par 0 */
+    var PHONE_RE = /^0[1-9](\s?\d{2}){4}$/;
 
-/* ── SUCCESS RECAP ────────────────────────────────── */
-function buildSucRecap(){
-  var rows = [];
-  var CATS = {cov:'Couverture automatique', shl:'Abri télescopique', oth:'Volet / Bâche / Deck'};
-  var TLS  = {urg:"Avant l'été", '6m':'6 mois', '1a':'1 an', ref:'En réflexion'};
-  rows.push(['Bassin', S.len.toFixed(1).replace('.',',') + ' × ' + S.wid.toFixed(1).replace('.',',') + ' m']);
-  if(S.eq) rows.push(['Équipement', CATS[S.eq] || S.eq]);
-  var prod = S.cm || S.sm;
-  if(prod && PNMS[prod]) rows.push(['Modèle', PNMS[prod]]);
-  if((S.cm === 'auto' || S.cm === 'semi') && S.mLbl) rows.push(['Membrane', S.mLbl]);
-  if((S.cm === 'auto' || S.cm === 'semi') && S.hLbl) rows.push(['Habillage', S.hLbl]);
-  if(S.dept) rows.push(['Département', S.dept]);
-  if(S.tl)   rows.push(['Délai', TLS[S.tl] || S.tl]);
-  var div = el('suc-recap');
-  var container = el('suc-recap-rows');
-  container.innerHTML = rows.map(function(r, i){
-    return '<div style="display:flex;justify-content:space-between;padding:5px 0;' +
-      (i > 0 ? 'border-top:1px solid #eee;' : '') +
-      'font-size:13px;gap:10px"><span style="color:#999">' + esc(r[0]) + '</span>' +
-      '<span style="font-weight:600;color:#111;text-align:right">' + esc(r[1]) + '</span></div>';
-  }).join('');
-  div.style.display = 'block';
-}
+    /* ── BARRE DE PROGRESSION ─────────────────────────── */
+    function updProgress() {
+      var steps = 0, done = 0;
+      /* Dimensions — toujours remplies avec valeur par défaut */
+      steps += 1; done += 1;
+      /* Équipement */
+      steps += 1; if (S.eq) done += 1;
+      /* Sous-choix produit */
+      if (S.eq === 'cov') { steps += 1; if (S.cm) done += 1; }
+      if (S.eq === 'shl') { steps += 1; if (S.sm) done += 1; }
+      /* Délai */
+      steps += 1; if (S.tl) done += 1;
+      /* Formulaire = 5 champs obligatoires */
+      steps += 5;
+      if (S.fn) done += 1;
+      if (S.ln) done += 1;
+      if (S.em && EMAIL_RE.test(S.em)) done += 1;
+      if (S.ph) done += 1;
+      if (S.dept) done += 1;
+      /* Consentement */
+      steps += 1; if (S.ok) done += 1;
 
-/* ── RESET ────────────────────────────────────────── */
-function resetForm(){
-  /* WCAG 2.2 §3.3.7 Redundant Entry — récupérer les données de contact du dernier lead soumis */
-  var prevContact = null;
-  try{
-    var raw = sessionStorage.getItem('dk_last_lead');
-    if(raw){
-      var prev = JSON.parse(raw);
-      if(prev && prev.prenom) prevContact = prev;
+      var pct = Math.round((done / steps) * 100);
+      var fill = el('prog-fill');
+      var bar = el('prog-bar');
+      if (fill) fill.style.width = pct + '%';
+      if (bar) bar.setAttribute('aria-valuenow', pct);
     }
-  }catch(e){}
 
-  S.eq=''; S.cm=''; S.sm='';
-  S.mRal='RAL 7037'; S.mLbl='Gris poussière';
-  S.hRal='RAL 7037'; S.hLbl='Gris poussière';
-  S.sol=true; S.rtt=false; S.shlMotor=false; S.gr=false; S.strucCol='';
-  S.tl='';
-  S.fn=''; S.ln=''; S.em=''; S.ph=''; S.dept=''; S.src=''; S.note=''; S.ok=false; S.ok2=false;
-
-  /* Reset emplacement */
-  S.loc = 'ext';
-  var locSel = el('loc-sel'); if(locSel) locSel.value = 'ext';
-  ['cov','shl','oth'].forEach(function(k){
-    el('eq-'+k).classList.remove('on');
-    el('eq-'+k).setAttribute('aria-checked','false');
-  });
-  ['auto','semi'].forEach(function(k){ el('b-'+k).classList.remove('on'); el('b-'+k).setAttribute('aria-pressed','false'); });
-  ['b-ore','b-eden'].forEach(function(id){ el(id).classList.remove('on'); el(id).setAttribute('aria-checked','false'); });
-  ['ul','m18','m30','m50','mid'].forEach(function(k){ el('h-'+k).classList.remove('on'); el('h-'+k).setAttribute('aria-checked','false'); });
-  ['tl-ete','tl-6m','tl-1a','tl-ref'].forEach(function(id){
-    el(id).classList.remove('on');
-    el(id).setAttribute('aria-pressed','false');
-  });
-  ['s-cm','s-mem','s-hab','s-co','s-sm','s-so','s-tl','s-frm'].forEach(function(id){ conceal(id); });
-
-  /* Pré-remplir les coordonnées si disponibles (WCAG 3.3.7) */
-  if(prevContact){
-    el('fn').value = prevContact.prenom || '';
-    el('ln').value = prevContact.nom    || '';
-    el('em').value = prevContact.email  || '';
-    el('ph').value = prevContact.tel    || '';
-    S.fn = el('fn').value;
-    S.ln = el('ln').value;
-    S.em = el('em').value;
-    S.ph = el('ph').value;
-    if(prevContact.email && EMAIL_RE.test(prevContact.email)){
-      el('em').classList.add('ok');
-    }
-    /* Pré-sélectionner le département si identique */
-    if(prevContact.departement){
-      var deptSel = el('dept');
-      for(var i=0; i<deptSel.options.length; i++){
-        if(deptSel.options[i].value === prevContact.departement){
-          deptSel.selectedIndex = i;
-          S.dept = prevContact.departement;
-          break;
+    /* ── ANALYTICS ─────────────────────────────────────── */
+    function track(event, params) {
+      try {
+        if (window.dataLayer) {
+          var p = Object.assign({ event: event }, params || {});
+          window.dataLayer.push(p);
         }
+        if (window.gtag) window.gtag('event', event, params || {});
+      } catch (e) { }
+    }
+
+    /* ── INIT ──────────────────────────────────────────── */
+    function init() {
+      /* Standalone detection */
+      if (window.self === window.top) {
+        document.documentElement.classList.add('diskoov-standalone');
+        document.body.classList.add('diskoov-standalone');
+      }
+      /* Synchronise le preload hero */
+      var heroImg = el('vi-pool');
+      var preload = document.getElementById('preload-hero');
+      if (heroImg && preload) preload.href = heroImg.src;
+      /* Phone link */
+      var ph = el('suc-phone');
+      if (ph) { ph.href = PHONE_TEL; ph.textContent = PHONE_DISPLAY; }
+      /* Departments */
+      var ds = el('dept');
+      var frag = document.createDocumentFragment();
+      DEPTS.forEach(function (v) {
+        var o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        frag.appendChild(o);
+      });
+      ds.appendChild(frag);
+      /* Color swatches */
+      buildSW('g-mem', MEM, 'm', function (c) {
+        S.mRal = c.r; S.mLbl = c.l;
+        el('mem-ral').textContent = c.r;
+        el('mem-lbl').textContent = c.l + ' — ' + c.r;
+        el('mem-dp').textContent = fmtDelta(MEM_DELTA[c.r] !== undefined ? MEM_DELTA[c.r] : 459);
+        updP();
+      });
+      buildSW('g-hab', HAB, 'h', function (c) {
+        S.hRal = c.r; S.hLbl = c.l;
+        el('hab-ral').textContent = c.r;
+        el('hab-lbl').textContent = c.l + ' — ' + c.r;
+        updP();
+      });
+      selSW('g-mem', 'm', 'RAL-7037');
+      selSW('g-hab', 'h', 'RAL-7037');
+      /* WCAG 2.4.3 Focus Order : s'assurer que les éléments dans les sections masquées
+         sont hors du tab-order dès le chargement de la page */
+      ['s-cm', 's-mem', 's-hab', 's-co', 's-sm', 's-so', 's-tl', 's-frm'].forEach(function (id) { conceal(id); });
+      updCTA();
+      updProgress();
+    }
+
+    /* ── STEP DIM BUTTONS (+/-) ───────────────────────── */
+    function stepD(id, delta, mn, mx) {
+      var inp = el(id);
+      var v = (parseFloat(inp.value) || mn) + delta;
+      v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
+      inp.value = v;
+      if (id === 'd-l') S.len = v; else S.wid = v;
+      updSummary(); updP();
+    }
+
+    /* ── SWATCHES ──────────────────────────────────────── */
+    function buildSW(gid, palette, pfx, cb) {
+      var g = el(gid);
+      var frag = document.createDocumentFragment();
+      palette.forEach(function (c) {
+        var k = c.r.replace(/ /g, '-');
+        var d = document.createElement('div');
+        d.className = 'sw';
+        d.id = 'sw-' + pfx + '-' + k;
+        d.style.background = c.h;
+        d.setAttribute('role', 'radio');
+        d.setAttribute('tabindex', '0');
+        d.setAttribute('aria-checked', 'false');
+        d.setAttribute('aria-label', c.l + ' — ' + c.r);
+        d.innerHTML = '<span class="sw-tt" aria-hidden="true">' + esc(c.l) + '<br><span style="opacity:.65">' + esc(c.r) + '</span></span>';
+        d.onclick = function () { selColor(g, d, c, cb); };
+        d.onkeydown = function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); d.click(); }
+        };
+        frag.appendChild(d);
+      });
+      g.appendChild(frag);
+    }
+
+    function selColor(grid, dot, c, cb) {
+      grid.querySelectorAll('.sw').forEach(function (s) {
+        s.classList.remove('on');
+        s.setAttribute('aria-checked', 'false');
+      });
+      dot.classList.add('on');
+      dot.setAttribute('aria-checked', 'true');
+      cb(c);
+    }
+
+    function selSW(gid, pfx, ral) {
+      var g = el(gid);
+      if (!g) return;
+      var d = el('sw-' + pfx + '-' + ral);
+      if (d) {
+        g.querySelectorAll('.sw').forEach(function (s) {
+          s.classList.remove('on');
+          s.setAttribute('aria-checked', 'false');
+        });
+        d.classList.add('on');
+        d.setAttribute('aria-checked', 'true');
       }
     }
-    /* Pré-sélectionner la source si identique */
-    if(prevContact.source){
-      el('src').value = prevContact.source;
-      S.src = prevContact.source;
+
+    /* ── SECTIONS REVEAL ───────────────────────────────── */
+    function reveal(id) {
+      var e = el(id);
+      e.classList.remove('hide');
+      e.classList.add('show');
+      /* WCAG 2.4.3 Focus Order : rétablir tabindex sur les éléments interactifs enfants */
+      e.querySelectorAll('[data-ti]').forEach(function (node) {
+        node.setAttribute('tabindex', node.getAttribute('data-ti'));
+        node.removeAttribute('data-ti');
+      });
     }
-  } else {
-    ['fn','ln','em','ph'].forEach(function(id){ el(id).value = ''; });
-    var emInp = el('em'); if(emInp){ emInp.classList.remove('err','ok'); }
-    el('dept').value = '';
-    el('src').value  = '';
-  }
-
-  var emErr = el('em-err'); if(emErr){ emErr.classList.remove('on'); }
-  var phInp = el('ph'); if(phInp){ phInp.classList.remove('err','ok'); }
-  var phErr = el('ph-err'); if(phErr){ phErr.classList.remove('on'); }
-  el('note').value = '';
-  var sc = el('strucCol'); if(sc) sc.value = '';
-  el('ok').checked = false;
-  var ok2el = el('ok2'); if(ok2el) ok2el.checked = false;
-  /* Reset compteur textarea */
-  var nc = el('note-count'); if(nc) nc.textContent = '800 caractères restants';
-  /* Reset swatches */
-  selSW('g-mem','m','RAL-7037');
-  selSW('g-hab','h','RAL-7037');
-  /* Reset toggles */
-  el('t-sol').classList.add('on');
-  el('t-sol').setAttribute('aria-pressed','true');
-  ['t-rtt','t-sm','t-gr'].forEach(function(id){
-    el(id).classList.remove('on');
-    el(id).setAttribute('aria-pressed','false');
-  });
-  /* Reset visual */
-  showImg('vi-pool');
-  pLast = '';   /* reset de la dernière valeur prix pour que la prochaine anime */
-  updSummary();
-  setP('Sélectionnez un équipement', true);
-  el('suc').classList.remove('on');
-  el('pbdy').style.display = '';
-  el('pfoot').style.display = '';
-  chk();
-  el('pbdy').scrollTop = 0;
-  requestAnimationFrame(function(){ updProgress(); });
-  /* Remettre le focus en haut du panel */
-  requestAnimationFrame(function(){ var h = el('pbdy'); if(h) h.focus(); });
-}
-
-/* ── TOOLTIPS — PORTAL UNIQUE ─────────────────────────
-   #dk-tip dans body — hors de tout overflow/clip.
-   getBoundingClientRect appelé au survol (visible).
-─────────────────────────────────────────────────── */
-function setupTooltips(){
-  var tip = document.getElementById('dk-tip');
-  if(!tip) return;
-  var GAP = 10; var MAR = 14;
-  var hideTimer = null;
-
-  function show(anchor, text){
-    if(!text || !text.trim()) return;
-    clearTimeout(hideTimer);
-    tip.textContent = text;
-    tip.classList.remove('on','tip-above','tip-below');
-    /* Rendu caché pour mesurer les dimensions réelles */
-    tip.style.opacity = '0';
-    tip.style.top = '0'; tip.style.left = '0';
-    var tw = tip.offsetWidth, th = tip.offsetHeight;
-    var ir = anchor.getBoundingClientRect();
-    var vw = window.innerWidth, vh = window.innerHeight;
-    /* Y */
-    var above = true, top = ir.top - th - GAP;
-    if(top < MAR){ top = ir.bottom + GAP; above = false; }
-    top = Math.max(MAR, Math.min(top, vh - th - MAR));
-    /* X */
-    var left = ir.left + ir.width/2 - tw/2;
-    left = Math.max(MAR, Math.min(left, vw - tw - MAR));
-    /* Flèche */
-    var ax = Math.round(ir.left + ir.width/2 - left);
-    ax = Math.max(10, Math.min(ax, tw-10));
-    tip.style.top  = Math.round(top)  + 'px';
-    tip.style.left = Math.round(left) + 'px';
-    tip.style.setProperty('--ax', ax + 'px');
-    tip.style.opacity = '';
-    tip.classList.add('on', above ? 'tip-above' : 'tip-below');
-    tip.setAttribute('aria-hidden','false');
-  }
-
-  function hide(delay){
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(function(){
-      tip.classList.remove('on');
-      tip.setAttribute('aria-hidden','true');
-    }, delay || 0);
-  }
-
-  /* Délégation mouseenter — tip-wrap (icônes i) */
-  document.addEventListener('mouseenter', function(e){
-    var wrap = e.target.closest && e.target.closest('.tip-wrap');
-    if(wrap){
-      var ic  = wrap.querySelector('.ic');
-      var src = wrap.querySelector('.tip');
-      if(ic && src) show(ic, src.textContent.trim());
-      return;
+    function revealTo(id) {
+      reveal(id);
+      requestAnimationFrame(function () {
+        el(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
     }
-    /* Swatches */
-    var sw = e.target.closest && e.target.closest('.sw');
-    if(sw) show(sw, sw.getAttribute('aria-label') || '');
-  }, true);
+    function conceal(id) {
+      var e = el(id);
+      e.classList.add('hide');
+      e.classList.remove('show');
+      /* WCAG 2.4.3 Focus Order : retirer du tab-order les éléments dans les sections cachées */
+      e.querySelectorAll('[tabindex="0"]').forEach(function (node) {
+        node.setAttribute('data-ti', '0');
+        node.setAttribute('tabindex', '-1');
+      });
+    }
 
-  document.addEventListener('mouseleave', function(e){
-    var onWrap = e.target.closest && e.target.closest('.tip-wrap');
-    var onSw   = e.target.closest && e.target.closest('.sw');
-    if(onWrap || onSw) hide(80);
-  }, true);
+    /* ── SELECTIONS ─────────────────────────────────────── */
+    function selLoc(v) {
+      S.loc = v;
+      /* Synchroniser le select si présent */
+      var sel = el('loc-sel');
+      if (sel) sel.value = v;
+      requestAnimationFrame(function () { updProgress(); });
+    }
 
-  document.addEventListener('focusin', function(e){
-    var wrap = e.target.closest && e.target.closest('.tip-wrap');
-    if(!wrap) return;
-    var ic  = wrap.querySelector('.ic');
-    var src = wrap.querySelector('.tip');
-    if(ic && src) show(ic, src.textContent.trim());
-  });
-  document.addEventListener('focusout', function(){ hide(80); });
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Escape') hide(0);
-  });
-}
+    function updD() {
+      S.len = parseFloat(el('d-l').value) || 8;
+      S.wid = parseFloat(el('d-w').value) || 4;
+      updSummary(); updP();
+    }
+    function fixD(id, mn, mx) {
+      var e = el(id);
+      var v = parseFloat(e.value) || mn;
+      v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
+      e.value = v;
+      if (id === 'd-l') S.len = v; else S.wid = v;
+      updSummary(); updP();
+    }
+
+    function selEq(v) {
+      S.eq = v; S.cm = ''; S.sm = '';
+      ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
+      ['b-ore', 'b-eden'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-checked', 'false'); });
+      ['ul', 'm18', 'm30', 'm50', 'mid'].forEach(function (k) { el('h-' + k).classList.remove('on'); el('h-' + k).setAttribute('aria-checked', 'false'); });
+      el('cm-p').textContent = '–';
+      ['cov', 'shl', 'oth'].forEach(function (k) {
+        el('eq-' + k).classList.remove('on');
+        el('eq-' + k).setAttribute('aria-checked', 'false');
+      });
+      el('eq-' + v).classList.add('on');
+      el('eq-' + v).setAttribute('aria-checked', 'true');
+      track('config_equipment', { equipment: v });
+      /* Sections + visuel — critique pour le paint immédiat */
+      if (v === 'cov') {
+        revealTo('s-cm');
+        conceal('s-mem'); conceal('s-hab'); conceal('s-co');
+        conceal('s-sm'); conceal('s-so');
+        conceal('s-tl'); conceal('s-frm');
+        showDemo();
+      } else if (v === 'shl') {
+        conceal('s-cm'); conceal('s-mem'); conceal('s-hab'); conceal('s-co');
+        revealTo('s-sm'); reveal('s-so');
+        conceal('s-tl'); conceal('s-frm');
+        showImg('vi-shl');
+      } else {
+        conceal('s-cm'); conceal('s-mem'); conceal('s-hab'); conceal('s-co');
+        conceal('s-sm'); conceal('s-so');
+        revealTo('s-tl'); reveal('s-frm');
+        showImg('vi-pool');
+      }
+      updP(); chk();
+      /* INP : différer les mises à jour non-critiques après le paint (libère le thread principal) */
+      requestAnimationFrame(function () { updSummary(); updProgress(); });
+    }
+
+    function selCM(v) {
+      S.cm = v;
+      ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
+      el('b-ore').classList.remove('on'); el('b-ore').setAttribute('aria-checked', 'false');
+      el('b-eden').classList.remove('on'); el('b-eden').setAttribute('aria-checked', 'false');
+      if (v === 'auto' || v === 'semi') {
+        el('b-' + v).classList.add('on');
+        el('b-' + v).setAttribute('aria-pressed', 'true');
+      } else if (v === 'ore') {
+        el('b-ore').classList.add('on'); el('b-ore').setAttribute('aria-checked', 'true');
+      } else if (v === 'eden') {
+        el('b-eden').classList.add('on'); el('b-eden').setAttribute('aria-checked', 'true');
+      }
+      var isCS = (v === 'auto' || v === 'semi');
+      if (isCS) { revealTo('s-mem'); reveal('s-hab'); reveal('s-co'); }
+      else { conceal('s-mem'); conceal('s-hab'); conceal('s-co'); }
+      var pm = { auto: '13 890 €', semi: '11 490 €', ore: 'Sur devis', eden: 'Sur devis' };
+      el('cm-p').textContent = pm[v] || '–';
+      track('config_model', { model: v, category: 'cover' });
+      reveal('s-tl'); reveal('s-frm');
+      if (!isCS) revealTo('s-tl');
+      updP(); chk();
+      requestAnimationFrame(function () { updSummary(); updProgress(); });
+    }
+
+    function selSM(v) {
+      S.sm = v;
+      ['ul', 'm18', 'm30', 'm50', 'mid'].forEach(function (k) {
+        el('h-' + k).classList.remove('on');
+        el('h-' + k).setAttribute('aria-checked', 'false');
+      });
+      el('h-' + v).classList.add('on');
+      el('h-' + v).setAttribute('aria-checked', 'true');
+      track('config_model', { model: v, category: 'shelter' });
+      revealTo('s-tl'); reveal('s-frm');
+      updP(); chk();
+      requestAnimationFrame(function () { updSummary(); updProgress(); });
+    }
+
+    function selTL(v, btn) {
+      S.tl = v;
+      ['tl-ete', 'tl-6m', 'tl-1a', 'tl-ref'].forEach(function (id) {
+        el(id).classList.remove('on');
+        el(id).setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('on');
+      btn.setAttribute('aria-pressed', 'true');
+      /* S'assurer que le formulaire est visible (cas où on arrive depuis selEq('oth')) */
+      reveal('s-frm');
+      chk();
+      requestAnimationFrame(function () { updProgress(); });
+    }
+
+    function togOpt(k, btn) {
+      if (k === 'sol') { S.sol = !S.sol; btn.classList.toggle('on', S.sol); }
+      else if (k === 'rtt') { S.rtt = !S.rtt; btn.classList.toggle('on', S.rtt); }
+      else if (k === 'sm') { S.shlMotor = !S.shlMotor; btn.classList.toggle('on', S.shlMotor); }
+      else if (k === 'gr') { S.gr = !S.gr; btn.classList.toggle('on', S.gr); }
+      btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
+      var codp = el('co-dp'); if (codp) codp.textContent = fmtDelta(S.rtt ? OPT_P.rtt : 0);
+      var sodp = el('so-dp'); if (sodp) sodp.textContent = fmtDelta((S.shlMotor ? OPT_P.shlMotor : 0) + (S.gr ? OPT_P.gr : 0));
+      updP();
+    }
+
+    /* ── PRICE ──────────────────────────────────────────── */
+    function updP() {
+      var eq = S.eq, cm = S.cm, sm = S.sm, base = 0;
+      if (eq === 'cov') {
+        if (!cm) { setP('–', true); return; }
+        if (cm === 'ore' || cm === 'eden') { setP('Sur devis', true); return; }
+        base = BP[cm] || 0;
+        base += (MEM_DELTA[S.mRal] !== undefined ? MEM_DELTA[S.mRal] : 459);
+        if (S.rtt) base += OPT_P.rtt;
+      } else if (eq === 'shl') {
+        if (!sm) { setP('–', true); return; }
+        if (sm === 'mid') { setP('Sur devis', true); return; }
+        base = BP[sm] || 0;
+        if (S.shlMotor) base += OPT_P.shlMotor;
+        if (S.gr) base += OPT_P.gr;
+      } else if (eq === 'oth') {
+        setP('Sur devis', true); return;
+      } else {
+        setP('Sélectionnez un équipement', true); return;
+      }
+      if (!base) { setP('–', true); return; }
+      setP('dès ' + base.toLocaleString('fr-FR') + ' €', false);
+    }
+
+    var ptimer = null;
+    var pLast = '';   /* dernière valeur affichée — pas d'animation si inchangée */
+
+    function setP(txt, na) {
+      var e = el('pfv');
+      clearTimeout(ptimer);
+
+      /* Même valeur qu'avant : juste synchroniser la classe, pas de flash ni de pulse */
+      if (txt === pLast) {
+        e.classList.toggle('na', na);
+        return;
+      }
+
+      /* Nouvelle valeur : flash d'opacité + pulse si prix numérique */
+      e.classList.toggle('na', na);
+      e.style.opacity = '.35';
+      ptimer = setTimeout(function () {
+        e.textContent = txt;
+        e.setAttribute('aria-label', na ? txt : 'Prix estimatif : ' + txt);
+        e.style.opacity = '1';
+        pLast = txt;
+        if (!na) {
+          e.classList.remove('pulse');
+          requestAnimationFrame(function () { e.classList.add('pulse'); });
+        }
+      }, 130);
+    }
+
+    /* ── LIVE SUMMARY ─────────────────────────────────── */
+    function updSummary() {
+      var e = el('ph-sum');
+      if (!e) return;
+      var PSHORT = {
+        auto: 'Coverseal Auto', semi: 'Coverseal Semi', ore: 'Oré', eden: 'Eden',
+        ul: 'Ultra Bas', m18: 'Master 18', m30: 'Master 30', m50: 'Master 50', mid: 'Mi-haut'
+      };
+      var parts = [];
+      var prod = S.cm || S.sm;
+      if (prod && PSHORT[prod]) parts.push(PSHORT[prod]);
+      else if (S.eq === 'oth') parts.push('Volet / Bâche');
+      if (S.eq && S.len && S.wid) parts.push(S.len.toFixed(1).replace('.', ',') + '×' + S.wid.toFixed(1).replace('.', ',') + ' m');
+      if ((S.cm === 'auto' || S.cm === 'semi') && S.mLbl) parts.push(S.mLbl);
+      var summary = parts.join(' · ');
+      e.textContent = summary;
+      e.setAttribute('aria-label', summary ? 'Configuration : ' + summary : '');
+      /* Mise à jour du titre de l'onglet pour les comparaisons multi-onglets */
+      document.title = summary ? summary + ' — Diskoov' : 'Configurateur Piscine — Diskoov';
+    }
+
+    /* ── CTA LABEL ─────────────────────────────────────── */
+    function updCTA() {
+      var btn = el('cta');
+      if (!btn) return;
+      var lbl = '';
+      var phoneDigits = (S.ph || '').replace(/\s/g, '');
+      var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
+      if (!S.eq) lbl = 'Choisissez un équipement';
+      else if (S.eq === 'cov' && !S.cm) lbl = 'Choisissez un modèle';
+      else if (S.eq === 'shl' && !S.sm) lbl = 'Choisissez une hauteur';
+      else if (!S.tl) lbl = 'Indiquez votre délai';
+      else if (!S.fn || !S.ln || !S.em || !S.ph || !S.dept) lbl = 'Complétez vos coordonnées';
+      else if (S.ph && !phoneOk) lbl = 'Numéro de téléphone invalide';
+      else if (!S.ok) lbl = 'Cochez le consentement';
+      else lbl = 'Obtenir mon devis gratuit';
+      btn.textContent = lbl;
+    }
+
+    /* ── VALIDATION ─────────────────────────────────────── */
+    function chk() {
+      var emailOk = !S.em || EMAIL_RE.test(S.em);
+      var phoneDigits = (S.ph || '').replace(/\s/g, '');
+      var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
+      var ok = !!(S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && S.dept && S.ok && S.tl);
+      el('cta').disabled = !ok;
+      updCTA();
+      updProgress();
+    }
+
+    function validateEmail(inp) {
+      var v = inp.value.trim();
+      var valid = !v || EMAIL_RE.test(v);
+      inp.classList.toggle('err', !!v && !valid);
+      inp.classList.toggle('ok', !!v && valid);
+      var errEl = el('em-err');
+      if (errEl) errEl.classList.toggle('on', !!v && !valid);
+    }
+
+    function fmtPhone(inp) {
+      var v = inp.value.replace(/\D/g, '').slice(0, 10);
+      if (v.length > 0) v = v.match(/.{1,2}/g).join(' ');
+      inp.value = v;
+      /* Validation visuelle dès 10 chiffres saisis */
+      var digits = inp.value.replace(/\s/g, '');
+      if (digits.length === 10) {
+        var valid = PHONE_RE.test(inp.value);
+        inp.classList.toggle('err', !valid);
+        inp.classList.toggle('ok', valid);
+        var errEl = el('ph-err');
+        if (errEl) errEl.classList.toggle('on', !valid);
+      } else {
+        inp.classList.remove('err', 'ok');
+        var errEl2 = el('ph-err');
+        if (errEl2) errEl2.classList.remove('on');
+      }
+    }
+
+    /* ── VISUAL ─────────────────────────────────────────── */
+    function showImg(id) {
+      ['vi-pool', 'vi-shl'].forEach(function (i) { el(i).classList.add('off'); });
+      el('vi-demo').classList.remove('on');
+      var badge = el('vi-badge');
+      if (badge) badge.classList.remove('on');
+      el(id).classList.remove('off');
+    }
+    function showDemo() {
+      ['vi-pool', 'vi-shl'].forEach(function (i) { el(i).classList.add('off'); });
+      el('vi-demo').classList.add('on');
+      /* Lazy-load fallback photo */
+      var fb = el('demo-fallback');
+      if (fb && !fb.style.backgroundImage) {
+        fb.style.backgroundImage = "url('/couverture-diskoov.webp')";
+      }
+      if (window.innerWidth > 820) loadYT();
+    }
+    function loadYT() {
+      var yt = el('yt-frame');
+      if (yt && !yt.src) {
+        yt.src = yt.dataset.src;
+        yt.style.opacity = '1';
+      }
+      var play = el('yt-play');
+      if (play) play.style.display = 'none';
+      /* Afficher le badge "en direct" */
+      var badge = el('vi-badge');
+      if (badge) badge.classList.add('on');
+    }
+
+    /* ── TOAST ──────────────────────────────────────────── */
+    function showToast(msg, isError) {
+      var t = el('dk-toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.style.background = isError ? '#7f1d1d' : '#14532d';
+      t.classList.add('on');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function () { t.classList.remove('on'); }, 6000);
+    }
+
+    /* ── SUBMIT ─────────────────────────────────────────── */
+    function doSubmit() {
+      var hp = el('hp');
+      if (hp && hp.value) { showSuccess('votre projet'); return; }
+
+      var btn = el('cta');
+      btn.disabled = true;
+      btn.classList.add('spin');
+
+      var TLS = { urg: "Avant l'été (URGENT)", '6m': 'Dans les 6 mois', '1a': "Dans l'année", ref: 'En réflexion' };
+      var payload = {
+        prenom: S.fn.trim(), nom: S.ln.trim(),
+        email: S.em.trim().toLowerCase(), tel: S.ph,
+        categorie: S.eq,
+        produit: S.cm || S.sm || S.eq,
+        produit_label: PNMS[S.cm || S.sm || S.eq] || '',
+        longueur: parseFloat(S.len) || 0,
+        largeur: parseFloat(S.wid) || 0,
+        surface: parseFloat((S.len * S.wid).toFixed(1)),
+        emplacement: S.loc === 'ext' ? 'Extérieur' : 'Intérieur',
+        membrane_ral: S.mRal || '', membrane_label: S.mLbl || '',
+        habillage_ral: S.hRal || '', habillage_label: S.hLbl || '',
+        option_motorisation_solaire: !!S.sol,
+        option_rail_tout_terrain: !!S.rtt,
+        option_motorisation_abri: !!S.shlMotor,
+        option_rail_sol: !!S.gr,
+        couleur_structure: S.strucCol || '',
+        departement: S.dept,
+        delai: TLS[S.tl] || S.tl,
+        commentaire: S.note || '',
+        source: S.src || '',
+        priorite: S.tl === 'urg' ? 'URGENT' : 'NORMAL',
+        consentement_relances: !!S.ok2,
+        timestamp: new Date().toISOString()
+      };
+
+      /* Sauvegarde locale avant tout envoi réseau */
+      try { sessionStorage.setItem('dk_last_lead', JSON.stringify(payload)); } catch (e) { }
+
+      var withTimeout = function (p, ms) {
+        return Promise.race([p, new Promise(function (_, r) {
+          setTimeout(function () { r(new Error('timeout')); }, ms || 10000);
+        })]);
+      };
+
+      var tasks = [
+        withTimeout(fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }))
+      ];
+      if (window.DISKOOV_WEBHOOK) {
+        tasks.push(withTimeout(fetch(window.DISKOOV_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })));
+      }
+
+      Promise.allSettled(tasks).then(function (results) {
+        var emailOk = results[0].status === 'fulfilled';
+        results.forEach(function (r, i) { if (r.status === 'rejected') console.error('[Diskoov] Send error #' + i, r.reason); });
+        track('lead_submitted', {
+          equipment: S.eq, model: S.cm || S.sm || '',
+          department: S.dept, timeline: S.tl,
+          priority: payload.priorite, email_sent: emailOk
+        });
+        var pname = PNMS[S.cm || S.sm || S.eq] || 'votre projet';
+        showSuccess(pname);
+        if (!emailOk) {
+          showToast('Votre demande est bien sauvegardée. Xavier vous contactera sous 48h.', true);
+        }
+      });
+    }
+
+    function showSuccess(pname) {
+      buildSucRecap();
+      el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
+      el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> est entre les mains de ' + esc(XAVIER_NAME) + '.<br><br>Il vous rappelle sous 48h au <strong>' + esc(S.ph) + '</strong>.';
+      el('pbdy').style.display = 'none';
+      el('pfoot').style.display = 'none';
+      el('suc').classList.add('on');
+      /* Mettre le focus sur le titre pour les lecteurs d'écran */
+      requestAnimationFrame(function () { var t = el('suc-t'); if (t) t.focus(); });
+    }
+
+    /* ── SUCCESS RECAP ────────────────────────────────── */
+    function buildSucRecap() {
+      var rows = [];
+      var CATS = { cov: 'Couverture automatique', shl: 'Abri télescopique', oth: 'Volet / Bâche / Deck' };
+      var TLS = { urg: "Avant l'été", '6m': '6 mois', '1a': '1 an', ref: 'En réflexion' };
+      rows.push(['Bassin', S.len.toFixed(1).replace('.', ',') + ' × ' + S.wid.toFixed(1).replace('.', ',') + ' m']);
+      if (S.eq) rows.push(['Équipement', CATS[S.eq] || S.eq]);
+      var prod = S.cm || S.sm;
+      if (prod && PNMS[prod]) rows.push(['Modèle', PNMS[prod]]);
+      if ((S.cm === 'auto' || S.cm === 'semi') && S.mLbl) rows.push(['Membrane', S.mLbl]);
+      if ((S.cm === 'auto' || S.cm === 'semi') && S.hLbl) rows.push(['Habillage', S.hLbl]);
+      if (S.dept) rows.push(['Département', S.dept]);
+      if (S.tl) rows.push(['Délai', TLS[S.tl] || S.tl]);
+      var div = el('suc-recap');
+      var container = el('suc-recap-rows');
+      container.innerHTML = rows.map(function (r, i) {
+        return '<div style="display:flex;justify-content:space-between;padding:5px 0;' +
+          (i > 0 ? 'border-top:1px solid #eee;' : '') +
+          'font-size:13px;gap:10px"><span style="color:#999">' + esc(r[0]) + '</span>' +
+          '<span style="font-weight:600;color:#111;text-align:right">' + esc(r[1]) + '</span></div>';
+      }).join('');
+      div.style.display = 'block';
+    }
+
+    /* ── RESET ────────────────────────────────────────── */
+    function resetForm() {
+      /* WCAG 2.2 §3.3.7 Redundant Entry — récupérer les données de contact du dernier lead soumis */
+      var prevContact = null;
+      try {
+        var raw = sessionStorage.getItem('dk_last_lead');
+        if (raw) {
+          var prev = JSON.parse(raw);
+          if (prev && prev.prenom) prevContact = prev;
+        }
+      } catch (e) { }
+
+      S.eq = ''; S.cm = ''; S.sm = '';
+      S.mRal = 'RAL 7037'; S.mLbl = 'Gris poussière';
+      S.hRal = 'RAL 7037'; S.hLbl = 'Gris poussière';
+      S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = '';
+      S.tl = '';
+      S.fn = ''; S.ln = ''; S.em = ''; S.ph = ''; S.dept = ''; S.src = ''; S.note = ''; S.ok = false; S.ok2 = false;
+
+      /* Reset emplacement */
+      S.loc = 'ext';
+      var locSel = el('loc-sel'); if (locSel) locSel.value = 'ext';
+      ['cov', 'shl', 'oth'].forEach(function (k) {
+        el('eq-' + k).classList.remove('on');
+        el('eq-' + k).setAttribute('aria-checked', 'false');
+      });
+      ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
+      ['b-ore', 'b-eden'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-checked', 'false'); });
+      ['ul', 'm18', 'm30', 'm50', 'mid'].forEach(function (k) { el('h-' + k).classList.remove('on'); el('h-' + k).setAttribute('aria-checked', 'false'); });
+      ['tl-ete', 'tl-6m', 'tl-1a', 'tl-ref'].forEach(function (id) {
+        el(id).classList.remove('on');
+        el(id).setAttribute('aria-pressed', 'false');
+      });
+      ['s-cm', 's-mem', 's-hab', 's-co', 's-sm', 's-so', 's-tl', 's-frm'].forEach(function (id) { conceal(id); });
+
+      /* Pré-remplir les coordonnées si disponibles (WCAG 3.3.7) */
+      if (prevContact) {
+        el('fn').value = prevContact.prenom || '';
+        el('ln').value = prevContact.nom || '';
+        el('em').value = prevContact.email || '';
+        el('ph').value = prevContact.tel || '';
+        S.fn = el('fn').value;
+        S.ln = el('ln').value;
+        S.em = el('em').value;
+        S.ph = el('ph').value;
+        if (prevContact.email && EMAIL_RE.test(prevContact.email)) {
+          el('em').classList.add('ok');
+        }
+        /* Pré-sélectionner le département si identique */
+        if (prevContact.departement) {
+          var deptSel = el('dept');
+          for (var i = 0; i < deptSel.options.length; i++) {
+            if (deptSel.options[i].value === prevContact.departement) {
+              deptSel.selectedIndex = i;
+              S.dept = prevContact.departement;
+              break;
+            }
+          }
+        }
+        /* Pré-sélectionner la source si identique */
+        if (prevContact.source) {
+          el('src').value = prevContact.source;
+          S.src = prevContact.source;
+        }
+      } else {
+        ['fn', 'ln', 'em', 'ph'].forEach(function (id) { el(id).value = ''; });
+        var emInp = el('em'); if (emInp) { emInp.classList.remove('err', 'ok'); }
+        el('dept').value = '';
+        el('src').value = '';
+      }
+
+      var emErr = el('em-err'); if (emErr) { emErr.classList.remove('on'); }
+      var phInp = el('ph'); if (phInp) { phInp.classList.remove('err', 'ok'); }
+      var phErr = el('ph-err'); if (phErr) { phErr.classList.remove('on'); }
+      el('note').value = '';
+      var sc = el('strucCol'); if (sc) sc.value = '';
+      el('ok').checked = false;
+      var ok2el = el('ok2'); if (ok2el) ok2el.checked = false;
+      /* Reset compteur textarea */
+      var nc = el('note-count'); if (nc) nc.textContent = '800 caractères restants';
+      /* Reset swatches */
+      selSW('g-mem', 'm', 'RAL-7037');
+      selSW('g-hab', 'h', 'RAL-7037');
+      /* Reset toggles */
+      el('t-sol').classList.add('on');
+      el('t-sol').setAttribute('aria-pressed', 'true');
+      ['t-rtt', 't-sm', 't-gr'].forEach(function (id) {
+        el(id).classList.remove('on');
+        el(id).setAttribute('aria-pressed', 'false');
+      });
+      /* Reset visual */
+      showImg('vi-pool');
+      pLast = '';   /* reset de la dernière valeur prix pour que la prochaine anime */
+      updSummary();
+      setP('Sélectionnez un équipement', true);
+      el('suc').classList.remove('on');
+      el('pbdy').style.display = '';
+      el('pfoot').style.display = '';
+      chk();
+      el('pbdy').scrollTop = 0;
+      requestAnimationFrame(function () { updProgress(); });
+      /* Remettre le focus en haut du panel */
+      requestAnimationFrame(function () { var h = el('pbdy'); if (h) h.focus(); });
+    }
+
+    /* ── TOOLTIPS — PORTAL UNIQUE ─────────────────────────
+       #dk-tip dans body — hors de tout overflow/clip.
+       getBoundingClientRect appelé au survol (visible).
+    ─────────────────────────────────────────────────── */
+    function setupTooltips() {
+      var tip = document.getElementById('dk-tip');
+      if (!tip) return;
+      var GAP = 10; var MAR = 14;
+      var hideTimer = null;
+
+      function show(anchor, text) {
+        if (!text || !text.trim()) return;
+        clearTimeout(hideTimer);
+        tip.textContent = text;
+        tip.classList.remove('on', 'tip-above', 'tip-below');
+        /* Positionnement */
+        tip.style.opacity = '0';
+        tip.style.top = '0'; tip.style.left = '0';
+        var tw = tip.offsetWidth, th = tip.offsetHeight;
+        var ir = anchor.getBoundingClientRect();
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var above = true, top = ir.top - th - GAP;
+        if (top < MAR) { top = ir.bottom + GAP; above = false; }
+        top = Math.max(MAR, Math.min(top, vh - th - MAR));
+        var left = ir.left + ir.width / 2 - tw / 2;
+        left = Math.max(MAR, Math.min(left, vw - tw - MAR));
+        var ax = Math.round(ir.left + ir.width / 2 - left);
+        ax = Math.max(10, Math.min(ax, tw - 10));
+        tip.style.top = Math.round(top) + 'px';
+        tip.style.left = Math.round(left) + 'px';
+        tip.style.setProperty('--ax', ax + 'px');
+        tip.style.opacity = '';
+        tip.classList.add('on', above ? 'tip-above' : 'tip-below');
+        tip.setAttribute('aria-hidden', 'false');
+
+        /* Mobile : auto-hide après 2.5s pour éviter l'effet "figé" si focusout/mouseleave ne tire pas */
+        if (window.innerWidth <= 820) hide(2500);
+      }
+
+      function hide(delay) {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () {
+          tip.classList.remove('on');
+          tip.setAttribute('aria-hidden', 'true');
+        }, delay || 0);
+      }
+
+      /* Fermeture immédiate au clic ailleurs (mobile + desktop) */
+      document.addEventListener('mousedown', function (e) {
+        if (!e.target.closest('.sw') && !e.target.closest('.tip-wrap')) hide(0);
+      }, true);
+
+      /* Fermeture immédiate au scroll (mobile + desktop) */
+      document.addEventListener('scroll', function () { hide(0); }, true);
+
+      /* Délégation mouseenter — tip-wrap (icônes i) */
+      document.addEventListener('mouseenter', function (e) {
+        var wrap = e.target.closest && e.target.closest('.tip-wrap');
+        if (wrap) {
+          var ic = wrap.querySelector('.ic');
+          var src = wrap.querySelector('.tip');
+          if (ic && src) show(ic, src.textContent.trim());
+          return;
+        }
+        var sw = e.target.closest && e.target.closest('.sw');
+        if (sw) show(sw, sw.getAttribute('aria-label') || '');
+      }, true);
+
+      document.addEventListener('mouseleave', function (e) {
+        var onTip = e.target.closest && (e.target.closest('.sw') || e.target.closest('.tip-wrap'));
+        if (onTip) hide(window.innerWidth <= 820 ? 2500 : 80);
+      }, true);
+
+      document.addEventListener('focusin', function (e) {
+        var wrap = e.target.closest && e.target.closest('.tip-wrap');
+        var sw = e.target.closest && e.target.closest('.sw');
+        if (wrap) {
+          var ic = wrap.querySelector('.ic');
+          var src = wrap.querySelector('.tip');
+          if (ic && src) show(ic, src.textContent.trim());
+        } else if (sw) {
+          show(sw, sw.getAttribute('aria-label') || '');
+        }
+      });
+
+      document.addEventListener('focusout', function (e) {
+        var onTip = e.target.closest && (e.target.closest('.sw') || e.target.closest('.tip-wrap'));
+        if (onTip) hide(window.innerWidth <= 820 ? 2500 : 80);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') hide(0);
+      });
+    }
 
 
-/* ── START ────────────────────────────────────────── */
-init();
-chk();
-setupTooltips();
-</script>
+    /* ── START ────────────────────────────────────────── */
+    init();
+    chk();
+    setupTooltips();
+  </script>
 </body>
+
 </html>
