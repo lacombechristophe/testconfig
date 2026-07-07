@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide de mise en service — Configurateur Diskoov</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #1a1a1a; font-size: 13px; line-height: 1.65; background: #fff; padding: 40px; max-width: 800px; margin: 0 auto; }
+
+  /* Header */
+  .hd { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; padding-bottom: 16px; border-bottom: 3px solid #111; }
+  .hd-logo { background: #c9a96e; color: #111; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+  .hd h1 { font-size: 20px; font-weight: 700; letter-spacing: -.03em; }
+  .hd p { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .subtitle { font-size: 12px; color: #666; margin-bottom: 32px; }
+
+  /* Sections */
+  h2 { font-size: 15px; font-weight: 700; color: #111; margin: 28px 0 10px; padding: 6px 12px; background: #f5f5f3; border-left: 3px solid #c9a96e; letter-spacing: -.02em; page-break-after: avoid; }
+  h2 .num { color: #c9a96e; margin-right: 6px; }
+  h3 { font-size: 13px; font-weight: 600; color: #333; margin: 16px 0 6px; }
+
+  p, li { font-size: 13px; line-height: 1.65; }
+  p { margin-bottom: 8px; }
+
+  ul, ol { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  code { background: #f0f0ee; padding: 1px 5px; border-radius: 3px; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12px; }
+
+  .warn { background: #fff8e6; border: 1px solid #f0d060; border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 12px; }
+  .warn::before { content: "Attention"; font-weight: 700; display: block; margin-bottom: 2px; color: #8a6d00; }
+
+  .tip { background: #eef7ee; border: 1px solid #b8dab8; border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 12px; }
+  .tip::before { content: "Bon a savoir"; font-weight: 700; display: block; margin-bottom: 2px; color: #2e7d32; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 12px; }
+  th { text-align: left; background: #111; color: #fff; padding: 7px 10px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  td { padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafaf8; }
+
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  .steps li { counter-increment: step; padding-left: 32px; position: relative; margin-bottom: 10px; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 0; background: #c9a96e; color: #111; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  .file { display: inline-block; background: #111; color: #fff; padding: 2px 8px; border-radius: 3px; font-family: monospace; font-size: 11px; font-weight: 600; }
+
+  .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #ddd; font-size: 11px; color: #aaa; text-align: center; }
+
+  @media print {
+    body { padding: 0; }
+    h2 { break-after: avoid; }
+    table, .warn, .tip { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-logo">D</div>
+  <div>
+    <h1>Configurateur Diskoov</h1>
+    <p>Guide de mise en service et de maintenance</p>
+  </div>
+</div>
+<p class="subtitle">Document de reference pour l'equipe Diskoov &mdash; Version 1.0</p>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">1.</span> Avant de mettre en ligne</h2>
+
+<p>Avant la premiere mise en ligne, ces elements doivent etre prets :</p>
+
+<h3>A. Images a fournir</h3>
+<table>
+  <tr><th>Fichier</th><th>Format</th><th>Utilisation</th></tr>
+  <tr><td><code>pool-diskoov.webp</code></td><td>WebP, 1920x1080, &lt;400 Ko</td><td>Photo principale (colonne gauche)</td></tr>
+  <tr><td><code>abri-telescopique-diskoov.webp</code></td><td>WebP, 1920x1080, &lt;400 Ko</td><td>Photo abri (quand abri selectionne)</td></tr>
+  <tr><td><code>couverture-diskoov.webp</code></td><td>WebP, 1920x1080, &lt;400 Ko</td><td>Photo couverture / fallback video</td></tr>
+  <tr><td><code>og-configurateur.jpg</code></td><td>JPG, 1200x630</td><td>Image de partage (Facebook, LinkedIn)</td></tr>
+  <tr><td><code>logo-diskoov.svg</code></td><td>SVG</td><td>Logo en haut du configurateur</td></tr>
+</table>
+
+<p>Deposer ces fichiers a la racine du projet sur GitHub (ou dans <code>/public/</code>).</p>
+
+<div class="tip">Les polices Inter sont <strong>deja incluses</strong> dans le projet (<code>/fonts/*.woff2</code>). Aucune action requise — elles sont auto-hebergees pour respecter le RGPD.</div>
+
+<h3>B. Fichier d'environnement</h3>
+<p>Pour le <strong>developpement local</strong>, renommer le fichier <code>.env.example</code> en <code>.env</code> et remplir les valeurs.</p>
+<p>Pour la <strong>production</strong>, renseigner ces variables dans <strong>Vercel &rarr; Settings &rarr; Environment Variables</strong> :</p>
+
+<table>
+  <tr><th>Variable</th><th>Obligatoire</th><th>Exemple</th></tr>
+  <tr><td><code>RESEND_API_KEY</code></td><td>Oui</td><td><code>re_xxxxxxx...</code></td></tr>
+  <tr><td><code>FROM_EMAIL</code></td><td>Oui</td><td><code>xavier@diskoov.fr</code></td></tr>
+  <tr><td><code>INTERNAL_EMAIL</code></td><td>Oui</td><td><code>xavier.dispot@diskoov.fr</code></td></tr>
+  <tr><td><code>CONTACT_NAME</code></td><td>Non</td><td><code>Xavier Dispot</code> (defaut)</td></tr>
+  <tr><td><code>CONTACT_PHONE</code></td><td>Non</td><td><code>06 20 54 25 04</code> (defaut)</td></tr>
+  <tr><td><code>CONTACT_LOC</code></td><td>Non</td><td><code>Showroom Saint-Laurent-des-Arbres</code> (defaut)</td></tr>
+  <tr><td><code>CONTACT_ADDR</code></td><td>Non</td><td><code>494, rue Leon Blum 34 000 Montpellier</code> (siege social)</td></tr>
+  <tr><td><code>SITE_URL</code></td><td>Non</td><td><code>https://diskoov.fr</code> (defaut)</td></tr>
+  <tr><td><code>LOGO_URL</code></td><td>Non</td><td>URL du logo dans les emails</td></tr>
+  <tr><td><code>WEBHOOK_URL</code></td><td>Non</td><td>URL Make.com / Zapier</td></tr>
+</table>
+
+<div class="warn">Le fichier <code>.env.example</code> est un modele. Il faut le <strong>renommer en <code>.env</code></strong> (ou <code>.env.local</code>) pour qu'il soit pris en compte en local. Ne jamais publier le fichier <code>.env</code> sur GitHub (il contient des cles secretes).</div>
+
+<div class="tip">Les variables <code>CONTACT_*</code> controlent les informations affichees dans les <strong>emails de confirmation</strong> envoyes aux prospects. Si elles ne sont pas renseignees, les valeurs par defaut sont utilisees.</div>
+
+<h3>C. Rate limiting (recommande)</h3>
+<p>Pour un rate limiting persistant, activer <strong>Vercel KV</strong> :</p>
+<ol class="steps">
+  <li>Vercel Dashboard &rarr; Storage &rarr; Create KV Store</li>
+  <li>Lier le store au projet configurateur</li>
+  <li>Les variables <code>KV_REST_API_URL</code> et <code>KV_REST_API_TOKEN</code> sont injectees automatiquement</li>
+</ol>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">2.</span> Modifier les informations du site</h2>
+
+<p>Toutes les informations modifiables du configurateur sont centralisees dans un seul fichier :</p>
+<p style="text-align:center;margin:14px 0"><span class="file">config.js</span></p>
+
+<h3>Comment modifier sur GitHub</h3>
+<ol class="steps">
+  <li>Ouvrir le depot GitHub du projet</li>
+  <li>Cliquer sur le fichier <code>config.js</code></li>
+  <li>Cliquer sur l'icone <strong>crayon</strong> (modifier)</li>
+  <li>Changer les valeurs souhaitees (sans toucher aux guillemets ni aux points-virgules)</li>
+  <li>Cliquer sur <strong>Commit changes</strong></li>
+</ol>
+
+<div class="tip">Le site se met a jour automatiquement en quelques secondes apres chaque modification.</div>
+
+<h3>Ce que vous pouvez modifier dans config.js</h3>
+<table>
+  <tr><th>Parametre</th><th>Ce qu'il controle</th></tr>
+  <tr><td><code>DISKOOV_PHONE_DISPLAY</code></td><td>Numero de telephone affiche sur le site</td></tr>
+  <tr><td><code>DISKOOV_PHONE_TEL</code></td><td>Numero cliquable (format <code>tel:06...</code>)</td></tr>
+  <tr><td><code>DISKOOV_CONTACT_NAME</code></td><td>Nom du conseiller (page de confirmation)</td></tr>
+  <tr><td><code>DISKOOV_CONTACT_EMAIL</code></td><td>Email de contact (mention RGPD)</td></tr>
+  <tr><td><code>DISKOOV_SITE_URL</code></td><td>Lien de retour vers le site principal</td></tr>
+  <tr><td><code>DISKOOV_PRIVACY_URL</code></td><td>Lien vers la politique de confidentialite</td></tr>
+  <tr><td><code>DISKOOV_PRICES</code></td><td>Prix de base de chaque produit (en euros TTC)</td></tr>
+  <tr><td><code>DISKOOV_OPTIONS</code></td><td>Prix des options (rail, motorisation, rail au sol)</td></tr>
+  <tr><td><code>DISKOOV_MEMBRANE_COLORS</code></td><td>Couleurs membrane + supplements</td></tr>
+  <tr><td><code>DISKOOV_COPING_COLORS</code></td><td>Couleurs habillage (margelles)</td></tr>
+  <tr><td><code>DISKOOV_STRUCTURE_COLORS</code></td><td>Couleurs structure (abri telescopique)</td></tr>
+  <tr><td><code>DISKOOV_GTM_ID</code></td><td>Google Tag Manager (tracking)</td></tr>
+  <tr><td><code>DISKOOV_YT_ID</code></td><td>ID de la video YouTube affichee</td></tr>
+  <tr><td><code>DISKOOV_WEBHOOK</code></td><td>URL webhook Make.com / Zapier</td></tr>
+</table>
+
+<div class="warn">
+  Le fichier <code>config.js</code> controle ce qui s'affiche <strong>sur le site</strong>.<br>
+  Les variables Vercel (<code>CONTACT_NAME</code>, <code>CONTACT_PHONE</code>, etc.) controlent ce qui apparait dans les <strong>emails</strong>.<br>
+  Si vous changez le nom ou le telephone, pensez a mettre a jour les deux.
+</div>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">3.</span> Exemple : changer un prix</h2>
+
+<p>Pour modifier le prix de base du Coverseal Automatique de 13 890 &euro; a 14 500 &euro; :</p>
+
+<ol class="steps">
+  <li>Ouvrir <code>config.js</code> sur GitHub</li>
+  <li>Trouver la ligne <code>auto: 13890,</code></li>
+  <li>Remplacer par <code>auto: 14500,</code></li>
+  <li>Cliquer sur <strong>Commit changes</strong></li>
+</ol>
+
+<p>Le nouveau prix sera visible sur le configurateur en quelques secondes.</p>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">4.</span> Exemple : ajouter une couleur membrane</h2>
+
+<p>Pour ajouter une nouvelle couleur (ex: Gris anthracite RAL 7016 avec supplement 459 &euro;) :</p>
+
+<ol class="steps">
+  <li>Ouvrir <code>config.js</code> sur GitHub</li>
+  <li>Dans la section <code>DISKOOV_MEMBRANE_COLORS</code>, ajouter une ligne avant le <code>]</code> :</li>
+</ol>
+<p style="margin-left:32px"><code>{ h: '#4A5568', r: 'RAL 7016', l: 'Gris anthracite', delta: 459 },</code></p>
+<p><strong>h</strong> = code couleur hexadecimal, <strong>r</strong> = code RAL, <strong>l</strong> = nom en francais, <strong>delta</strong> = supplement en euros.</p>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">5.</span> Integration WordPress</h2>
+
+<p>Le configurateur s'integre dans WordPress via un <strong>iframe</strong>. Coller ce code dans l'editeur de la page WordPress :</p>
+
+<div style="background:#1a1a1a;color:#e0e0e0;padding:14px 16px;border-radius:6px;font-family:monospace;font-size:11px;line-height:1.7;margin:10px 0;white-space:pre;overflow-x:auto">&lt;style&gt;
+.diskoov-iframe-wrap {
+  position: relative; width: 100%;
+  height: 100svh; overflow: hidden;
+}
+.diskoov-iframe-wrap iframe {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; border: none;
+}
+&lt;/style&gt;
+&lt;div class="diskoov-iframe-wrap"&gt;
+  &lt;iframe
+    src="https://configurateur.diskoov.fr"
+    title="Configurateur piscine Diskoov"
+    allow="autoplay; encrypted-media"
+    loading="lazy"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</div>
+
+<div class="tip">Pour masquer le header/footer WordPress sur cette page, ajouter dans <code>functions.php</code> un filtre qui cache ces elements sur la page configurateur.</div>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">6.</span> Ce qu'il ne faut PAS toucher</h2>
+
+<table>
+  <tr><th>Fichier</th><th>Pourquoi ne pas le modifier</th></tr>
+  <tr><td><code>index.html</code></td><td>Contient toute la logique du configurateur. Une erreur peut casser le site.</td></tr>
+  <tr><td><code>api/send-email.ts</code></td><td>Gere l'envoi d'emails et la validation. Code serveur sensible.</td></tr>
+  <tr><td><code>vercel.json</code></td><td>Configuration de securite et de deploiement.</td></tr>
+</table>
+
+<p>En cas de besoin de modification technique, contacter votre developpeur.</p>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">7.</span> Securite en place</h2>
+
+<p>Le configurateur integre les protections suivantes :</p>
+<ul>
+  <li><strong>HTTPS force</strong> sur toutes les pages (HSTS)</li>
+  <li><strong>Validation complete</strong> des donnees cote serveur (email, telephone, dimensions)</li>
+  <li><strong>Protection anti-spam</strong> : rate limiting (1 demande/15 sec par email, 10/heure par IP)</li>
+  <li><strong>Protection anti-bot</strong> : champ honeypot invisible</li>
+  <li><strong>CORS strict</strong> : seuls diskoov.fr et configurateur.diskoov.fr sont autorises</li>
+  <li><strong>Echappement HTML</strong> dans tous les emails (empeche les injections)</li>
+  <li><strong>Polices auto-hebergees</strong> : aucun appel a Google Fonts (conforme RGPD)</li>
+  <li><strong>Banniere cookies CNIL</strong> : activee automatiquement si Google Analytics est configure</li>
+  <li><strong>Retry automatique</strong> : si un lead echoue (reseau), il est sauvegarde et renvoye automatiquement</li>
+</ul>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">8.</span> Resume des fichiers</h2>
+
+<table>
+  <tr><th>Fichier</th><th>Role</th><th>Qui le modifie</th></tr>
+  <tr><td><code>config.js</code></td><td>Tous les parametres editables (prix, contact, couleurs, URLs)</td><td>Diskoov</td></tr>
+  <tr><td><code>index.html</code></td><td>Interface du configurateur</td><td>Developpeur uniquement</td></tr>
+  <tr><td><code>api/send-email.ts</code></td><td>Envoi d'emails + validation</td><td>Developpeur uniquement</td></tr>
+  <tr><td><code>vercel.json</code></td><td>Securite + deploiement</td><td>Developpeur uniquement</td></tr>
+  <tr><td><code>.env.example</code></td><td>Modele des variables d'environnement</td><td>Reference</td></tr>
+</table>
+
+
+<!-- ================================================================ -->
+<h2><span class="num">9.</span> Support</h2>
+
+<p>En cas de probleme technique avec le configurateur :</p>
+<ul>
+  <li>Verifier que les variables d'environnement sont bien renseignees sur Vercel</li>
+  <li>Verifier que les images et polices sont bien uploadees</li>
+  <li>Contacter votre developpeur avec une capture d'ecran du probleme</li>
+</ul>
+
+<div class="footer">
+  Configurateur Diskoov &mdash; Document confidentiel &mdash; Ne pas diffuser
+</div>
+
+</body>
+</html>

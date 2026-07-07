@@ -1,0 +1,508 @@
+(function (root, factory) {
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.DISKOOV_RULES = api;
+}(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  var STATUS = Object.freeze({ EXACT: 'exact', INDICATIVE: 'indicative', QUOTE: 'quote' });
+  var VAT = 1.20;
+
+  var PRODUCTS = Object.freeze({
+    bab: { label: 'Bâche à barres Secu Classic', family: 'bab', image: 'assets/produits/bab/couverture-a-barres.jpg' },
+    ore_compact: { label: 'Oré Compact', family: 'ore', image: 'assets/produits/ore/ore-fermee.jpg' },
+    ore_essential: { label: 'Oré Essential', family: 'ore', image: 'assets/produits/ore/ore-ouverte.jpg' },
+    volet_hs: { label: 'Volet hors-sol', family: 'volet', image: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg' },
+    volet_immerge: { label: 'Volet immergé', family: 'volet', image: 'assets/produits/volets-immerges/volet-immerge-blanc.jpg' },
+    masterdeck: { label: 'Terrasse mobile MasterDeck', family: 'masterdeck', image: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg' },
+    ul: { label: 'Abri Ultra Bas / Neo', family: 'abri', image: 'assets/produits/abris/master-ultra-bas-1-2.jpg' },
+    m18: { label: 'Abri Master 18', family: 'abri', image: 'assets/produits/abris/master-bas-1-8.jpg' },
+    m30: { label: 'Abri Master 30', family: 'abri', image: 'assets/produits/abris/master-bas-1-8.jpg' },
+    m50: { label: 'Abri Master 50', family: 'abri', image: 'assets/produits/abris/master-mi-haut.jpg' },
+    mid: { label: 'Abri mi-haut', family: 'abri', image: 'assets/produits/abris/master-mi-haut.jpg' }
+  });
+
+  var ORE_COMPACT = {
+    lengths: [3, 4, 5, 6, 7], widths: [2.5, 3, 3.5],
+    prices: {
+      3: [4451, 4555, 4716], 4: [4499, 4640, 4773], 5: [4678, 4773, 4962],
+      6: [4839, 4962, 5151], 7: [5047, 5113, 5283]
+    }
+  };
+  var ORE_ESSENTIAL = {
+    lengths: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], widths: [2.5, 3, 3.5, 4, 4.5, 5],
+    prices: {
+      3: [4946, 5061, 5240, 5387, 5518, 5954], 4: [4998, 5156, 5303, 5460, 5544, 6195],
+      5: [5198, 5303, 5513, 5618, 5817, 6384], 6: [5376, 5513, 5723, 5849, 6132, 6563],
+      7: [5607, 5681, 5870, 5922, 6426, 6878], 8: [5796, 5870, 6017, 6174, 6720, 6993],
+      9: [5964, 6027, 6185, 6353, 7046, 7182], 10: [6090, 6248, 6300, 6521, 7140, 7298],
+      11: [6279, 6510, 6731, 6941, 7245, 7371], 12: [6668, 6836, 6972, 7119, 7340, 7508]
+    }
+  };
+
+  var LAME_TIERS = [
+    [3, 219.41, 449.99], [3.5, 248.53, 513.34], [4, 277.65, 576.70],
+    [4.5, 306.75, 640.06], [5, 335.87, 703.41], [5.5, 364.99, 766.77],
+    [6, 394.10, 830.12], [6.5, 435.99, 919.32], [7, 464.70, 981.22],
+    [7.5, 495.52, 1043.12], [8, 531.08, 1105.02]
+  ];
+
+  var SHIPPING_GROUPS = [
+    [['26'], 562.38, 776.62],
+    [['04', '05', '07', '30', '38', '42', '69', '84'], 776.62, 996.22],
+    [['01', '06', '13', '34', '43', '48', '71', '73', '74', '83'], 889.10, 1103.34],
+    [['03', '11', '12', '15', '31', '39', '63', '66', '81'], 996.22, 1215.81],
+    [['09', '19', '21', '23', '25', '32', '46', '58', '65', '70', '82'], 1103.34, 1322.93],
+    [['10', '16', '18', '24', '33', '36', '40', '41', '44', '45', '47', '52', '64', '68', '86', '87', '88', '89'], 1215.81, 1430.05],
+    [['17', '28', '37', '51', '54', '55', '57', '67', '75', '77', '78', '79', '90', '91', '92', '93', '94', '95'], 1322.93, 1537.17],
+    [['02', '08', '14', '22', '27', '29', '35', '49', '50', '53', '56', '59', '60', '61', '62', '72', '76', '80', '85'], 1430.05, 1649.65]
+  ];
+
+  var ABRI_CATALOG = {
+    ul: {
+      discount: 0.33,
+      tiers: {
+        2: [[390, 5645], [480, 6169.17], [570, 7103.33]],
+        3: [[390, 7482.5], [480, 8160.83], [550, 9149.17]],
+        4: [[390, 9476.67], [480, 10155.83], [540, 11196.67]],
+        5: [[390, 11379.17], [480, 12144.17], [530, 13338.33]],
+        6: [[390, 13143.33], [480, 14083.33], [530, 15542.5]]
+      }
+    },
+    m18: {
+      discount: 0.33,
+      tiers: {
+        2: [[390, 5491.67], [480, 6169.17], [570, 7103.33]],
+        3: [[390, 7482.5], [480, 8160.83], [550, 9149.17]],
+        4: [[390, 9476.67], [480, 10155.83], [540, 11197.5]],
+        5: [[390, 11379.17], [480, 12144.17], [530, 13338.33]],
+        6: [[390, 13143.33], [480, 14081.67], [530, 15543.33]],
+        7: [[390, 15285], [480, 16221.67], [530, 17736.67]]
+      }
+    },
+    m30: {
+      discount: 0.28,
+      tiers: {
+        2: [[390, 5608.33], [480, 6299.17], [570, 7253.33]],
+        3: [[390, 7640], [480, 8332.5], [550, 9342.5]],
+        4: [[390, 9676.67], [480, 10373.33], [540, 11432.5]],
+        5: [[390, 11619.17], [480, 12399.17], [530, 13618.33]],
+        6: [[390, 13421.67], [480, 14380], [530, 15869.17]],
+        7: [[390, 15605.83], [480, 16563.33], [530, 18110]]
+      }
+    }
+  };
+
+  function n(value) {
+    var result = typeof value === 'number' ? value : parseFloat(String(value || '').replace(',', '.'));
+    return Number.isFinite(result) ? result : 0;
+  }
+
+  function money(value) { return Math.round((n(value) + Number.EPSILON) * 100) / 100; }
+
+  function normalizedDimensions(input) {
+    var a = n(input && input.length);
+    var b = n(input && input.width);
+    return { length: Math.max(a, b), width: Math.min(a, b), area: money(a * b) };
+  }
+
+  function nextTier(value, tiers) {
+    for (var i = 0; i < tiers.length; i += 1) if (value <= tiers[i] + 0.0001) return tiers[i];
+    return null;
+  }
+
+  function departmentCode(value) {
+    var match = String(value || '').trim().match(/^(\d{2}|2A|2B)/i);
+    return match ? match[1].toUpperCase() : '';
+  }
+
+  function shippingPrice(department, kind) {
+    var code = departmentCode(department);
+    for (var i = 0; i < SHIPPING_GROUPS.length; i += 1) {
+      if (SHIPPING_GROUPS[i][0].indexOf(code) !== -1) return kind === 'immerge' ? SHIPPING_GROUPS[i][2] : SHIPPING_GROUPS[i][1];
+    }
+    return null;
+  }
+
+  function commonMissing(input, includeInstallation) {
+    var missing = [];
+    if (includeInstallation && !input.installation) missing.push('prestation souhaitée');
+    if (!input.support) missing.push('support autour du bassin');
+    if (!input.margelles) missing.push('margelles / niveau des plages');
+    return missing;
+  }
+
+  function incomplete(product, missing, reference) {
+    return result(product, {
+      eligible: null,
+      warnings: ['Configuration technique incomplète : ' + missing.join(', ') + '.'],
+      reference: reference || 'Qualification technique',
+      technical: { missingInputs: missing.slice() }
+    });
+  }
+
+  function manualReview(product, warning, reference, technical) {
+    return result(product, {
+      eligible: null,
+      warnings: [warning],
+      reference: reference || 'Étude technique',
+      technical: technical || {}
+    });
+  }
+
+  function result(product, overrides) {
+    var meta = PRODUCTS[product] || { label: product, image: '' };
+    var base = {
+      product: product, label: meta.label, family: meta.family || '', image: meta.image || '',
+      status: STATUS.QUOTE, eligible: null, total: null, breakdown: [], warnings: [],
+      reference: '', technical: {}
+    };
+    Object.keys(overrides || {}).forEach(function (key) { base[key] = overrides[key]; });
+    return base;
+  }
+
+  function invalidDimensions(product) {
+    return result(product, {
+      eligible: false,
+      warnings: ['Renseignez une longueur et une largeur valides pour vérifier ce produit.'],
+      reference: 'Saisie bassin'
+    });
+  }
+
+  function nonRectangular(product, input) {
+    if (!input.shape || input.shape === 'rect') return null;
+    return result(product, {
+      eligible: null,
+      warnings: ['Forme non rectangulaire : plan coté et validation fabricant nécessaires.'],
+      reference: 'Étude sur mesure — forme du bassin'
+    });
+  }
+
+  function calculateOre(product, input) {
+    var shapeResult = nonRectangular(product, input);
+    if (shapeResult) return shapeResult;
+    var dims = normalizedDimensions(input);
+    if (!dims.length || !dims.width) return invalidDimensions(product);
+    var missing = commonMissing(input, true);
+    if (!input.clearance) missing.push('plage côté mécanisme');
+    if (missing.length) return incomplete(product, missing, 'REGLES-ORE — conditions d’implantation');
+    if (input.support === 'bois' || input.support === 'autre') {
+      return manualReview(product, 'Support à valider avant chiffrage Oré : planéité, fixation et portance doivent être confirmées.', 'REGLES-ORE — support final terminé', { support: input.support });
+    }
+    if (input.margelles === 'debord') {
+      return manualReview(product, 'Margelles/terrasses avec décalage de niveau : recouvrement 20 cm, guidage et jupe PVC à valider sur site.', 'REGLES-ORE — margelles et terrasses au même niveau', { margelles: input.margelles });
+    }
+    var table = product === 'ore_compact' ? ORE_COMPACT : ORE_ESSENTIAL;
+    var lTier = nextTier(dims.length, table.lengths);
+    var wTier = nextTier(dims.width, table.widths);
+    if (!lTier || !wTier) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Dimensions hors matrice ' + (product === 'ore_compact' ? 'Compact (7 × 3,5 m)' : 'Essential (12 × 5 m)') + ' : étude fabricant requise.'],
+        reference: 'REGLES-ORE — matrice dimensions/prix',
+        technical: { rollingClearanceCm: 60, totalClearanceCm: 80, mechanismHeightCm: 45 }
+      });
+    }
+    if (input.clearance === 'moins_60' || input.clearance === '60_79') {
+      return result(product, {
+        eligible: input.clearance === 'moins_60' ? false : null,
+        warnings: [input.clearance === 'moins_60' ? 'Moins de 60 cm côté mécanisme : roulement standard impossible.' : '60 à 79 cm disponibles : l’encombrement total documenté de 80 cm n’est pas garanti.'],
+        reference: 'REGLES-ORE — encombrements 60 / 80 / 45 cm',
+        technical: { rollingClearanceCm: 60, totalClearanceCm: 80, mechanismHeightCm: 45 }
+      });
+    }
+    var base = table.prices[lTier][table.widths.indexOf(wTier)];
+    var selectedOptions = [];
+    var oreOptions = input.options || {};
+    if (oreOptions.oreSolar) selectedOptions.push('Panneau solaire d’appoint sélectionné.');
+    if (oreOptions.oreBlockCut) selectedOptions.push('Découpe pour bloc filtration sélectionnée.');
+    if (oreOptions.oreAntiWind) selectedOptions.push('Sangle anti-vent sélectionnée.');
+    if (oreOptions.oreWinterStrap) selectedOptions.push('Sangle d’hivernage longitudinale sélectionnée.');
+    if (oreOptions.oreExtraRetreat) selectedOptions.push('Recul supplémentaire sélectionné.');
+    if (oreOptions.oreSpecialColor) selectedOptions.push('Coloris personnalisé à confirmer dans la proposition.');
+    var warnings = [
+      'Estimation indicative à confirmer après validation technique.',
+      'Prévoir 60 cm de roulement et 80 cm d’encombrement total côté mécanisme.',
+      input.installation === 'fourniture' ? 'Fourniture seule : les contraintes de pose seront vérifiées avec vous.' : 'Pose demandée : les accès et conditions de pose seront vérifiés avec vous.'
+    ];
+    if (product === 'ore_compact' && input.installation === 'fourniture_pose') {
+      warnings.push('Pose par 2 techniciens Diskoov incluse pour Oré Compact.');
+    }
+    return result(product, {
+      status: STATUS.INDICATIVE,
+      eligible: true,
+      total: money(base),
+      breakdown: [{ label: 'Base produit ' + lTier + ' × ' + String(wTier).replace('.', ',') + ' m', amount: money(base) }],
+      warnings: warnings.concat(selectedOptions),
+      reference: 'REGLES-ORE — matrice tarifaire source',
+      technical: { selectedLength: lTier, selectedWidth: wTier, rollingClearanceCm: 60, totalClearanceCm: 80, mechanismHeightCm: 45, selectedOptions: selectedOptions, installationIncluded: product === 'ore_compact' && input.installation === 'fourniture_pose' }
+    });
+  }
+
+  function calculateBab(input) {
+    var shapeResult = nonRectangular('bab', input);
+    if (shapeResult) return shapeResult;
+    var dims = normalizedDimensions(input);
+    if (!dims.length || !dims.width) return invalidDimensions('bab');
+    var missing = commonMissing(input, true);
+    if (missing.length) return incomplete('bab', missing, 'REGLES-BAB — conditions basiques');
+    if (input.support === 'autre') {
+      return manualReview('bab', 'Support non standard : ancrage et fixation des pitons à valider avant estimation.', 'REGLES-BAB — ancrage support béton/lambourdes', { support: input.support });
+    }
+    if (dims.length > 12 || dims.width > 5.4) {
+      return result('bab', {
+        eligible: false,
+        warnings: ['Dimensions supérieures à la limite technique documentée (12 × 5,40 m).'],
+        reference: 'REGLES-BAB — limites dimensionnelles'
+      });
+    }
+    var opts = input.options || {};
+    if (opts.rollingUp && dims.width > 5.3) {
+      return result('bab', {
+        eligible: false,
+        warnings: ['Rolling-Up hors limite documentée : bassin maximal 12 × 5,30 m avec enrouleur motorisé.'],
+        reference: 'REGLES-BAB — limite Rolling-Up',
+        technical: { maxRollingUpLength: 12, maxRollingUpWidth: 5.3 }
+      });
+    }
+    var surface = money((dims.length + 0.5) * (dims.width + 0.5));
+    var lines = [{ label: 'Secu Classic — ' + String(surface).replace('.', ',') + ' m²', amount: money(surface * 36.04 * 0.65) }];
+    if (opts.antiAbrasion) lines.push({ label: 'Bandes anti-abrasion', amount: money(surface * 3.64 * 0.65) });
+    if (opts.blockCut) lines.push({ label: 'Découpe bloc filtration', amount: money(137.07 * 0.65) });
+    if (opts.stair) lines.push({ label: 'Découpe escalier', amount: money(168.43 * 0.65) });
+    if (opts.rollingUp) lines.push({ label: 'Rolling-Up', amount: money(947.50 * 0.65) });
+    if (surface < 15) lines.push({ label: 'Majoration petite surface (< 15 m²)', amount: money(lines[0].amount * 0.15) });
+    if (opts.cutCorners) lines.push({ label: 'Majoration angles coupés', amount: money(lines[0].amount * 0.15) });
+    lines.push({ label: 'Emballage', amount: 96 }, { label: 'Transport', amount: 132 });
+    var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
+    return result('bab', {
+      status: STATUS.INDICATIVE,
+      eligible: true,
+      total: money(total * VAT),
+      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
+      warnings: ['Estimation TTC indicative : le devis test et la grille 2026 divergent sur le PU, la remise et le transport.', input.support === 'bois' ? 'Support bois déclaré : ancrage sur lambourdes/plots béton à valider.' : 'Ancrage sous réserve d’un support compatible.', input.margelles === 'debord' ? 'Margelles avec débord : bandes anti-abrasion et frottements à contrôler.' : 'Validation de la forme, des renforts et des découpes par Diskoov.', input.installation === 'fourniture_pose' ? 'Pose demandée : non incluse dans cette estimation BAB source.' : 'Installation client suivant notice fabricant.', 'Paiement documenté : 50 % à la commande, 50 % au solde.'],
+      reference: 'REGLES-BAB — grille 2026, remise de vente et frais',
+      technical: { billingSurface: surface, maxLength: 12, maxWidth: 5.4, maxRollingUpWidth: 5.3 }
+    });
+  }
+
+  function lameTier(width) {
+    for (var i = 0; i < LAME_TIERS.length; i += 1) if (width <= LAME_TIERS[i][0] + 0.0001) return LAME_TIERS[i];
+    return null;
+  }
+
+  function calculateVolet(kind, input) {
+    var product = kind === 'immerge' ? 'volet_immerge' : 'volet_hs';
+    var shapeResult = nonRectangular(product, input);
+    if (shapeResult) return shapeResult;
+    var dims = normalizedDimensions(input);
+    if (!dims.length || !dims.width) return invalidDimensions(product);
+    var missing = commonMissing(input, true);
+    if (!input.electricity) missing.push('alimentation électrique proche');
+    if (kind === 'immerge' && !input.immergedIntegration) missing.push('type d’intégration du volet immergé');
+    if (missing.length) return incomplete(product, missing, 'REGLES-VOLETS — qualification avant chiffrage');
+    var maxLength = kind === 'immerge' ? 14 : 12;
+    var maxArea = kind === 'immerge' ? 84 : 72;
+    if (dims.width < 2.45) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Largeur inférieure au minimum documenté de 2,45 m pour la conformité sécurité des lames.'],
+        reference: 'REGLES-VOLETS — largeur minimale de lames'
+      });
+    }
+    if (dims.width > 6 || dims.length > maxLength || dims.area > maxArea) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Dimensions hors limite documentée (' + maxLength + ' × 6 m, ' + maxArea + ' m² maximum).'],
+        reference: 'REGLES-VOLETS — limites fabricant'
+      });
+    }
+    var tier = lameTier(dims.width);
+    if (!tier) return result(product, { eligible: false, warnings: ['Largeur hors grille de lames.'], reference: 'REGLES-VOLETS — tarif lames' });
+    if (input.installation !== 'fourniture_pose') {
+      return manualReview(product, 'La grille transport fournie couvre une livraison/installation ; une fourniture seule doit être chiffrée manuellement.', 'REGLES-VOLETS — livraison + installation 2026', { installation: input.installation });
+    }
+    if (input.support === 'bois' || input.support === 'autre') {
+      return manualReview(product, 'Support non standard pour volet : fixation, platines, alimentation et accès chantier à valider sur devis.', 'REGLES-VOLETS — conditions de pose', { support: input.support });
+    }
+    if (kind === 'hors_sol' && input.margelles === 'sans') {
+      return manualReview(product, 'Volet hors-sol sans margelles : implantation des pieds/platines à valider avant prix.', 'REGLES-VOLETS — structure fixée sur margelle', { margelles: input.margelles });
+    }
+    if (kind === 'immerge' && input.immergedIntegration !== 'paroi') {
+      return manualReview(product, 'Volet immergé avec fond de bassin, caillebotis ou intégration spéciale : mur, poutre, équerres et caillebotis doivent être chiffrés séparément.', 'REGLES-VOLETS — options immergées', { immergedIntegration: input.immergedIntegration });
+    }
+    var options = input.options || {};
+    if (options.voletSolar) {
+      return manualReview(product, 'Alimentation solaire / pré-équipement demandé : plus-value et compatibilité moteur à chiffrer sur devis.', 'REGLES-VOLETS — options alimentation', { voletSolar: true });
+    }
+    var bladeUnit = options.polycarbonate ? tier[2] : tier[1];
+    var structureRef = '';
+    var structurePrice = 0;
+    var structureDiscount = kind === 'immerge' ? 0.25 : 0.30;
+
+    if (kind === 'immerge') {
+      if (input.electricity !== 'oui') {
+        return manualReview(product, 'Un volet immergé motorisé nécessite une alimentation validée ; pré-équipement électrique à confirmer.', 'REGLES-VOLETS — moteur 24V', { electricity: input.electricity });
+      }
+      if (dims.width <= 4 && dims.area <= 50) { structureRef = 'VRSUB4'; structurePrice = 4663.51; }
+      else if (dims.width <= 5 && dims.area <= 50) { structureRef = 'VRSUB5'; structurePrice = 5288.49; }
+      else { structureRef = 'VRSUB6'; structurePrice = 5522.26; }
+    } else if (input.electricity === 'non' && dims.width <= 3 && dims.length <= 6) {
+      structureRef = 'VRMANU'; structurePrice = 1480;
+    } else if (input.electricity !== 'oui') {
+      return manualReview(product, 'Sans alimentation proche, le volet hors-sol motorisé doit être étudié avec option solaire ou pré-équipement électrique.', 'REGLES-VOLETS — alimentation solaire / Easy Plug', { electricity: input.electricity });
+    } else if (dims.width <= 4 && dims.length <= 8) {
+      structureRef = 'VRSIL80S'; structurePrice = 1945.77;
+    } else if (dims.width > 4 && dims.width <= 5 && dims.length <= 10) {
+      structureRef = 'VRSILC120'; structurePrice = 2237.50;
+    } else if (dims.width > 4 && dims.width <= 6 && dims.length <= 12) {
+      structureRef = 'VRSIL200S'; structurePrice = 2845.25;
+    } else {
+      return result(product, {
+        eligible: null,
+        warnings: ['Combinaison longueur/largeur non couverte sans ambiguïté par les références de structure : chiffrage manuel requis.'],
+        reference: 'REGLES-VOLETS — structures hors-sol'
+      });
+    }
+
+    var shipping = shippingPrice(input.department, kind);
+    if (shipping === null) {
+      return result(product, {
+        eligible: true,
+        warnings: ['Département absent de la grille transport (Corse, DOM ou valeur non renseignée) : devis transport requis.'],
+        reference: 'REGLES-VOLETS — transport par département',
+        technical: { structureRef: structureRef, bladeWidthTier: tier[0] }
+      });
+    }
+    var structureNet = money(structurePrice * (1 - structureDiscount));
+    var bladesNet = money(dims.length * bladeUnit * 0.60);
+    var packaging = kind === 'immerge' ? 149 : 96;
+    var lines = [
+      { label: 'Structure ' + structureRef, amount: structureNet },
+      { label: 'Tablier ' + (options.polycarbonate ? 'polycarbonate' : 'PVC') + ' — palier ' + String(tier[0]).replace('.', ',') + ' m', amount: bladesNet },
+      { label: 'Emballage', amount: packaging },
+      { label: 'Transport département ' + departmentCode(input.department), amount: shipping }
+    ];
+    var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
+    var warnings = ['Estimation TTC indicative : remises et pose à valider sur devis.', 'Livraison et pose intégrées à cette estimation.', 'Paiement documenté : 30 % commande, 40 % lancement/visite technique, 30 % livraison/solde.'];
+    if (structureRef === 'VRMANU') warnings.push('Structure manuelle VRMANU : uniquement pour petits bassins jusqu’à 3 × 6 m, confort d’usage à valider.');
+    if (dims.width < 3 && structureRef !== 'VRMANU') warnings.push('Largeur proche du minimum sécurité : compatibilité structure à valider fabricant.');
+    if (options.polycarbonate) warnings.push('Coloris polycarbonate à préciser : certaines teintes sont réservées à l’intérieur ou modifient fortement l’apport thermique.');
+    if (options.stair) warnings.push('Escalier/découpe déclaré : référence, dimensions et plus-value à confirmer sur devis ; non inclus dans l’estimation.');
+    if (kind === 'immerge') warnings.push('Estimation limitée à structure + tablier + emballage + transport/pose ; mur, poutre, équerres et caillebotis non inclus sauf validation.');
+    if (structureRef === 'VRSUB6' && dims.width > 5) warnings.push('Renfort anti-flexion vivement conseillé au-delà de 5 m ; il n’est pas inclus dans cette estimation.');
+    return result(product, {
+      status: STATUS.INDICATIVE,
+      eligible: true,
+      total: money(total * VAT),
+      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
+      warnings: warnings,
+      reference: 'REGLES-VOLETS — structures, lames, remises et transport',
+      technical: { structureRef: structureRef, bladeWidthTier: tier[0], material: options.polycarbonate ? 'polycarbonate' : 'PVC', installationIncluded: input.installation === 'fourniture_pose' }
+    });
+  }
+
+  function calculateAbri(product, input) {
+    var shapeResult = nonRectangular(product, input);
+    if (shapeResult) return shapeResult;
+    var dims = normalizedDimensions(input);
+    if (!dims.length || !dims.width) return invalidDimensions(product);
+    var missing = commonMissing(input, true);
+    if (missing.length) return incomplete(product, missing, 'REGLES-ABRIS-AQUAMASTER — conditions chantier');
+    if (input.installation !== 'fourniture_pose') {
+      return manualReview(product, 'Le calcul abri documenté inclut transport et pose de référence ; une fourniture seule doit être chiffrée manuellement.', 'REGLES-ABRIS-AQUAMASTER — pose/livraison', { installation: input.installation });
+    }
+    if (input.support === 'bois' || input.support === 'autre') {
+      return manualReview(product, 'Support chantier non standard pour abri : rails, fixation et niveau doivent être validés avant prix.', 'REGLES-ABRIS-AQUAMASTER — accès/support chantier', { support: input.support });
+    }
+    if (product === 'm50' || product === 'mid') {
+      return result(product, {
+        eligible: null,
+        warnings: ['La source ne permet pas un chiffrage 2026 fiable et complet pour ce modèle. Étude AquaMaster requise.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — écart catalogue/simulateurs'
+      });
+    }
+    var data = ABRI_CATALOG[product];
+    if (!data) return result(product, { eligible: null, warnings: ['Modèle non relié à une grille tarifaire qualifiée.'] });
+    var opts = input.options || {};
+    if (opts.motorisation || opts.groundRail) {
+      return manualReview(product, 'Motorisation ou rail au sol sélectionné : les dépendances catalogue sont trop spécifiques pour conserver un prix automatique fiable.', 'REGLES-ABRIS-AQUAMASTER — options à dépendances', { motorisation: !!opts.motorisation, groundRail: !!opts.groundRail });
+    }
+    var shelterLength = money(dims.length + 0.2);
+    var chordCm = Math.ceil((dims.width + 0.3) * 100);
+    var modules = Math.ceil(shelterLength / 2.1);
+    var tiers = data.tiers[modules];
+    if (!tiers) {
+      return result(product, {
+        eligible: null,
+        warnings: ['Nombre de modules hors grille exploitable (' + modules + '). Étude fabricant requise.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — catalogue 2026',
+        technical: { shelterLength: shelterLength, chordCm: chordCm, modules: modules }
+      });
+    }
+    var selected = null;
+    for (var i = 0; i < tiers.length; i += 1) if (chordCm <= tiers[i][0]) { selected = tiers[i]; break; }
+    if (!selected) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Corde calculée (' + chordCm + ' cm) supérieure à la grille du modèle.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — paliers de corde',
+        technical: { shelterLength: shelterLength, chordCm: chordCm, modules: modules }
+      });
+    }
+    var catalog = selected[1];
+    var net = money(catalog * (1 - data.discount));
+    var transport = 438;
+    var installation = 708.33;
+    var lines = [
+      { label: 'Abri catalogue ' + modules + ' modules / corde ' + selected[0] + ' cm', amount: net },
+      { label: 'Transport', amount: transport },
+      { label: 'Pose de référence', amount: installation }
+    ];
+    var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
+    return result(product, {
+      status: STATUS.INDICATIVE,
+      eligible: true,
+      total: money(total * VAT),
+      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
+      warnings: ['Transport et pose de référence intégrés à cette estimation.', 'Estimation TTC indicative issue du catalogue et des hypothèses de vente documentées ; options, accès chantier et validation fabricant non inclus.', 'Nombre de modules estimé à partir de l’exemple source : validation AquaMaster obligatoire.', 'Paiement documenté : 30 % acompte, 40 % visite technique, 30 % solde.'],
+      reference: 'REGLES-ABRIS-AQUAMASTER — catalogue 2026 + simulateurs de vente',
+      technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, catalogPublicHT: catalog, installationIncluded: true }
+    });
+  }
+
+  function calculate(product, input) {
+    input = input || {};
+    if (product === 'bab') return calculateBab(input);
+    if (product === 'ore_compact' || product === 'ore_essential') return calculateOre(product, input);
+    if (product === 'volet_hs') return calculateVolet('hors_sol', input);
+    if (product === 'volet_immerge') return calculateVolet('immerge', input);
+    if (product === 'ul' || product === 'm18' || product === 'm30' || product === 'm50' || product === 'mid') return calculateAbri(product, input);
+    if (product === 'masterdeck') {
+      return result(product, {
+        eligible: null,
+        warnings: ['La matrice source MasterDeck comporte des ambiguïtés commerciales : étude sur mesure obligatoire.'],
+        reference: 'ANNEXE-DONNEES-SOURCES — matrice MasterDeck'
+      });
+    }
+    return result(product || '', { eligible: null, warnings: ['Produit inconnu du moteur de règles.'] });
+  }
+
+  function productOptions(product) {
+    if (product === 'bab') return ['antiAbrasion', 'blockCut', 'rollingUp', 'cutCorners'];
+    if (product === 'volet_hs' || product === 'volet_immerge') return ['polycarbonate'];
+    return [];
+  }
+
+  return Object.freeze({
+    STATUS: STATUS,
+    PRODUCTS: PRODUCTS,
+    calculate: calculate,
+    productOptions: productOptions,
+    normalizedDimensions: normalizedDimensions,
+    departmentCode: departmentCode,
+    shippingPrice: shippingPrice,
+    money: money,
+    _data: Object.freeze({ oreCompact: ORE_COMPACT, oreEssential: ORE_ESSENTIAL, lameTiers: LAME_TIERS, abriCatalog: ABRI_CATALOG })
+  });
+}));
