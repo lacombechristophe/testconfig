@@ -16,6 +16,7 @@ Statuts proposés : `VALIDÉ`, `À MODIFIER`, `SUR DEVIS`, `NON PROPOSÉ`.
 | GEN-06 | Statut du prix affiché | Prix ferme ou estimation | « Estimation TTC 2026 » jusqu'à validation contractuelle | |
 | GEN-07 | Arrondi prospect | Centimes ou euros entiers | Afficher à l'euro, conserver les centimes dans le calcul | |
 | GEN-08 | Mise à jour annuelle | Responsable et date de remplacement des grilles | Identifier un responsable et le millésime actif | |
+| GEN-09 | Rentabilité interne | Colonnes achat, PA HT, marge et bases fournisseur | Ne jamais exposer au prospect ; réserver à l'e-mail interne ou au back-office | |
 
 ## B. Oré
 

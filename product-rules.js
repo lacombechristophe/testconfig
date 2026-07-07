@@ -580,7 +580,7 @@
       oreCompact: ORE_COMPACT,
       oreEssential: ORE_ESSENTIAL,
       lameTiers: LAME_TIERS,
-      abriCatalog: ABRI_COMMERCIAL,
+      abriCatalog: ABRI_TECHNICAL,
       abriCommercial: ABRI_COMMERCIAL,
       abriTechnical: ABRI_TECHNICAL
     })

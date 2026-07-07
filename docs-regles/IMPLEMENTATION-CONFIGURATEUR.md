@@ -12,6 +12,8 @@ Le configurateur distingue désormais trois cas :
 
 Le devis concurrent Pisceen/DERCYA `S021` reste un benchmark de présentation uniquement. Aucun prix, produit, remise ou référence de ce devis n'est présent dans `product-rules.js`.
 
+Le catalogue AquaMaster est traité comme une source technique et, si Xavier le confirme, comme une base de rentabilité interne. Les prix visibles côté prospect doivent rester issus des fichiers Excel Diskoov lorsqu'une méthode commerciale complète existe. Les coûts d'achat, marges et prix fournisseur ne doivent pas être exposés dans l'interface publique.
+
 ## Cartographie source → moteur → interface
 
 | Produit | Règles intégrées au moteur | Interface reliée | Statut affiché |
