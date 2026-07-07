@@ -17,19 +17,20 @@ Le devis concurrent Pisceen/DERCYA `S021` reste un benchmark de présentation un
 | Produit | Règles intégrées au moteur | Interface reliée | Statut affiché |
 |---|---|---|---|
 | Coverseal Auto / Semi | Fonctionnement historique conservé, faute de nouvelle grille source dans le dossier | Modèle, membrane, habillage, rail | Prix historique paramétrable |
-| Oré Compact | Matrice 3–7 m × 2,5–3,5 m, palier supérieur, limite dimensionnelle, encombrements 60/80/45 cm | Choix Compact, support, margelles, plage mécanisme, prestation, options et images | Base source indicative, régime fiscal/pose/transport explicitement non affirmés |
-| Oré Essential | Matrice 3–12 m × 2,5–5 m, mêmes contraintes techniques | Choix Essential et mêmes questions | Base source indicative |
+| Oré Compact | Matrice 3–7 m × 2,5–3,5 m, palier supérieur, bornes mini/maxi, encombrements 60/80/45 cm | Choix Compact, support, margelles, plage mécanisme, prestation, options et images | Base Excel indicative ; toute option contradictoire force un devis |
+| Oré Essential | Matrice 3–12 m × 2,5–5 m, mêmes contraintes techniques | Choix Essential et mêmes questions | Base Excel indicative ; options sur devis |
 | BAB Secu Classic | Surface `(L+0,50)×(l+0,50)`, PU 36,04 € HT/m², remise 35 %, emballage, transport, petite surface, pans coupés, anti-abrasion, découpe, escalier et Rolling-Up | Produit dédié, options, support, margelles, prestation et images | TTC indicatif ; divergences juillet 2026 rappelées |
-| Volet hors-sol | Limites 12×6/72 m², structure selon dimensions, palier lames, PVC/polycarbonate, remise, emballage et transport par département | Produit dédié, matériau, électricité, support, margelles, prestation et images | TTC indicatif ou sur devis si combinaison/transport non couvert |
-| Volet immergé | Limites 14×6/84 m², VRSUB4/5/6, palier lames, PVC/polycarbonate, emballage et transport | Même qualification spécifique | TTC indicatif ou sur devis |
-| Ultra Bas / Master 18 / Master 30 | Agrandissement +20/+30 cm, classe de corde, catalogue 2026, remise documentée, transport et pose de référence | Choix hauteur, options, couleur, questions chantier et images | TTC indicatif ; nombre de modules et validation AquaMaster signalés |
-| Master 50 / Mi-haut | Sources commerciales insuffisamment cohérentes pour un calcul automatique fiable | Choix conservé, questions et images | Sur devis |
+| Volet hors-sol | Limites 12×6/72 m², structures Excel selon dimensions, 11 paliers de lames, PVC/polycarbonate, emballage et transport par département | Produit dédié, matériau, électricité, support, margelles, prestation et images | TTC indicatif ; escalier, solaire et variantes non arbitrées sur devis |
+| Volet immergé | Limites 14×6/84 m², VRSUB4/5/6, palier lames, PVC/polycarbonate, emballage et transport | Même qualification spécifique | TTC indicatif pour paroi simple ; intégrations spéciales et VRSUB6 >5 m sur devis |
+| Ultra Bas / Master 18 / Master 30 | Agrandissement +20/+30 cm, classe de corde, prix publics et remises Excel, transport/pose Excel, limites catalogue | Choix hauteur, options, couleur, questions chantier et images | TTC indicatif ; nombre de modules et validation AquaMaster signalés |
+| Master 50 / Mi-haut | Limites de modules et corde du catalogue intégrées ; méthode commerciale insuffisamment cohérente | Choix désactivé hors taille, questions et images | Compatible techniquement ou hors modèle, prix sur devis |
 | MasterDeck | Caractéristiques techniques conservées dans la documentation ; matrice et moteurs contradictoires | Produit, questions chantier et visuel générique piscine | Sur devis |
 
 ## Règles de sécurité contre les faux prix
 
 - Une forme non rectangulaire bascule sur étude sur mesure pour les nouveaux moteurs.
 - Une dimension hors matrice n'est jamais extrapolée.
+- Les dimensions Oré inférieures au premier palier sont également bloquées ; le premier prix n'est jamais appliqué à un bassin plus petit sans règle source.
 - Les formes arrondies/libres désactivent côté interface les modèles à estimation directe/indicative qui exigent une base rectangulaire : Coverseal auto/semi, Oré Compact/Essential, BAB, volets et abris calculables. Les sorties explicitement sur mesure restent sélectionnables pour convertir le prospect : Eden, Master 50, Mi-haut et MasterDeck.
 - Les modèles avec plage dimensionnelle connue sont désactivés dès le choix produit si la taille renseignée sort de leur grille : Oré Compact/Essential, BAB, volets et abris calculables. Un ancien lien partagé ou un appel JS ne peut pas forcer une sélection hors plage ; le modèle actif est désélectionné si l'utilisateur modifie ensuite les dimensions.
 - Les produits issus des règles Xavier exigent maintenant une qualification minimale avant envoi : prestation souhaitée, support autour du bassin et niveau des margelles/plages.
@@ -45,8 +46,11 @@ Le devis concurrent Pisceen/DERCYA `S021` reste un benchmark de présentation un
 - Le volet manuel VRMANU est qualifié uniquement pour les petits bassins jusqu'à 3 × 6 m sans alimentation électrique.
 - Le volet polycarbonate remplace le prix PVC au lieu d'ajouter deux tabliers.
 - L'option solaire/pré-équipement volet est transmise, mais force un devis manuel car la plus-value et la compatibilité moteur ne sont pas arbitrées.
+- Un coloris de lames polycarbonate active automatiquement le tarif polycarbonate afin d'éviter un prix PVC incohérent.
+- Un escalier de volet force un devis tant que la forme, les deux dimensions utiles et la finition équerre/lisse ne sont pas toutes qualifiées.
 - Le volet immergé ne donne une base indicative que pour une intégration simple avec flasques sur paroi ; fond de bassin, caillebotis, mur, poutre et équerres restent sur devis.
 - Le scénario immergé « 12×6 » dupliqué n'est pas utilisé.
+- Au-delà de 5 m de largeur, VRSUB6 force un devis pour valider le renfort anti-flexion lié à la garantie.
 - Corse, DOM et départements absents de la grille transport restent sur devis.
 - Si un escalier est activé, l'interface ne laisse plus un état partiel : type droit par défaut, position intérieure, côté largeur et largeur 1,5 m sont préremplis, puis modifiables. Les escaliers d'angle reçoivent un coin par défaut afin que le schéma ne soit jamais incohérent.
 - L'option « Échelle amovible » a été retirée du parcours, des liens partagés, du payload API et des e-mails, car elle n'est pas utile selon Xavier.
@@ -67,7 +71,7 @@ Sur mobile, le visuel est réduit par défaut puis se compacte en bandeau dès q
 
 ## Vérification automatisée et manuelle
 
-- Tests Node : normalisation, paliers Oré, encombrement Oré, qualification Oré incomplète, limites BAB, limite Rolling-Up, options BAB, largeur minimale volets, VRMANU manuel, structures et transport volets, intégration volet immergé, VRSUB6, abris, options abri sur devis, exclusion concurrente, existence des images relatives et matrice de sûreté sur tous les produits.
+- Tests Node : normalisation, bornes et paliers Oré, options Oré contradictoires, limites BAB, limite Rolling-Up, options BAB, largeur minimale volets, VRMANU, VRSIL80S/VRSILC120, escalier volet, transport, intégration immergée, VRSUB6, prix Excel abri 8×4, limites Master 50, exclusion concurrente, images relatives et matrice de sûreté sur tous les produits.
 - Compilation TypeScript de l'API e-mail.
 - Contrôle de syntaxe des scripts intégrés à `index.html`.
 - Vérification de tous les chemins d'assets utilisés.

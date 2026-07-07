@@ -13,6 +13,7 @@ Les documents sont organisés par famille :
 - `REGLES-ORE.md` : couvertures motorisées Oré Essentiel et Oré Compact.
 - `REGLES-VOLETS.md` : volets hors-sol, volets immergés, lames, escaliers, emballages, transport et installation.
 - `AUDIT-SOURCES-ET-ECARTS.md` : couverture des 34 fichiers sources, conflits entre sources et écarts avec le configurateur actuel.
+- `COUVERTURE-SOURCES-ORIGINALES.md` : registre de preuve 34/34, empreintes, traitement de chaque fichier et contrôles croisés.
 - `ANNEXE-DONNEES-SOURCES.md` : transcription exhaustive et auditable des PDF, Word et feuilles Excel, avec formules.
 - `ASSETS-PRODUITS.md` : correspondance des 17 images avec les parcours et options produit.
 - `IMPLEMENTATION-CONFIGURATEUR.md` : cartographie source → moteur → interface, protections contre les faux prix, vérifications et arbitrages encore ouverts.

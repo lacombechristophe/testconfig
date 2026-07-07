@@ -171,10 +171,38 @@ test('volet hors-sol choisit VRSIL80S et le transport du Rhône', function () {
   assert.ok(r.total > 0);
 });
 
-test('volet hors-sol laisse sur devis une combinaison non couverte', function () {
+test('volet hors-sol choisit VRSILC120 pour un bassin 9 × 4', function () {
   var r = rules.calculate('volet_hs', Object.assign({}, VOLET_COMMON, { length: 9, width: 4, department: '26' }));
+  assert.equal(r.status, 'indicative');
+  assert.equal(r.technical.structureRef, 'VRSILC120');
+});
+
+test('volet hors-sol laisse sur devis une combinaison non couverte sans ambiguïté', function () {
+  var r = rules.calculate('volet_hs', Object.assign({}, VOLET_COMMON, { length: 11, width: 4, department: '26' }));
   assert.equal(r.status, 'quote');
   assert.equal(r.eligible, null);
+});
+
+test('volet avec escalier ne produit pas de prix incomplet', function () {
+  var r = rules.calculate('volet_hs', Object.assign({}, VOLET_COMMON, {
+    length: 8,
+    width: 4,
+    options: { stair: true, stairType: 'roman', stairWidth: 3 }
+  }));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.total, null);
+  assert.equal(r.technical.stairType, 'roman');
+});
+
+test('un coloris polycarbonate ne peut pas conserver un prix PVC', function () {
+  var r = rules.calculate('volet_hs', Object.assign({}, VOLET_COMMON, {
+    length: 8,
+    width: 4,
+    productColor: 'poly_bleu',
+    options: {}
+  }));
+  assert.equal(r.status, 'indicative');
+  assert.equal(r.technical.material, 'polycarbonate');
 });
 
 test('volet hors-sol bloque une largeur inférieure à 2,45 m', function () {
@@ -214,7 +242,39 @@ test('abri 8 × 4 reproduit 4 modules et la corde 480', function () {
   assert.equal(r.technical.modules, 4);
   assert.equal(r.technical.chordCm, 430);
   assert.equal(r.technical.selectedChordCm, 480);
-  assert.ok(r.total > 9000);
+  assert.equal(r.total, 9380.76);
+});
+
+test('Oré avec option contradictoire reste sur devis sans faux total', function () {
+  var r = rules.calculate('ore_essential', Object.assign({
+    length: 8,
+    width: 4,
+    options: { oreSolar: true }
+  }, ORE_COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.total, null);
+  assert.equal(r.technical.basePrice, 6174);
+});
+
+test('Oré bloque aussi les dimensions sous le premier palier', function () {
+  var r = rules.calculate('ore_compact', Object.assign({ length: 2.9, width: 2.5 }, ORE_COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, false);
+});
+
+test('Master 50 vérifie les limites techniques avant le devis', function () {
+  var compatible = rules.calculate('m50', Object.assign({ length: 8, width: 4 }, COMMON));
+  var tooWide = rules.calculate('m50', Object.assign({ length: 8, width: 6 }, COMMON));
+  assert.equal(compatible.status, 'quote');
+  assert.equal(compatible.eligible, true);
+  assert.equal(tooWide.eligible, false);
+});
+
+test('un abri techniquement compatible sans cellule Excel reste éligible sur devis', function () {
+  var r = rules.calculate('m18', Object.assign({ length: 10, width: 5.2 }, COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, true);
+  assert.equal(r.total, null);
 });
 
 test('Master 50 et MasterDeck restent explicitement sur devis', function () {

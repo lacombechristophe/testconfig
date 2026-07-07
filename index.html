@@ -4050,22 +4050,19 @@
         }
         return dimOk();
       }
-      if (product === 'ul' || product === 'm18' || product === 'm30') {
-        var catalog = window.DISKOOV_RULES && window.DISKOOV_RULES._data && window.DISKOOV_RULES._data.abriCatalog ? window.DISKOOV_RULES._data.abriCatalog[product] : null;
-        if (!catalog) return dimOk();
+      if (product === 'ul' || product === 'm18' || product === 'm30' || product === 'm50' || product === 'mid') {
+        var technical = window.DISKOOV_RULES && window.DISKOOV_RULES._data && window.DISKOOV_RULES._data.abriTechnical ? window.DISKOOV_RULES._data.abriTechnical[product] : null;
+        if (!technical) return dimOk();
         var shelterLength = Math.round((d.length + 0.2) * 100) / 100;
-        var modules = Math.ceil(shelterLength / 2.1);
-        var tiers = catalog.tiers[modules];
-        if (!tiers) {
-          var moduleKeys = Object.keys(catalog.tiers).map(function (k) { return parseInt(k, 10); }).sort(function (a, b) { return a - b; });
-          var maxModules = moduleKeys[moduleKeys.length - 1];
-          var maxLen = Math.round(((maxModules * 2.1) - 0.2) * 10) / 10;
-          return dimBlocked('Longueur à vérifier', 'Abri : longueur à valider, environ ' + fmtM(maxLen) + ' m maximum pour ce modèle.');
+        var modules = Math.ceil(shelterLength / technical.moduleWidthM);
+        if (technical.modules.indexOf(modules) === -1) {
+          var maxModules = Math.max.apply(Math, technical.modules);
+          var maxLen = Math.round(((maxModules * technical.moduleWidthM) - 0.2) * 10) / 10;
+          return dimBlocked('Longueur hors modèle', 'Abri : longueur maximale indicative de ' + fmtM(maxLen) + ' m pour ce modèle.');
         }
         var chordCm = Math.ceil((d.width + 0.3) * 100);
-        var maxChord = tiers.reduce(function (max, tier) { return Math.max(max, tier[0]); }, 0);
-        if (chordCm > maxChord) {
-          return dimBlocked('Largeur à vérifier', 'Abri : largeur + marge technique supérieure à la limite du modèle (' + maxChord + ' cm).');
+        if (chordCm < technical.minChordCm || chordCm > technical.maxChordCm) {
+          return dimBlocked('Largeur hors modèle', 'Abri : largeur avec marge technique comprise entre ' + technical.minChordCm + ' et ' + technical.maxChordCm + ' cm pour ce modèle.');
         }
         return dimOk();
       }
@@ -5324,6 +5321,8 @@
 
     function setProductField(key, value) {
       S[key] = value;
+      if (key === 'productColor' && /^poly_/.test(value)) S.voletPoly = true;
+      if (key === 'productColor' && /^(blanc|sable|gris_7004)$/.test(value)) S.voletPoly = false;
       updP();
       chk();
       requestAnimationFrame(updProgress);
@@ -5556,6 +5555,9 @@
           antiAbrasion: S.babAntiAbrasion,
           blockCut: S.babBlockCut || S.filtration,
           stair: S.stair,
+          stairType: S.stairType,
+          stairWidth: S.stairWidth,
+          stairPosition: S.stairPos,
           rollingUp: S.babRollingUp,
           cutCorners: S.babCutCorners,
           polycarbonate: S.voletPoly,

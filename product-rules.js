@@ -58,39 +58,47 @@
     [['02', '08', '14', '22', '27', '29', '35', '49', '50', '53', '56', '59', '60', '61', '62', '72', '76', '80', '85'], 1430.05, 1649.65]
   ];
 
-  var ABRI_CATALOG = {
+  // Prix commerciaux issus des classeurs Excel Diskoov. Les limites techniques
+  // restent séparées et proviennent du catalogue AquaMaster TTC 02/2026.
+  var ABRI_COMMERCIAL = {
     ul: {
       discount: 0.33,
       tiers: {
-        2: [[390, 5645], [480, 6169.17], [570, 7103.33]],
-        3: [[390, 7482.5], [480, 8160.83], [550, 9149.17]],
-        4: [[390, 9476.67], [480, 10155.83], [540, 11196.67]],
-        5: [[390, 11379.17], [480, 12144.17], [530, 13338.33]],
-        6: [[390, 13143.33], [480, 14083.33], [530, 15542.5]]
+        2: [[390, 5384.166666666667], [480, 6048.333333333334]],
+        3: [[390, 7335.833333333334], [480, 8000.833333333334], [530, 8970]],
+        4: [[390, 9290.833333333334], [480, 9956.666666666668]],
+        5: [[390, 11155.833333333334], [480, 11905.833333333334], [580, 13076.666666666668]],
+        6: [[390, 13035.833333333334], [480, 13807.5], [580, 15237.5]]
       }
     },
     m18: {
       discount: 0.33,
       tiers: {
-        2: [[390, 5491.67], [480, 6169.17], [570, 7103.33]],
-        3: [[390, 7482.5], [480, 8160.83], [550, 9149.17]],
-        4: [[390, 9476.67], [480, 10155.83], [540, 11197.5]],
-        5: [[390, 11379.17], [480, 12144.17], [530, 13338.33]],
-        6: [[390, 13143.33], [480, 14081.67], [530, 15543.33]],
-        7: [[390, 15285], [480, 16221.67], [530, 17736.67]]
+        2: [[390, 5384.166666666667], [480, 6048.333333333334]],
+        3: [[390, 7335.833333333334], [480, 8000.833333333334], [530, 8970]],
+        4: [[390, 9290.833333333334], [480, 9956.666666666668], [580, 10977.5]],
+        5: [[390, 11155.833333333334], [480, 11905.833333333334], [530, 13076.666666666668]],
+        6: [[390, 12885.833333333334], [480, 13805.833333333334], [580, 15238.333333333334]]
       }
     },
     m30: {
       discount: 0.28,
       tiers: {
-        2: [[390, 5608.33], [480, 6299.17], [570, 7253.33]],
-        3: [[390, 7640], [480, 8332.5], [550, 9342.5]],
-        4: [[390, 9676.67], [480, 10373.33], [540, 11432.5]],
-        5: [[390, 11619.17], [480, 12399.17], [530, 13618.33]],
-        6: [[390, 13421.67], [480, 14380], [530, 15869.17]],
-        7: [[390, 15605.83], [480, 16563.33], [530, 18110]]
+        2: [[390, 5497.5], [480, 6175.833333333334]],
+        3: [[390, 7490], [480, 8169.166666666667], [530, 9159.166666666668]],
+        4: [[390, 9486.666666666668], [480, 10166.666666666668], [580, 11208.333333333334]],
+        5: [[390, 11391.666666666668], [480, 12155.833333333334], [580, 13351.666666666668]],
+        6: [[390, 13157.5], [480, 14098.333333333334], [580, 15558.333333333334]]
       }
     }
+  };
+
+  var ABRI_TECHNICAL = {
+    ul: { minChordCm: 330, maxChordCm: 530, moduleWidthM: 2.10, modules: [2, 3, 4, 5, 6] },
+    m18: { minChordCm: 330, maxChordCm: 580, moduleWidthM: 2.10, modules: [2, 3, 4, 5, 6, 7] },
+    m30: { minChordCm: 330, maxChordCm: 580, moduleWidthM: 2.10, modules: [2, 3, 4, 5, 6, 7] },
+    m50: { minChordCm: 330, maxChordCm: 580, moduleWidthM: 2.10, modules: [2, 3, 4, 5, 6, 7] },
+    mid: { minChordCm: 400, maxChordCm: 1000, moduleWidthM: 2.15, modules: [2, 3, 4, 5, 6, 7, 8] }
   };
 
   function n(value) {
@@ -109,6 +117,22 @@
   function nextTier(value, tiers) {
     for (var i = 0; i < tiers.length; i += 1) if (value <= tiers[i] + 0.0001) return tiers[i];
     return null;
+  }
+
+  function abriTechnicalSelection(product, dims) {
+    var technical = ABRI_TECHNICAL[product];
+    if (!technical) return null;
+    var shelterLength = money(dims.length + 0.2);
+    var chordCm = Math.ceil((dims.width + 0.3) * 100);
+    var modules = Math.ceil(shelterLength / technical.moduleWidthM);
+    return {
+      data: technical,
+      shelterLength: shelterLength,
+      chordCm: chordCm,
+      modules: modules,
+      moduleSupported: technical.modules.indexOf(modules) !== -1,
+      chordSupported: chordCm >= technical.minChordCm && chordCm <= technical.maxChordCm
+    };
   }
 
   function departmentCode(value) {
@@ -193,6 +217,13 @@
       return manualReview(product, 'Margelles/terrasses avec décalage de niveau : recouvrement 20 cm, guidage et jupe PVC à valider sur site.', 'REGLES-ORE — margelles et terrasses au même niveau', { margelles: input.margelles });
     }
     var table = product === 'ore_compact' ? ORE_COMPACT : ORE_ESSENTIAL;
+    if (dims.length < table.lengths[0] || dims.width < table.widths[0]) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Dimensions inférieures au premier palier tarifaire documenté (' + table.lengths[0] + ' × ' + String(table.widths[0]).replace('.', ',') + ' m).'],
+        reference: 'REGLES-ORE — matrice dimensions/prix'
+      });
+    }
     var lTier = nextTier(dims.length, table.lengths);
     var wTier = nextTier(dims.width, table.widths);
     if (!lTier || !wTier) {
@@ -220,6 +251,14 @@
     if (oreOptions.oreWinterStrap) selectedOptions.push('Sangle d’hivernage longitudinale sélectionnée.');
     if (oreOptions.oreExtraRetreat) selectedOptions.push('Recul supplémentaire sélectionné.');
     if (oreOptions.oreSpecialColor) selectedOptions.push('Coloris personnalisé à confirmer dans la proposition.');
+    if (selectedOptions.length) {
+      return manualReview(product, 'Les options sélectionnées nécessitent une validation personnalisée avant estimation.', 'REGLES-ORE — options à valider', {
+        selectedLength: lTier,
+        selectedWidth: wTier,
+        selectedOptions: selectedOptions,
+        basePrice: money(base)
+      });
+    }
     var warnings = [
       'Estimation indicative à confirmer après validation technique.',
       'Prévoir 60 cm de roulement et 80 cm d’encombrement total côté mécanisme.',
@@ -335,7 +374,15 @@
     if (options.voletSolar) {
       return manualReview(product, 'Alimentation solaire / pré-équipement demandé : plus-value et compatibilité moteur à chiffrer sur devis.', 'REGLES-VOLETS — options alimentation', { voletSolar: true });
     }
-    var bladeUnit = options.polycarbonate ? tier[2] : tier[1];
+    if (options.stair) {
+      return manualReview(product, 'La découpe d’escalier dépend de sa forme, de ses dimensions et de la finition équerre ou lisse ; ces éléments seront validés avant chiffrage.', 'REGLES-VOLETS — escaliers 2026', {
+        stairType: options.stairType || '',
+        stairWidth: n(options.stairWidth),
+        stairPosition: options.stairPosition || ''
+      });
+    }
+    var wantsPolycarbonate = !!options.polycarbonate || /^poly_/.test(String(input.productColor || ''));
+    var bladeUnit = wantsPolycarbonate ? tier[2] : tier[1];
     var structureRef = '';
     var structurePrice = 0;
     var structureDiscount = kind === 'immerge' ? 0.25 : 0.30;
@@ -353,7 +400,7 @@
       return manualReview(product, 'Sans alimentation proche, le volet hors-sol motorisé doit être étudié avec option solaire ou pré-équipement électrique.', 'REGLES-VOLETS — alimentation solaire / Easy Plug', { electricity: input.electricity });
     } else if (dims.width <= 4 && dims.length <= 8) {
       structureRef = 'VRSIL80S'; structurePrice = 1945.77;
-    } else if (dims.width > 4 && dims.width <= 5 && dims.length <= 10) {
+    } else if (dims.width >= 4 && dims.width <= 5 && dims.length <= 10) {
       structureRef = 'VRSILC120'; structurePrice = 2237.50;
     } else if (dims.width > 4 && dims.width <= 6 && dims.length <= 12) {
       structureRef = 'VRSIL200S'; structurePrice = 2845.25;
@@ -362,6 +409,14 @@
         eligible: null,
         warnings: ['Combinaison longueur/largeur non couverte sans ambiguïté par les références de structure : chiffrage manuel requis.'],
         reference: 'REGLES-VOLETS — structures hors-sol'
+      });
+    }
+
+    if (kind === 'immerge' && structureRef === 'VRSUB6' && dims.width > 5) {
+      return manualReview(product, 'Au-delà de 5 m de largeur, le renfort anti-flexion VRSUB6 doit être validé pour préserver la garantie.', 'REGLES-VOLETS — renfort VRSUB6', {
+        structureRef: structureRef,
+        width: dims.width,
+        reinforcementPublicHT: 540
       });
     }
 
@@ -379,7 +434,7 @@
     var packaging = kind === 'immerge' ? 149 : 96;
     var lines = [
       { label: 'Structure ' + structureRef, amount: structureNet },
-      { label: 'Tablier ' + (options.polycarbonate ? 'polycarbonate' : 'PVC') + ' — palier ' + String(tier[0]).replace('.', ',') + ' m', amount: bladesNet },
+      { label: 'Tablier ' + (wantsPolycarbonate ? 'polycarbonate' : 'PVC') + ' — palier ' + String(tier[0]).replace('.', ',') + ' m', amount: bladesNet },
       { label: 'Emballage', amount: packaging },
       { label: 'Transport département ' + departmentCode(input.department), amount: shipping }
     ];
@@ -387,8 +442,7 @@
     var warnings = ['Estimation TTC indicative : remises et pose à valider sur devis.', 'Livraison et pose intégrées à cette estimation.', 'Paiement documenté : 30 % commande, 40 % lancement/visite technique, 30 % livraison/solde.'];
     if (structureRef === 'VRMANU') warnings.push('Structure manuelle VRMANU : uniquement pour petits bassins jusqu’à 3 × 6 m, confort d’usage à valider.');
     if (dims.width < 3 && structureRef !== 'VRMANU') warnings.push('Largeur proche du minimum sécurité : compatibilité structure à valider fabricant.');
-    if (options.polycarbonate) warnings.push('Coloris polycarbonate à préciser : certaines teintes sont réservées à l’intérieur ou modifient fortement l’apport thermique.');
-    if (options.stair) warnings.push('Escalier/découpe déclaré : référence, dimensions et plus-value à confirmer sur devis ; non inclus dans l’estimation.');
+    if (wantsPolycarbonate) warnings.push('Coloris polycarbonate à préciser : certaines teintes sont réservées à l’intérieur ou modifient fortement l’apport thermique.');
     if (kind === 'immerge') warnings.push('Estimation limitée à structure + tablier + emballage + transport/pose ; mur, poutre, équerres et caillebotis non inclus sauf validation.');
     if (structureRef === 'VRSUB6' && dims.width > 5) warnings.push('Renfort anti-flexion vivement conseillé au-delà de 5 m ; il n’est pas inclus dans cette estimation.');
     return result(product, {
@@ -398,7 +452,7 @@
       breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
       warnings: warnings,
       reference: 'REGLES-VOLETS — structures, lames, remises et transport',
-      technical: { structureRef: structureRef, bladeWidthTier: tier[0], material: options.polycarbonate ? 'polycarbonate' : 'PVC', installationIncluded: input.installation === 'fourniture_pose' }
+      technical: { structureRef: structureRef, bladeWidthTier: tier[0], material: wantsPolycarbonate ? 'polycarbonate' : 'PVC', installationIncluded: input.installation === 'fourniture_pose' }
     });
   }
 
@@ -415,28 +469,47 @@
     if (input.support === 'bois' || input.support === 'autre') {
       return manualReview(product, 'Support chantier non standard pour abri : rails, fixation et niveau doivent être validés avant prix.', 'REGLES-ABRIS-AQUAMASTER — accès/support chantier', { support: input.support });
     }
-    if (product === 'm50' || product === 'mid') {
+    var selection = abriTechnicalSelection(product, dims);
+    if (!selection) return result(product, { eligible: null, warnings: ['Modèle non relié à une grille technique qualifiée.'] });
+    if (!selection.moduleSupported) {
       return result(product, {
-        eligible: null,
-        warnings: ['La source ne permet pas un chiffrage 2026 fiable et complet pour ce modèle. Étude AquaMaster requise.'],
-        reference: 'REGLES-ABRIS-AQUAMASTER — écart catalogue/simulateurs'
+        eligible: false,
+        warnings: ['Longueur hors nombre d’éléments disponible pour ce modèle.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — limites techniques catalogue 2026',
+        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
       });
     }
-    var data = ABRI_CATALOG[product];
-    if (!data) return result(product, { eligible: null, warnings: ['Modèle non relié à une grille tarifaire qualifiée.'] });
+    if (!selection.chordSupported) {
+      return result(product, {
+        eligible: false,
+        warnings: ['Largeur avec marge technique hors plage du modèle (' + selection.data.minChordCm + ' à ' + selection.data.maxChordCm + ' cm).'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — limites de corde catalogue 2026',
+        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
+      });
+    }
+    if (product === 'm50' || product === 'mid') {
+      return result(product, {
+        eligible: true,
+        warnings: ['Ce modèle est compatible avec les dimensions saisies et fera l’objet d’une proposition personnalisée.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — prix commercial à valider',
+        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
+      });
+    }
+    var data = ABRI_COMMERCIAL[product];
+    if (!data) return result(product, { eligible: null, warnings: ['Modèle non relié à une grille tarifaire commerciale qualifiée.'] });
     var opts = input.options || {};
     if (opts.motorisation || opts.groundRail) {
       return manualReview(product, 'Motorisation ou rail au sol sélectionné : les dépendances catalogue sont trop spécifiques pour conserver un prix automatique fiable.', 'REGLES-ABRIS-AQUAMASTER — options à dépendances', { motorisation: !!opts.motorisation, groundRail: !!opts.groundRail });
     }
-    var shelterLength = money(dims.length + 0.2);
-    var chordCm = Math.ceil((dims.width + 0.3) * 100);
-    var modules = Math.ceil(shelterLength / 2.1);
+    var shelterLength = selection.shelterLength;
+    var chordCm = selection.chordCm;
+    var modules = selection.modules;
     var tiers = data.tiers[modules];
     if (!tiers) {
       return result(product, {
-        eligible: null,
-        warnings: ['Nombre de modules hors grille exploitable (' + modules + '). Étude fabricant requise.'],
-        reference: 'REGLES-ABRIS-AQUAMASTER — catalogue 2026',
+        eligible: true,
+        warnings: ['Dimensions techniquement compatibles, mais combinaison absente de la grille Excel commerciale : étude personnalisée requise.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — grille Excel commerciale 2026',
         technical: { shelterLength: shelterLength, chordCm: chordCm, modules: modules }
       });
     }
@@ -444,18 +517,18 @@
     for (var i = 0; i < tiers.length; i += 1) if (chordCm <= tiers[i][0]) { selected = tiers[i]; break; }
     if (!selected) {
       return result(product, {
-        eligible: false,
-        warnings: ['Corde calculée (' + chordCm + ' cm) supérieure à la grille du modèle.'],
-        reference: 'REGLES-ABRIS-AQUAMASTER — paliers de corde',
+        eligible: true,
+        warnings: ['Dimensions techniquement compatibles, mais palier de corde absent de la grille Excel commerciale.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — grille Excel commerciale 2026',
         technical: { shelterLength: shelterLength, chordCm: chordCm, modules: modules }
       });
     }
-    var catalog = selected[1];
-    var net = money(catalog * (1 - data.discount));
+    var excelPublicHT = selected[1];
+    var net = money(excelPublicHT * (1 - data.discount));
     var transport = 438;
     var installation = 708.33;
     var lines = [
-      { label: 'Abri catalogue ' + modules + ' modules / corde ' + selected[0] + ' cm', amount: net },
+      { label: 'Base abri Excel ' + modules + ' modules / corde ' + selected[0] + ' cm', amount: net },
       { label: 'Transport', amount: transport },
       { label: 'Pose de référence', amount: installation }
     ];
@@ -465,9 +538,9 @@
       eligible: true,
       total: money(total * VAT),
       breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
-      warnings: ['Transport et pose de référence intégrés à cette estimation.', 'Estimation TTC indicative issue du catalogue et des hypothèses de vente documentées ; options, accès chantier et validation fabricant non inclus.', 'Nombre de modules estimé à partir de l’exemple source : validation AquaMaster obligatoire.', 'Paiement documenté : 30 % acompte, 40 % visite technique, 30 % solde.'],
-      reference: 'REGLES-ABRIS-AQUAMASTER — catalogue 2026 + simulateurs de vente',
-      technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, catalogPublicHT: catalog, installationIncluded: true }
+      warnings: ['Transport et pose de référence intégrés à cette estimation.', 'Estimation TTC 2026 à confirmer après vérification des options, des accès et du support.', 'Nombre de modules estimé à partir de la largeur maximale par élément du catalogue : validation AquaMaster obligatoire.'],
+      reference: 'REGLES-ABRIS-AQUAMASTER — classeurs Excel Diskoov 2026 + limites catalogue',
+      technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, excelPublicHT: excelPublicHT, installationIncluded: true }
     });
   }
 
@@ -503,6 +576,13 @@
     departmentCode: departmentCode,
     shippingPrice: shippingPrice,
     money: money,
-    _data: Object.freeze({ oreCompact: ORE_COMPACT, oreEssential: ORE_ESSENTIAL, lameTiers: LAME_TIERS, abriCatalog: ABRI_CATALOG })
+    _data: Object.freeze({
+      oreCompact: ORE_COMPACT,
+      oreEssential: ORE_ESSENTIAL,
+      lameTiers: LAME_TIERS,
+      abriCatalog: ABRI_COMMERCIAL,
+      abriCommercial: ABRI_COMMERCIAL,
+      abriTechnical: ABRI_TECHNICAL
+    })
   });
 }));

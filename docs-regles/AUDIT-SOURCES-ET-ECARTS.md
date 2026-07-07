@@ -4,10 +4,11 @@
 
 - 34 fichiers inventoriés et consultés.
 - 6 PDF, 97 pages au total, texte extrait page par page et rendu visuel contrôlé.
-- 2 DOCX, 62 paragraphes utiles extraits ; rendu Word automatique indisponible dans l'environnement, sans impact sur l'extraction structurelle.
+- 2 DOCX, 58 paragraphes extraits ; rendu Word contrôlé visuellement.
 - 9 classeurs, 22 feuilles et toutes les cellules non vides/formules exportées.
 - 17 images inspectées à leur résolution d'origine.
 - Les données détaillées sont reprises dans les documents métier et dans `ANNEXE-DONNEES-SOURCES.md`.
+- Le registre avec empreintes et traitement de chaque fichier se trouve dans `COUVERTURE-SOURCES-ORIGINALES.md`.
 
 ## Matrice de couverture — 34/34
 
@@ -74,6 +75,7 @@ Le devis S021 Pisceen/DERCYA est un document concurrent. Aucune référence, auc
 
 - Prix publics des feuilles et catalogue MAJ 02/2026 non concordants.
 - Deux méthodes de prix client dans les mêmes classeurs : remise commerciale sur public ou coût d'achat + marge.
+- Pour Master 30 en 8×4 / 4 modules / corde 480, la feuille de simulation reprend `11 948 € TTC` alors que la table nommée Master 30 indique `12 200 € TTC` ; le moteur retient la ligne explicitement rattachée à Master 30 et conserve l'écart à valider.
 - Installation Master : 1 400 € dans le catalogue HT, 850 € TTC dans le catalogue TTC et la feuille.
 - La feuille 1.2/1.8 contient un lien externe vers le classeur 3.0.
 
