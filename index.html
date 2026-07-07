@@ -5597,14 +5597,14 @@
         return 'MasterDeck est étudié sur mesure selon votre bassin, la terrasse et les accès.';
       }
       if (/Nombre de modules estimé/i.test(raw)) {
-        return 'Le nombre de modules sera confirmé lors de la validation technique.';
+        return 'Le nombre de modules sera ajusté à votre bassin lors de la préparation de votre proposition.';
       }
       if (/matrice|source|grille|document|documentée|documenté|simulateur|catalogue|hypothèse|moteur tarifaire|REGLES|ANNEXE|remise|Paiement|chiffrage|fiscal|régime|qualification/i.test(raw)) {
         if (/dimension|limite|largeur|longueur|module|corde|hors/i.test(raw)) {
-          return 'Certaines dimensions nécessitent une vérification technique avant estimation.';
+          return 'Nous confirmerons avec vous les dimensions finales de votre projet.';
         }
         if (/support|chantier|pose|transport|installation|accès/i.test(raw)) {
-          return 'Les conditions de pose et d’accès seront vérifiées avant la proposition.';
+          return 'Nous confirmerons avec vous les derniers détails de pose et d’accès.';
         }
         if (product === 'masterdeck') {
           return 'MasterDeck est étudié sur mesure selon votre bassin, la terrasse et les accès.';
@@ -5626,8 +5626,8 @@
       var gaps = getProductGaps();
       box.classList.toggle('blocked', gaps.length > 0 || rr.status === 'quote');
       box.classList.toggle('ok', gaps.length === 0 && rr.eligible === true && rr.status !== 'quote');
-      var statusLabel = rr.status === 'indicative' ? 'Estimation indicative' : (rr.status === 'exact' ? 'Prix calculé' : 'Validation par devis');
-      var eligibility = rr.eligible === false ? ' · hors dimensions standards' : (rr.eligible === true ? ' · dimensions compatibles' : '');
+      var statusLabel = rr.status === 'indicative' ? 'Première estimation' : (rr.status === 'exact' ? 'Estimation calculée' : 'Étude personnalisée');
+      var eligibility = rr.eligible === false ? ' · étude sur mesure' : '';
       var seenWarnings = {};
       var warnings = (rr.warnings || []).map(function (w) {
         return publicRuleWarning(w, product);
@@ -5639,14 +5639,14 @@
       var summary = gaps.length
         ? 'Complétez ces informations pour préparer une estimation fiable.'
         : (rr.status === 'quote'
-          ? 'Cette configuration sera étudiée par Diskoov avant proposition.'
-          : 'Les informations clés sont suffisantes pour afficher une base de prix.');
-      var chip = gaps.length ? gaps.length + ' info' + (gaps.length > 1 ? 's' : '') + ' à préciser' : (rr.status === 'quote' ? 'Sur devis' : 'OK');
+          ? 'Votre projet fera l’objet d’une proposition personnalisée.'
+          : 'Une première estimation est disponible pour votre configuration.');
+      var chip = gaps.length ? gaps.length + ' info' + (gaps.length > 1 ? 's' : '') + ' à préciser' : (rr.status === 'quote' ? 'Sur mesure' : 'Disponible');
       var warningHtml = warnings.map(function (w) { return '<div class="rule-status-line"><span>' + esc(w) + '</span></div>'; }).join('');
       var missingHtml = gaps.length ? '<div class="missing-list">' + gaps.map(function (g) { return '<span>' + esc(g) + '</span>'; }).join('') + '</div>' : '';
       box.dataset.reference = rr.reference || '';
       box.innerHTML =
-        '<div class="rule-status-head"><div><div class="rule-status-kicker">Contrôle devis</div><strong>' + esc(statusLabel + eligibility) + '</strong></div><span class="rule-status-chip">' + esc(chip) + '</span></div>' +
+        '<div class="rule-status-head"><div><div class="rule-status-kicker">Votre estimation</div><strong>' + esc(statusLabel + eligibility) + '</strong></div><span class="rule-status-chip">' + esc(chip) + '</span></div>' +
         '<p class="rule-status-copy">' + esc(summary) + '</p>' +
         missingHtml +
         warningHtml;
