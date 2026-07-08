@@ -155,6 +155,7 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      user-select: none;
       background:
         linear-gradient(120deg, rgba(8, 20, 12, .45), rgba(8, 20, 12, .08)),
         url('assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg') center/cover no-repeat,
@@ -1978,123 +1979,6 @@
     }
 
     /* ─────────────────────────────────────────────────────────
-   SVG POOL SCHEMA (left panel overlay)
-───────────────────────────────────────────────────────── */
-    .pool-schema {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(14, 26, 13, .92);
-      backdrop-filter: blur(8px);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity .5s ease, visibility 0s .5s;
-      pointer-events: none;
-      z-index: 4;
-      padding: 40px;
-      overflow: hidden;
-      /* WebKit iOS : forcer compositing GPU + fiabiliser visibility toggle */
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-    }
-
-    .pool-schema.on {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity .5s ease, visibility 0s;
-      pointer-events: auto
-    }
-
-    .pool-schema svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .pool-schema text {
-      font-family: 'Inter', sans-serif;
-      fill: rgba(255, 255, 255, .75);
-    }
-
-    .pool-schema .pool-rect {
-      stroke: rgba(255, 255, 255, .4);
-      stroke-width: 2;
-      fill: rgba(30, 120, 180, .15);
-      transition: all .4s ease;
-    }
-
-    .pool-schema .pool-cover {
-      stroke: none;
-      opacity: .25;
-      transition: all .4s ease;
-    }
-
-    .pool-schema .pool-stair {
-      stroke: rgba(255, 255, 255, .5);
-      stroke-width: 1.5;
-      fill: rgba(255, 255, 255, .08);
-      transition: all .3s ease;
-    }
-
-    .pool-schema .pool-dim-line {
-      stroke: rgba(255, 255, 255, .3);
-      stroke-width: 1;
-      stroke-dasharray: 4 3;
-    }
-
-    .pool-schema .pool-dim-text {
-      font-size: 13px;
-      font-weight: 600;
-      fill: #fff;
-    }
-
-    .pool-schema .pool-surface {
-      font-size: 16px;
-      font-weight: 700;
-      fill: var(--gold);
-    }
-
-    .pool-schema .pool-equip-icon {
-      fill: rgba(255, 255, 255, .5);
-    }
-
-    .pool-schema .pool-label {
-      font-size: 11px;
-      fill: rgba(255, 255, 255, .45);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    /* Toggle btn to switch schema/photo */
-    .vis-toggle {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 6;
-      background: rgba(0, 0, 0, .55);
-      backdrop-filter: blur(6px);
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, .15);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: background .15s;
-    }
-
-    .vis-toggle:hover {
-      background: rgba(0, 0, 0, .7)
-    }
-
-    /* ─────────────────────────────────────────────────────────
    PRICE BREAKDOWN
 ───────────────────────────────────────────────────────── */
     .pf-breakdown {
@@ -2486,6 +2370,7 @@
         overflow: hidden;
         --mobile-vis-height: clamp(132px, 28svh, 220px);
         --mobile-vis-collapsed: 88px;
+        --mobile-vis-peek: clamp(148px, 24svh, 194px);
       }
 
       .vis {
@@ -2500,6 +2385,15 @@
       .root.mobile-compact .vis {
         height: var(--mobile-vis-collapsed);
         min-height: var(--mobile-vis-collapsed);
+      }
+
+      .root.mobile-peek .vis {
+        height: var(--mobile-vis-peek);
+        min-height: var(--mobile-vis-peek);
+      }
+
+      .root.mobile-compact .vis.is-zoomable {
+        touch-action: none;
       }
 
       .vis.is-zoomable .vis-open-btn {
@@ -2536,13 +2430,6 @@
       .root.mobile-compact .vi-logo {
         transform: translateY(-2px) scale(.88);
         transform-origin: top left;
-      }
-
-      .root.mobile-compact .vis-toggle {
-        right: 16px;
-        bottom: 14px;
-        padding: 7px 10px;
-        font-size: 10.5px;
       }
 
       .panel {
@@ -2631,16 +2518,6 @@
         display: none !important
       }
 
-      /* Schéma piscine plus grand sur mobile */
-      .pool-schema {
-        padding: 12px;
-      }
-
-      .pool-schema svg {
-        max-width: 100%;
-        max-height: 100%;
-      }
-
       /* Succès : panneau prend toute la hauteur quand le visuel est masqué */
       .panel:has(#suc.on) {
         flex: 1;
@@ -2678,7 +2555,6 @@
     /* ─────────────────────────────────────────────────────────
    MISSING FOCUS-VISIBLE STATES
 ───────────────────────────────────────────────────────── */
-      .vis-toggle:focus-visible,
       .vis-open-btn:focus-visible,
       .visual-lightbox-close:focus-visible,
       .share-btn:focus-visible,
@@ -2705,7 +2581,6 @@
       .pfoot,
       .progress-bar,
       .vi-badge,
-      .vis-toggle,
       .vis-open-btn,
       .visual-lightbox,
       .share-btn,
@@ -2873,23 +2748,6 @@
       </div>
 
       <div class="vi-gr" aria-hidden="true"></div>
-
-      <!-- SVG Pool Schema Overlay -->
-      <div class="pool-schema" id="pool-schema" aria-label="Schéma technique de votre piscine">
-        <svg id="pool-svg" viewBox="0 0 500 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"></svg>
-      </div>
-
-      <!-- Toggle schema/photo -->
-      <button type="button" class="vis-toggle" id="vis-toggle" onclick="toggleSchema()" style="display:none"
-        aria-label="Basculer entre le schéma et la photo">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <line x1="3" y1="9" x2="21" y2="9" />
-          <line x1="9" y1="3" x2="9" y2="21" />
-        </svg>
-        <span id="vis-toggle-lbl">Voir le schéma</span>
-      </button>
 
       <button type="button" class="vis-open-btn" id="vis-open-btn" onclick="openVisualLightbox(event)"
         aria-label="Agrandir la photo du produit">
@@ -3217,7 +3075,7 @@
                   onclick="stepStairW(-0.1)">−</button>
                 <input class="di" type="number" id="d-sw" name="largeur_escalier" value="1.5" min="0.5" max="12"
                   step="0.1" inputmode="decimal" aria-label="Largeur escalier en mètres"
-                  oninput="S.stairWidth=parseFloat(this.value)||1.5;updSchema()" onblur="clampStairW()">
+                  oninput="S.stairWidth=parseFloat(this.value)||1.5" onblur="clampStairW()">
                 <button type="button" class="d-btn" aria-label="Augmenter largeur escalier"
                   onclick="stepStairW(+0.1)">+</button>
                 <span class="du" aria-hidden="true">m</span>
@@ -3940,8 +3798,7 @@
       oreSolar: false, oreBlockCut: false, oreAntiWind: false, oreWinterStrap: false, oreExtraRetreat: false, oreSpecialColor: false,
       voletPoly: false, voletSolar: false, lastRuleResult: null,
       tl: '',
-      fn: '', ln: '', em: '', ph: '', dept: '', src: '', note: '', ok: false, ok2: false,
-      schemaOn: false
+      fn: '', ln: '', em: '', ph: '', dept: '', src: '', note: '', ok: false, ok2: false
     };
 
     /* ── HELPERS ────────────────────────────────────────── */
@@ -4283,23 +4140,64 @@
       } catch (e) { }
     }
 
+    var mobileChromeLastTop = 0;
+    var mobileChromeUpTravel = 0;
+    var mobileVisualPull = {
+      active: false,
+      pointerId: null,
+      startX: 0,
+      startY: 0
+    };
+    var mobileVisualSuppressClickUntil = 0;
+
+    function peekMobileVisual(action) {
+      var app = el('app');
+      if (!app || window.innerWidth > 820) return false;
+      app.classList.add('mobile-compact');
+      if (!app.classList.contains('mobile-peek')) {
+        app.classList.add('mobile-peek');
+        track('config_mobile_visual_peek', { action: action || 'pull_down' });
+      }
+      mobileChromeUpTravel = 0;
+      return true;
+    }
+
     function updateMobileChrome() {
       var app = el('app');
       var body = el('pbdy');
       if (!app || !body) return;
       if (window.innerWidth > 820) {
-        app.classList.remove('mobile-compact');
+        app.classList.remove('mobile-compact', 'mobile-peek');
+        mobileChromeUpTravel = 0;
+        mobileChromeLastTop = 0;
         return;
       }
+      var top = body.scrollTop;
+      var delta = top - mobileChromeLastTop;
+      mobileChromeLastTop = top;
       /* Hystérésis mobile : évite de compacter/décompacter au moindre micro-scroll. */
       var threshold = app.classList.contains('mobile-compact') ? 48 : 88;
-      app.classList.toggle('mobile-compact', body.scrollTop > threshold);
+      var compact = top > threshold;
+      app.classList.toggle('mobile-compact', compact);
+      if (!compact) {
+        app.classList.remove('mobile-peek');
+        mobileChromeUpTravel = 0;
+        return;
+      }
+      if (delta < -2 && top > 120) {
+        mobileChromeUpTravel += Math.abs(delta);
+        if (mobileChromeUpTravel >= 72) peekMobileVisual('scroll_up');
+      } else if (delta > 4) {
+        mobileChromeUpTravel = 0;
+        app.classList.remove('mobile-peek');
+      }
     }
 
     function setupMobileChrome() {
       var body = el('pbdy');
       if (!body) return;
       var scheduled = false;
+      mobileChromeLastTop = body.scrollTop;
       function schedule() {
         if (scheduled) return;
         scheduled = true;
@@ -4311,6 +4209,51 @@
       body.addEventListener('scroll', schedule, { passive: true });
       window.addEventListener('resize', schedule, { passive: true });
       updateMobileChrome();
+    }
+
+    function setupMobileVisualPull() {
+      var vis = document.querySelector('.vis');
+      if (!vis || !window.PointerEvent) return;
+
+      function endPull(event) {
+        if (!mobileVisualPull.active) return;
+        if (event && event.pointerId != null && event.pointerId !== mobileVisualPull.pointerId) return;
+        try {
+          if (event && vis.hasPointerCapture && vis.hasPointerCapture(event.pointerId)) {
+            vis.releasePointerCapture(event.pointerId);
+          }
+        } catch (e) { }
+        mobileVisualPull.active = false;
+        mobileVisualPull.pointerId = null;
+      }
+
+      vis.addEventListener('pointerdown', function (event) {
+        if (window.innerWidth > 820 || !event.isPrimary) return;
+        if (event.target.closest && event.target.closest('button,a,iframe,#yt-play')) return;
+        var app = el('app');
+        if (!app || !app.classList.contains('mobile-compact') || !getActiveVisualImage()) return;
+        mobileVisualPull.active = true;
+        mobileVisualPull.pointerId = event.pointerId;
+        mobileVisualPull.startX = event.clientX;
+        mobileVisualPull.startY = event.clientY;
+        try { vis.setPointerCapture(event.pointerId); } catch (e) { }
+      }, { passive: true });
+
+      vis.addEventListener('pointermove', function (event) {
+        if (!mobileVisualPull.active || event.pointerId !== mobileVisualPull.pointerId) return;
+        var dx = Math.abs(event.clientX - mobileVisualPull.startX);
+        var dy = event.clientY - mobileVisualPull.startY;
+        if (dy > 52 && dy > dx * 1.15) {
+          event.preventDefault();
+          mobileVisualSuppressClickUntil = Date.now() + 450;
+          peekMobileVisual('pull_down');
+          endPull(event);
+        }
+      }, { passive: false });
+
+      vis.addEventListener('pointerup', endPull);
+      vis.addEventListener('pointercancel', endPull);
+      vis.addEventListener('lostpointercapture', endPull);
     }
 
     /* ── INIT ──────────────────────────────────────────── */
@@ -4360,7 +4303,7 @@
         el('mem-ral').textContent = c.r;
         el('mem-lbl').textContent = c.l + ' — ' + c.r;
         el('mem-dp').textContent = fmtDelta(MEM_DELTA[c.r] !== undefined ? MEM_DELTA[c.r] : 459);
-        updP(); updSchema();
+        updP();
       });
       buildSW('g-hab', HAB, 'h', function (c) {
         S.hRal = c.r; S.hLbl = c.l;
@@ -4383,13 +4326,11 @@
       var presets = document.querySelectorAll('.dim-pre');
       if (presets.length) presets[0].classList.add('on');
       updSurface();
-      updSchema();
       updateDimensionAvailability({ toast: false });
-      /* Show toggle + share btn */
-      el('vis-toggle').style.display = 'flex';
       updCTA();
       updProgress();
       setupMobileChrome();
+      setupMobileVisualPull();
       setupVisualLightbox();
       /* Restore config from URL if shared */
       restoreFromURL();
@@ -4402,7 +4343,7 @@
       v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
       inp.value = v;
       if (id === 'd-l') S.len = v; else S.wid = v;
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
       /* Mettre à jour le max de largeur escalier si les dimensions changent */
       updStairMax();
       updateDimensionAvailability();
@@ -4423,7 +4364,6 @@
       if (S.stairWidth > mx) {
         S.stairWidth = mx;
         inp.value = mx;
-        updSchema();
       }
     }
     function stepStairW(delta) {
@@ -4433,7 +4373,7 @@
       v = Math.min(mx, Math.max(0.5, Math.round(v * 10) / 10));
       inp.value = v;
       S.stairWidth = v;
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
     }
     function clampStairW() {
       var mx = getStairMaxW();
@@ -4442,7 +4382,6 @@
       v = Math.min(mx, Math.max(0.5, Math.round(v * 10) / 10));
       inp.value = v;
       S.stairWidth = v;
-      updSchema();
     }
 
     /* ── SWATCHES ──────────────────────────────────────── */
@@ -4555,7 +4494,7 @@
       S.wid = parseFloat(el('d-w').value) || 4;
       /* Clear preset highlight when free-typing */
       document.querySelectorAll('.dim-pre').forEach(function (b) { b.classList.remove('on'); });
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
       updateDimensionAvailability();
     }
     function fixD(id, mn, mx) {
@@ -4564,7 +4503,7 @@
       v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
       e.value = v;
       if (id === 'd-l') S.len = v; else if (id === 'd-w') S.wid = v;
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
       updateDimensionAvailability();
     }
 
@@ -4584,7 +4523,7 @@
         conceal('s-libre');
       }
       track('config_shape', { shape: v });
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
       updateDimensionAvailability();
       requestAnimationFrame(function () { updProgress(); });
     }
@@ -4596,7 +4535,7 @@
       S.len = l; S.wid = w;
       document.querySelectorAll('.dim-pre').forEach(function (b) { b.classList.remove('on'); });
       btn.classList.add('on');
-      updSurface(); updSummary(); updP(); updSchema();
+      updSurface(); updSummary(); updP();
       updateDimensionAvailability();
     }
 
@@ -4630,7 +4569,7 @@
         return;
       }
       if (!v) { S.stairType = ''; S.stairSide = ''; S.stairCorner = ''; S.stairDesc = ''; S.stairPos = 'interieur'; }
-      updSchema(); updSummary(); updP(); chk();
+      updSummary(); updP(); chk();
       requestAnimationFrame(function () { updProgress(); });
     }
 
@@ -4640,7 +4579,6 @@
       el('stp-int').setAttribute('aria-pressed', String(v === 'interieur'));
       el('stp-ext').classList.toggle('on', v === 'exterieur');
       el('stp-ext').setAttribute('aria-pressed', String(v === 'exterieur'));
-      updSchema();
     }
 
     function selStairType(v) {
@@ -4686,7 +4624,7 @@
       });
       var sd2 = el('stair-desc'); if (sd2) sd2.value = '';
       updStairMax();
-      updSchema(); updSummary(); updP(); chk();
+      updSummary(); updP(); chk();
       requestAnimationFrame(function () { updProgress(); });
     }
 
@@ -4698,7 +4636,7 @@
       el('stc-lar').classList.toggle('on', v === 'largeur');
       el('stc-lar').setAttribute('aria-pressed', String(v === 'largeur'));
       updStairMax();
-      updSchema(); updSummary();
+      updSummary();
     }
 
     function selStairCorner(v) {
@@ -4709,7 +4647,7 @@
         b.classList.toggle('on', c === v);
         b.setAttribute('aria-checked', String(c === v));
       });
-      updSchema(); updSummary();
+      updSummary();
     }
 
     /* ── FILE UPLOAD ─────────────────────────────────── */
@@ -4817,206 +4755,6 @@
       el('file-zone').style.display = '';
       var fi = el('plan-file'); if (fi) fi.value = '';
       requestAnimationFrame(function () { updProgress(); });
-    }
-
-    /* ── SVG POOL SCHEMA ─────────────────────────────── */
-    function updSchema() {
-      var svg = el('pool-svg');
-      if (!svg) return;
-
-      /* Forme libre : afficher un schéma dédié sans dimensions */
-      if (S.shape === 'libre') {
-        svg.innerHTML = '<defs><linearGradient id="water-grad-libre" x1="0" y1="0" x2="0" y2="1">'
-          + '<stop offset="0%" stop-color="#1a5276" stop-opacity=".6"/>'
-          + '<stop offset="100%" stop-color="#0e6655" stop-opacity=".35"/>'
-          + '</linearGradient></defs>'
-          + '<text class="pool-label" x="250" y="30" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.4)" font-weight="600" font-family="Inter,sans-serif" letter-spacing="2">FORME LIBRE</text>'
-          /* Forme organique stylisée */
-          + '<path d="M130 280 C100 220, 110 140, 160 110 C210 80, 290 75, 340 100 C390 125, 410 180, 390 240 C370 300, 310 330, 250 325 C190 320, 140 310, 130 280Z" '
-          + 'fill="url(#water-grad-libre)" stroke="rgba(255,255,255,.4)" stroke-width="2"/>'
-          /* Contour intérieur */
-          + '<path d="M145 272 C120 218, 128 150, 170 125 C212 100, 282 96, 328 116 C374 136, 392 185, 375 235 C358 285, 305 310, 250 306 C195 302, 155 298, 145 272Z" '
-          + 'fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>'
-          /* Ondulations */
-          + '<path d="M170 190 Q250 175, 350 195" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>'
-          + '<path d="M160 220 Q250 205, 360 225" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>'
-          /* Texte central */
-          + '<text x="255" y="210" text-anchor="middle" font-size="16" fill="rgba(255,255,255,.5)" font-weight="300" font-family="Inter,sans-serif">Sur mesure</text>'
-          /* Icône règle / mesure */
-          + '<line x1="225" y1="185" x2="285" y2="185" stroke="rgba(255,255,255,.15)" stroke-width="1"/>'
-          + '<line x1="225" y1="182" x2="225" y2="188" stroke="rgba(255,255,255,.15)" stroke-width="1"/>'
-          + '<line x1="255" y1="183" x2="255" y2="187" stroke="rgba(255,255,255,.1)" stroke-width="1"/>'
-          + '<line x1="285" y1="182" x2="285" y2="188" stroke="rgba(255,255,255,.15)" stroke-width="1"/>';
-        return;
-      }
-
-      var W = 500, H = 400;
-      var pad = window.innerWidth <= 820 ? 50 : 80;
-      var pW = W - 2 * pad, pH = H - 2 * pad;
-      var ratio = Math.min(pW / S.len, pH / S.wid);
-      var rW = S.len * ratio, rH = S.wid * ratio;
-      var x0 = (W - rW) / 2, y0 = (H - rH) / 2;
-      var rx = S.shape === 'oval' ? rW / 2 : 8;
-      var ry = S.shape === 'oval' ? rH / 2 : 8;
-
-      var memColor = '#1F78B4';
-      MEM.forEach(function (c) { if (c.r === S.mRal) memColor = c.h; });
-
-      var parts = [];
-      /* SVG Defs: water gradient + arrow markers */
-      parts.push('<defs>');
-      parts.push('<linearGradient id="water-grad" x1="0" y1="0" x2="0" y2="1">');
-      parts.push('<stop offset="0%" stop-color="#1a5276" stop-opacity=".8"/>');
-      parts.push('<stop offset="100%" stop-color="#0e6655" stop-opacity=".5"/>');
-      parts.push('</linearGradient>');
-      parts.push('<marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse">');
-      parts.push('<path d="M0,0 L6,3 L0,6" fill="rgba(255,255,255,.5)"/>');
-      parts.push('</marker>');
-      parts.push('</defs>');
-
-      /* Margelle (outer border) */
-      if (S.shape === 'oval') {
-        parts.push('<ellipse cx="' + (x0 + rW / 2) + '" cy="' + (y0 + rH / 2) + '" rx="' + (rW / 2 + 6) + '" ry="' + (rH / 2 + 6) + '" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="4"/>');
-      } else {
-        parts.push('<rect x="' + (x0 - 6) + '" y="' + (y0 - 6) + '" width="' + (rW + 12) + '" height="' + (rH + 12) + '" rx="' + (rx + 4) + '" ry="' + (ry + 4) + '" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="4"/>');
-      }
-
-      /* Pool body with water gradient */
-      if (S.shape === 'oval') {
-        parts.push('<ellipse class="pool-rect" cx="' + (x0 + rW / 2) + '" cy="' + (y0 + rH / 2) + '" rx="' + (rW / 2) + '" ry="' + (rH / 2) + '" fill="url(#water-grad)"/>');
-      } else {
-        parts.push('<rect class="pool-rect" x="' + x0 + '" y="' + y0 + '" width="' + rW + '" height="' + rH + '" rx="' + rx + '" ry="' + ry + '" fill="url(#water-grad)"/>');
-      }
-
-      /* Water ripple lines */
-      var rippleOp = [.08, .06, .05];
-      for (var ri = 0; ri < 3; ri++) {
-        var ry2 = y0 + rH * (0.3 + ri * 0.2);
-        parts.push('<line x1="' + (x0 + rW * 0.15) + '" y1="' + ry2 + '" x2="' + (x0 + rW * 0.85) + '" y2="' + ry2 + '" stroke="rgba(255,255,255,' + rippleOp[ri] + ')" stroke-width="1"/>');
-      }
-
-      /* Cover overlay */
-      if (S.eq === 'cov' && S.cm) {
-        if (S.shape === 'oval') {
-          parts.push('<ellipse class="pool-cover" cx="' + (x0 + rW / 2) + '" cy="' + (y0 + rH / 2) + '" rx="' + (rW / 2 - 6) + '" ry="' + (rH / 2 - 6) + '" fill="' + memColor + '" opacity=".55"/>');
-        } else {
-          parts.push('<rect class="pool-cover" x="' + (x0 + 6) + '" y="' + (y0 + 6) + '" width="' + (rW - 12) + '" height="' + (rH - 12) + '" rx="' + Math.max(rx - 3, 2) + '" ry="' + Math.max(ry - 3, 2) + '" fill="' + memColor + '" opacity=".55"/>');
-        }
-      }
-
-      /* Stair rendering — intérieur = dans le bassin, extérieur = dépasse hors du bassin */
-      if (S.stair && S.stairType) {
-        var sw = S.stairWidth * ratio;
-        var sd = 22;
-        var numSteps = 3;
-        var isInt = S.stairPos === 'interieur';
-
-        if (S.stairType === 'droit') {
-          var sx, sy, sW, sH;
-          if (S.stairSide === 'largeur') {
-            sx = x0 + (rW - sw) / 2;
-            sy = isInt ? y0 : y0 - sd;
-            sW = sw; sH = sd;
-            parts.push('<rect class="pool-stair" x="' + sx + '" y="' + sy + '" width="' + sW + '" height="' + sH + '" rx="2"/>');
-            for (var si = 1; si <= numSteps; si++) {
-              var ly = sy + (sH / (numSteps + 1)) * si;
-              parts.push('<line x1="' + (sx + 2) + '" y1="' + ly + '" x2="' + (sx + sW - 2) + '" y2="' + ly + '" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>');
-            }
-          } else {
-            sx = isInt ? x0 : x0 - sd;
-            sy = y0 + (rH - sw) / 2; sW = sd; sH = sw;
-            parts.push('<rect class="pool-stair" x="' + sx + '" y="' + sy + '" width="' + sW + '" height="' + sH + '" rx="2"/>');
-            for (var si2 = 1; si2 <= numSteps; si2++) {
-              var lx = sx + (sW / (numSteps + 1)) * si2;
-              parts.push('<line x1="' + lx + '" y1="' + (sy + 2) + '" x2="' + lx + '" y2="' + (sy + sH - 2) + '" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>');
-            }
-          }
-        } else if (S.stairType === 'roman') {
-          var rDepth = Math.min(sd * 1.1, rH * 0.25);
-          if (S.stairSide === 'largeur') {
-            var rcx = x0 + rW / 2;
-            /* Int : centre décalé vers l'intérieur / Ext : centre sur le bord */
-            var rcyR = isInt ? y0 + rDepth : y0;
-            parts.push('<ellipse class="pool-stair" cx="' + rcx + '" cy="' + rcyR + '" rx="' + (sw / 2) + '" ry="' + rDepth + '"/>');
-            parts.push('<ellipse cx="' + rcx + '" cy="' + rcyR + '" rx="' + (sw / 2 * 0.65) + '" ry="' + (rDepth * 0.6) + '" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-            parts.push('<ellipse cx="' + rcx + '" cy="' + rcyR + '" rx="' + (sw / 2 * 0.35) + '" ry="' + (rDepth * 0.3) + '" fill="none" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>');
-          } else {
-            var rcyL = y0 + rH / 2;
-            var rDepthL = Math.min(sd * 1.1, rW * 0.2);
-            /* Int : centre décalé vers l'intérieur / Ext : centre sur le bord */
-            var rcxL = isInt ? x0 + rDepthL : x0;
-            parts.push('<ellipse class="pool-stair" cx="' + rcxL + '" cy="' + rcyL + '" rx="' + rDepthL + '" ry="' + (sw / 2) + '"/>');
-            parts.push('<ellipse cx="' + rcxL + '" cy="' + rcyL + '" rx="' + (rDepthL * 0.6) + '" ry="' + (sw / 2 * 0.65) + '" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-            parts.push('<ellipse cx="' + rcxL + '" cy="' + rcyL + '" rx="' + (rDepthL * 0.3) + '" ry="' + (sw / 2 * 0.35) + '" fill="none" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>');
-          }
-        } else if (S.stairType === 'angle' && S.stairCorner) {
-          var cs = Math.min(rW, rH) * 0.28;
-          var cx, cy, pts;
-          if (isInt) {
-            /* Intérieur : triangle dans le bassin */
-            if (S.stairCorner === 'hg') { cx = x0; cy = y0; pts = cx + ',' + cy + ' ' + (cx + cs) + ',' + cy + ' ' + cx + ',' + (cy + cs); }
-            else if (S.stairCorner === 'hd') { cx = x0 + rW; cy = y0; pts = cx + ',' + cy + ' ' + (cx - cs) + ',' + cy + ' ' + cx + ',' + (cy + cs); }
-            else if (S.stairCorner === 'bg') { cx = x0; cy = y0 + rH; pts = cx + ',' + cy + ' ' + (cx + cs) + ',' + cy + ' ' + cx + ',' + (cy - cs); }
-            else { cx = x0 + rW; cy = y0 + rH; pts = cx + ',' + cy + ' ' + (cx - cs) + ',' + cy + ' ' + cx + ',' + (cy - cs); }
-          } else {
-            /* Extérieur : triangle hors du bassin */
-            if (S.stairCorner === 'hg') { cx = x0; cy = y0; pts = cx + ',' + cy + ' ' + (cx - cs) + ',' + cy + ' ' + cx + ',' + (cy - cs); }
-            else if (S.stairCorner === 'hd') { cx = x0 + rW; cy = y0; pts = cx + ',' + cy + ' ' + (cx + cs) + ',' + cy + ' ' + cx + ',' + (cy - cs); }
-            else if (S.stairCorner === 'bg') { cx = x0; cy = y0 + rH; pts = cx + ',' + cy + ' ' + (cx - cs) + ',' + cy + ' ' + cx + ',' + (cy + cs); }
-            else { cx = x0 + rW; cy = y0 + rH; pts = cx + ',' + cy + ' ' + (cx + cs) + ',' + cy + ' ' + cx + ',' + (cy + cs); }
-          }
-          parts.push('<polygon class="pool-stair" points="' + pts + '" stroke-linejoin="round"/>');
-          /* Step diagonals */
-          var sDir = isInt ? 1 : -1;
-          for (var di = 1; di <= 2; di++) {
-            var f = di / 3;
-            if (S.stairCorner === 'hg') parts.push('<line x1="' + (cx + cs * f * sDir) + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy + cs * f * sDir) + '" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-            else if (S.stairCorner === 'hd') parts.push('<line x1="' + (cx - cs * f * sDir) + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy + cs * f * sDir) + '" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-            else if (S.stairCorner === 'bg') parts.push('<line x1="' + (cx + cs * f * sDir) + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy - cs * f * sDir) + '" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-            else parts.push('<line x1="' + (cx - cs * f * sDir) + '" y1="' + cy + '" x2="' + cx + '" y2="' + (cy - cs * f * sDir) + '" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-          }
-        }
-      }
-
-      /* Dimension lines with arrow markers */
-      var arrL = y0 + rH + 35;
-      parts.push('<line x1="' + x0 + '" y1="' + arrL + '" x2="' + (x0 + rW) + '" y2="' + arrL + '" stroke="rgba(255,255,255,.35)" stroke-width="1" marker-start="url(#arr)" marker-end="url(#arr)"/>');
-      /* Tick lines */
-      parts.push('<line x1="' + x0 + '" y1="' + (arrL - 4) + '" x2="' + x0 + '" y2="' + (arrL + 4) + '" stroke="rgba(255,255,255,.35)" stroke-width="1"/>');
-      parts.push('<line x1="' + (x0 + rW) + '" y1="' + (arrL - 4) + '" x2="' + (x0 + rW) + '" y2="' + (arrL + 4) + '" stroke="rgba(255,255,255,.35)" stroke-width="1"/>');
-      parts.push('<text class="pool-dim-text" x="' + (x0 + rW / 2) + '" y="' + (arrL + 18) + '" text-anchor="middle">' + S.len.toFixed(1).replace('.', ',') + ' m</text>');
-
-      var arrR = x0 + rW + 35;
-      parts.push('<line x1="' + arrR + '" y1="' + y0 + '" x2="' + arrR + '" y2="' + (y0 + rH) + '" stroke="rgba(255,255,255,.35)" stroke-width="1" marker-start="url(#arr)" marker-end="url(#arr)"/>');
-      parts.push('<line x1="' + (arrR - 4) + '" y1="' + y0 + '" x2="' + (arrR + 4) + '" y2="' + y0 + '" stroke="rgba(255,255,255,.35)" stroke-width="1"/>');
-      parts.push('<line x1="' + (arrR - 4) + '" y1="' + (y0 + rH) + '" x2="' + (arrR + 4) + '" y2="' + (y0 + rH) + '" stroke="rgba(255,255,255,.35)" stroke-width="1"/>');
-      parts.push('<text class="pool-dim-text" x="' + (arrR + 18) + '" y="' + (y0 + rH / 2) + '" text-anchor="middle" transform="rotate(90 ' + (arrR + 18) + ' ' + (y0 + rH / 2) + ')">' + S.wid.toFixed(1).replace('.', ',') + ' m</text>');
-
-      /* Surface label */
-      var surface = S.shape === 'oval' ? Math.PI * (S.len / 2) * (S.wid / 2) : S.len * S.wid;
-      parts.push('<text class="pool-surface" x="' + (x0 + rW / 2) + '" y="' + (y0 + rH / 2 + 5) + '" text-anchor="middle" font-size="18" fill="rgba(255,255,255,.6)" font-weight="300" font-family="Inter,sans-serif">' + Math.round(surface * 10) / 10 + ' m²</text>');
-
-      /* Shape label */
-      var shapes = { rect: 'RECTANGULAIRE', oval: 'ARRONDIE', libre: 'FORME LIBRE' };
-      parts.push('<text class="pool-label" x="' + (W / 2) + '" y="24" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.4)" font-weight="600" font-family="Inter,sans-serif" letter-spacing="2">' + (shapes[S.shape] || '') + '</text>');
-
-      /* Equipment icons — proper symbols */
-      if (S.filtration) {
-        var fX = x0 + rW + 14, fY = y0 + 18;
-        parts.push('<circle cx="' + fX + '" cy="' + fY + '" r="8" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>');
-        parts.push('<circle cx="' + fX + '" cy="' + fY + '" r="3" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".8"/>');
-        parts.push('<line x1="' + fX + '" y1="' + (fY - 7) + '" x2="' + fX + '" y2="' + (fY - 4) + '" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>');
-        parts.push('<line x1="' + fX + '" y1="' + (fY + 4) + '" x2="' + fX + '" y2="' + (fY + 7) + '" stroke="rgba(255,255,255,.4)" stroke-width=".8"/>');
-        parts.push('<text x="' + fX + '" y="' + (fY + 20) + '" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.3)" font-family="Inter,sans-serif">Filtr.</text>');
-      }
-      svg.innerHTML = parts.join('');
-    }
-
-    function toggleSchema() {
-      S.schemaOn = !S.schemaOn;
-      el('pool-schema').classList.toggle('on', S.schemaOn);
-      el('vis-toggle-lbl').textContent = S.schemaOn ? 'Voir la photo' : 'Voir le schéma';
-      syncVisualZoomState();
     }
 
     /* ── PRICE BREAKDOWN ─────────────────────────────── */
@@ -5191,7 +4929,7 @@
         var restoredProduct = S.cm || S.sm || S.otherProduct;
         if (restoredProduct && (S.otherProduct || restoredProduct.indexOf('ore_') === 0 || S.sm)) renderProductDetails(restoredProduct);
         updateDimensionAvailability({ toast: false });
-        updSurface(); updSchema(); updSummary(); updP(); updProgress();
+        updSurface(); updSummary(); updP(); updProgress();
         /* Show share btn since config exists */
         el('share-btn').style.display = 'inline-flex';
       } catch (e) { console.warn('[Diskoov] URL restore error:', e); }
@@ -5485,7 +5223,7 @@
       else if (k === 'rtt') { S.rtt = !S.rtt; btn.classList.toggle('on', S.rtt); }
       else if (k === 'sm') { S.shlMotor = !S.shlMotor; btn.classList.toggle('on', S.shlMotor); }
       else if (k === 'gr') { S.gr = !S.gr; btn.classList.toggle('on', S.gr); }
-      else if (k === 'filt') { S.filtration = !S.filtration; btn.classList.toggle('on', S.filtration); updSchema(); }
+      else if (k === 'filt') { S.filtration = !S.filtration; btn.classList.toggle('on', S.filtration); }
       btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
       var codp = el('co-dp'); if (codp) codp.textContent = fmtDelta(S.rtt ? OPT_P.rtt : 0);
       var sodp = el('so-dp'); if (sodp) sodp.textContent = (S.shlMotor || S.gr) ? 'Sur devis' : '+ 0 €';
@@ -5784,7 +5522,7 @@
     var visualLightboxLastFocus = null;
 
     function getActiveVisualImage() {
-      if (S.schemaOn || el('vi-demo').classList.contains('on')) return null;
+      if (el('vi-demo').classList.contains('on')) return null;
       var ids = ['vi-product', 'vi-shl', 'vi-pool'];
       for (var i = 0; i < ids.length; i++) {
         var img = el(ids[i]);
@@ -5847,6 +5585,11 @@
       var vis = document.querySelector('.vis');
       if (!vis) return;
       vis.addEventListener('click', function (event) {
+        if (Date.now() < mobileVisualSuppressClickUntil) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
         if (event.target.closest && event.target.closest('button,a,iframe,#yt-play')) return;
         openVisualLightbox(event);
       });
@@ -6204,7 +5947,6 @@
       S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
       S.tl = '';
       S.fn = ''; S.ln = ''; S.em = ''; S.ph = ''; S.dept = ''; S.src = ''; S.note = ''; S.ok = false; S.ok2 = false;
-      S.schemaOn = false;
 
       /* Reset shape */
       ['rect', 'oval', 'libre'].forEach(function (k) { el('sh-' + k).classList.toggle('on', k === 'rect'); el('sh-' + k).setAttribute('aria-checked', String(k === 'rect')); });
@@ -6304,15 +6046,14 @@
         el(id).classList.remove('on');
         el(id).setAttribute('aria-pressed', 'false');
       });
-      /* Reset visual + schema */
+      /* Reset visual */
       showImg('vi-pool');
-      el('pool-schema').classList.remove('on');
       el('share-btn').style.display = 'none';
       pLast = '';
       /* Restaurer la hauteur du visuel (masqué sur mobile lors du succès) */
       var vis = document.querySelector('.vis');
       if (vis) { vis.style.height = ''; vis.style.minHeight = ''; }
-      updSurface(); updSchema(); updSummary();
+      updSurface(); updSummary();
       setP('Sélectionnez un équipement', true);
       el('pf-title').textContent = 'Prix estimatif TTC';
       el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
