@@ -30,6 +30,7 @@
   var shell = document.createElement('section');
   shell.className = 'advisor-shell';
   shell.id = 'advisor-v2';
+  shell.setAttribute('data-screen', 'welcome');
   shell.setAttribute('aria-label', 'Conseiller piscine Diskoov');
   shell.innerHTML = shellTemplate();
   root.insertBefore(shell, root.firstChild);
@@ -65,7 +66,7 @@
       + '  <header class="advisor-header">'
       + '    <div class="advisor-header-row">'
       + '      <a class="advisor-brand" href="https://diskoov.fr" aria-label="Diskoov, retour au site"><span class="advisor-brand-mark" aria-hidden="true">D</span><span>Diskoov</span></a>'
-      + '      <button type="button" class="advisor-help" data-action="direct">Je connais déjà mon produit</button>'
+      + '      <button type="button" class="advisor-help" data-action="direct" aria-label="Voir directement les produits">Produits</button>'
       + '    </div>'
       + '    <div class="advisor-progress" data-advisor-progress></div>'
       + '  </header>'
@@ -226,6 +227,7 @@
   }
 
   function render() {
+    shell.setAttribute('data-screen', state.screen);
     updateProgress();
     updateVisualCopy();
     body.innerHTML = screenTemplate();
@@ -301,7 +303,7 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre piscine</div>'
       + '<h1 class="advisor-title">Parlez-nous de votre bassin.</h1>'
-      + '<p class="advisor-subtitle">Les dimensions intérieures et la forme permettent d’écarter immédiatement les produits hors limites.</p>'
+      + '<p class="advisor-subtitle">Indiquez la forme et les dimensions du bassin. Le conseiller garde uniquement les solutions cohérentes avec votre projet.</p>'
       + '<div class="advisor-pool-layout">'
       + '  <fieldset class="advisor-fieldset"><legend class="advisor-legend">Forme du bassin</legend>'
       + '    <div class="advisor-segmented" role="radiogroup" aria-label="Forme du bassin">'
@@ -341,7 +343,7 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre projet</div>'
       + '<h1 class="advisor-title">Deux dernières indications pour mieux vous guider.</h1>'
-      + '<p class="advisor-subtitle">Le budget et le délai restent facultatifs. Ils ajustent l’ordre des recommandations, mais n’excluent jamais une solution techniquement compatible.</p>'
+      + '<p class="advisor-subtitle">Ces réponses nous aident à classer les solutions. Vous pouvez rester approximatif : les détails seront confirmés ensuite.</p>'
       + '<div class="advisor-options-grid">'
       + optionGroup('Budget envisagé', 'budget', budgets, state.budget)
       + optionGroup('Horizon du projet', 'delay', delays, state.delay)
@@ -368,12 +370,12 @@
       + '<div class="advisor-results-head"><div>'
       + '  <div class="advisor-step-label">Nos recommandations</div>'
       + '  <h1 class="advisor-title">Les solutions les plus cohérentes pour votre projet.</h1>'
-      + '  <p class="advisor-subtitle">Classées selon vos priorités et les règles disponibles pour un bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m.</p>'
-      + '</div><div class="advisor-result-actions"><button type="button" class="advisor-button advisor-button--secondary" data-action="compare">' + (state.compare ? 'Masquer le comparatif' : 'Comparer les 3 solutions') + '</button><button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
+      + '  <p class="advisor-subtitle">Voici les options les plus pertinentes pour un bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m, classées selon vos priorités.</p>'
+      + '</div><div class="advisor-result-actions"><button type="button" class="advisor-button advisor-button--secondary" data-action="compare">' + (state.compare ? 'Masquer le comparatif' : 'Comparer') + '</button><button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
+      + (state.compare ? compareTemplate(top) : '')
       + '<div class="advisor-result-list">' + products.map(resultCard).join('') + '</div>'
       + (state.results.compatible.length > 3 ? '<button type="button" class="advisor-more" data-action="show-all">' + (state.showAll ? 'Afficher seulement les 3 recommandations' : 'Voir les ' + state.results.compatible.length + ' solutions compatibles') + '</button>' : '')
       + excludedCopy
-      + (state.compare ? compareTemplate(top) : '')
       + '</div>';
   }
 
@@ -432,7 +434,7 @@
     var nextLabel = state.screen === 'project' ? 'Voir mes recommandations' : 'Continuer';
     var showNext = ['priorities', 'pool', 'project'].indexOf(state.screen) !== -1;
     var backLabel = state.screen === 'results' ? 'Modifier mes réponses' : 'Retour';
-    return '<div class="advisor-footer-note">Les prix définitifs dépendent des options et de la validation du site.</div><div class="advisor-footer-actions">'
+    return '<div class="advisor-footer-note">L’estimation sera affinée avec les détails de pose et d’accès.</div><div class="advisor-footer-actions">'
       + '<button type="button" class="advisor-button advisor-button--text" data-action="back">← ' + backLabel + '</button>'
       + (showNext ? '<button type="button" class="advisor-button" data-action="next"' + (nextDisabled ? ' disabled' : '') + '>' + nextLabel + ' <span aria-hidden="true">→</span></button>' : '')
       + '</div>';
