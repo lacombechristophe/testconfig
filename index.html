@@ -5,14 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Configurateur Piscine — Diskoov</title>
+  <title>Conseiller piscine &amp; configurateur — Diskoov</title>
   <meta name="description"
-    content="Configurez votre couverture automatique ou abri télescopique Diskoov et obtenez un devis gratuit sous 48h.">
+    content="Trouvez la protection adaptée à votre piscine, comparez les solutions Diskoov et préparez votre devis en quelques étapes.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Configurateur Piscine — Diskoov">
+  <meta property="og:title" content="Conseiller piscine &amp; configurateur — Diskoov">
   <meta property="og:description"
-    content="Couverture automatique 4 saisons · Abri télescopique · Devis gratuit sous 48h">
+    content="Un parcours guidé pour trouver la protection adaptée à votre piscine et préparer votre devis.">
   <meta property="og:url" content="https://configurateur.diskoov.fr">
   <meta property="og:type" content="website">
   <!-- ⚠️ Créer un screenshot 1200×630 du configurateur et l'uploader dans /public/ -->
@@ -21,8 +21,8 @@
   <meta property="og:image:height" content="630">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Configurateur Piscine — Diskoov">
-  <meta name="twitter:description" content="Couverture automatique · Abri télescopique · Devis gratuit 48h">
+  <meta name="twitter:title" content="Conseiller piscine &amp; configurateur — Diskoov">
+  <meta name="twitter:description" content="Trouvez la protection adaptée à votre piscine et préparez votre devis.">
   <meta name="twitter:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
 
   <link rel="canonical" href="https://configurateur.diskoov.fr">
@@ -79,6 +79,7 @@
   </style>
   <link rel="preload" as="font" href="fonts/inter-400.woff2" type="font/woff2" crossorigin>
   <link rel="preload" as="font" href="fonts/inter-700.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="advisor-v2.css?v=20260708">
 
   <style>
     /* ─────────────────────────────────────────────────────────
@@ -2801,7 +2802,7 @@
       <div class="p-bd" id="pbdy">
 
         <!-- FORME DE PISCINE -->
-        <div class="s" role="group" aria-labelledby="lbl-shape">
+        <div class="s" id="s-shape" role="group" aria-labelledby="lbl-shape">
           <div class="sh">
             <span class="sl" id="lbl-shape">Forme du bassin</span>
           </div>
@@ -3115,7 +3116,7 @@
         </div>
 
         <!-- ÉQUIPEMENT -->
-        <div class="s" role="group" aria-labelledby="lbl-eq">
+        <div class="s" id="s-equipment" role="group" aria-labelledby="lbl-eq">
           <div class="sh"><span class="sl" id="lbl-eq">Équipement</span></div>
           <div class="pcs" role="radiogroup" aria-labelledby="lbl-eq">
             <div class="pc" id="eq-cov" role="radio" aria-checked="false" tabindex="0" onclick="selEq('cov')"
@@ -3703,6 +3704,7 @@
 
   <script src="config.js"></script>
   <script src="product-rules.js?v=20260707-visuals"></script>
+  <script src="advisor-engine.js?v=20260708"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -6259,6 +6261,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
+  <script src="advisor-v2.js?v=20260708"></script>
 </body>
 
 </html>
