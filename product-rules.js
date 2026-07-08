@@ -9,17 +9,20 @@
   var VAT = 1.20;
 
   var PRODUCTS = Object.freeze({
-    bab: { label: 'Bâche à barres Secu Classic', family: 'bab', image: 'assets/produits/bab/couverture-a-barres.jpg' },
-    ore_compact: { label: 'Oré Compact', family: 'ore', image: 'assets/produits/ore/ore-fermee.jpg' },
-    ore_essential: { label: 'Oré Essential', family: 'ore', image: 'assets/produits/ore/ore-ouverte.jpg' },
-    volet_hs: { label: 'Volet hors-sol', family: 'volet', image: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg' },
-    volet_immerge: { label: 'Volet immergé', family: 'volet', image: 'assets/produits/volets-immerges/volet-immerge-blanc.jpg' },
-    masterdeck: { label: 'Terrasse mobile MasterDeck', family: 'masterdeck', image: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg' },
-    ul: { label: 'Abri Ultra Bas / Neo', family: 'abri', image: 'assets/produits/abris/master-ultra-bas-1-2.jpg' },
-    m18: { label: 'Abri Master 18', family: 'abri', image: 'assets/produits/abris/master-bas-1-8.jpg' },
-    m30: { label: 'Abri Master 30', family: 'abri', image: 'assets/produits/abris/master-bas-1-8.jpg' },
-    m50: { label: 'Abri Master 50', family: 'abri', image: 'assets/produits/abris/master-mi-haut.jpg' },
-    mid: { label: 'Abri mi-haut', family: 'abri', image: 'assets/produits/abris/master-mi-haut.jpg' }
+    bab: { label: 'Bâche à barres Secu Classic', family: 'bab', image: 'assets/produits/conseiller/bab.webp' },
+    ore_compact: { label: 'Oré Compact', family: 'ore', image: 'assets/produits/conseiller/ore-fermee.webp' },
+    ore_essential: { label: 'Oré Essential', family: 'ore', image: 'assets/produits/conseiller/ore-ouverte.webp' },
+    auto: { label: 'Coverseal automatique', family: 'coverseal', image: 'assets/produits/conseiller/coverseal.webp' },
+    semi: { label: 'Coverseal semi-automatique', family: 'coverseal', image: 'assets/produits/conseiller/coverseal.webp' },
+    eden: { label: 'Eden', family: 'eden', image: 'assets/produits/conseiller/eden.webp' },
+    volet_hs: { label: 'Volet hors-sol', family: 'volet', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
+    volet_immerge: { label: 'Volet immergé', family: 'volet', image: 'assets/produits/conseiller/volet-immerge.webp' },
+    masterdeck: { label: 'Terrasse mobile MasterDeck', family: 'masterdeck', image: 'assets/produits/conseiller/masterdeck.webp' },
+    ul: { label: 'Abri Ultra Bas / Neo', family: 'abri', image: 'assets/produits/conseiller/abri-ultra-bas.webp' },
+    m18: { label: 'Abri Master 18', family: 'abri', image: 'assets/produits/conseiller/abri-bas.webp' },
+    m30: { label: 'Abri Master 30', family: 'abri', image: 'assets/produits/conseiller/abri-bas.webp' },
+    m50: { label: 'Abri Master 50', family: 'abri', image: 'assets/produits/conseiller/abri-mi-haut.webp' },
+    mid: { label: 'Abri mi-haut', family: 'abri', image: 'assets/produits/conseiller/abri-mi-haut.webp' }
   });
 
   var ORE_COMPACT = {

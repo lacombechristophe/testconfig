@@ -1898,3 +1898,413 @@
     width: 100%;
   }
 }
+
+/* Conversion pass — only fixes that reduce friction or improve product confidence */
+.advisor-shell[data-screen="welcome"] .advisor-help {
+  display: none;
+}
+
+.advisor-result-media--fallback {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 24% 20%, rgba(255, 255, 255, .5), transparent 28%),
+    linear-gradient(135deg, #eaf2ee, #d7e6e1 48%, #f7f3e8);
+  cursor: default;
+}
+
+.advisor-fallback-visual {
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  border: 1px solid rgba(16, 37, 28, .08);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.28)),
+    repeating-linear-gradient(90deg, rgba(16,37,28,.08) 0 1px, transparent 1px 13px);
+  color: var(--v2-forest);
+}
+
+.advisor-fallback-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.72);
+  color: #286a76;
+  box-shadow: 0 10px 24px rgba(16,37,28,.08);
+}
+
+.advisor-fallback-label {
+  max-width: 120px;
+  color: #345248;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.advisor-benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.advisor-benefits span {
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(196, 154, 82, .13);
+  color: #7a5a22;
+  font-size: 10px;
+  font-weight: 780;
+}
+
+@media (max-width: 900px) {
+  .advisor-result-media {
+    min-height: 150px;
+    max-height: 168px;
+  }
+
+  .advisor-result-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .advisor-benefits {
+    margin-top: 8px;
+  }
+}
+
+/* Mobile density pass — keeps the guided flow premium without hiding the products below the fold */
+@media (max-width: 900px) {
+  .advisor-panel {
+    overflow: hidden;
+  }
+
+  .advisor-header {
+    padding: 8px 14px 0;
+    box-shadow: 0 1px 0 rgba(16, 37, 28, .08);
+  }
+
+  .advisor-header-row {
+    min-height: 36px;
+  }
+
+  .advisor-brand {
+    min-height: 34px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 16px;
+  }
+
+  .advisor-brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .advisor-brand span {
+    font-size: 16px;
+  }
+
+  .advisor-help {
+    min-height: 34px;
+    padding: 0 13px;
+    border-radius: 999px;
+  }
+
+  .advisor-progress {
+    margin-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .advisor-progress-meta {
+    font-size: 11px;
+  }
+
+  .advisor-body {
+    min-height: 0;
+  }
+
+  .advisor-screen {
+    padding: 20px 14px 82px;
+  }
+
+  .advisor-step-label {
+    padding: 7px 11px;
+    font-size: 11px;
+  }
+
+  .advisor-title,
+  .advisor-shell[data-screen="results"] .advisor-title,
+  .advisor-shell[data-screen="direct"] .advisor-title {
+    max-width: 10.5em;
+    font-size: clamp(30px, 10vw, 38px);
+    line-height: .98;
+    letter-spacing: -.05em;
+  }
+
+  .advisor-subtitle {
+    max-width: 31em;
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .advisor-results-head {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .advisor-result-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .advisor-result-actions .advisor-button {
+    min-height: 46px;
+    padding-inline: 10px;
+  }
+
+  .advisor-result-list {
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .advisor-result {
+    border-radius: 21px;
+    box-shadow: 0 12px 34px rgba(16, 37, 28, .07);
+  }
+
+  .advisor-result:first-child {
+    box-shadow: 0 18px 44px rgba(16, 37, 28, .12);
+  }
+
+  .advisor-result-media {
+    min-height: 160px;
+    max-height: 176px;
+    margin: 9px 9px 0;
+    border-radius: 17px;
+  }
+
+  .advisor-result-media img {
+    aspect-ratio: 16 / 9;
+  }
+
+  .advisor-result-rank {
+    left: 12px;
+    top: 12px;
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .advisor-result-content {
+    padding: 13px 15px 4px;
+  }
+
+  .advisor-result-category {
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+
+  .advisor-result-title {
+    margin-top: 5px;
+    font-size: 24px;
+    line-height: 1.04;
+    letter-spacing: -.035em;
+  }
+
+  .advisor-result-description {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .advisor-benefits {
+    margin-top: 10px;
+    gap: 7px;
+  }
+
+  .advisor-benefits span,
+  .advisor-reason {
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .advisor-reasons {
+    gap: 7px;
+    margin-top: 9px;
+  }
+
+  .advisor-result-cta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 15px 15px;
+  }
+
+  .advisor-estimate {
+    font-size: 14px;
+    font-weight: 850;
+  }
+
+  .advisor-result-cta .advisor-button {
+    min-height: 42px;
+    min-width: 116px;
+    padding-inline: 14px;
+    border-radius: 14px;
+    font-size: 11px;
+  }
+
+  .advisor-more {
+    min-height: 46px;
+    margin-top: 3px;
+    border-radius: 15px;
+  }
+
+  .advisor-footer {
+    padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+    box-shadow: 0 -14px 34px rgba(16, 37, 28, .1);
+  }
+
+  .advisor-footer-actions {
+    display: grid;
+    grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+    gap: 10px;
+    width: 100%;
+  }
+
+  .advisor-footer .advisor-button {
+    min-height: 48px;
+    padding-inline: 12px;
+    border-radius: 16px;
+    font-size: 12px;
+  }
+
+  .advisor-footer .advisor-button--text {
+    justify-content: center;
+    border: 1px solid rgba(16, 37, 28, .1);
+    background: rgba(255,255,255,.78);
+  }
+}
+
+@media (max-width: 430px) {
+  .advisor-title,
+  .advisor-shell[data-screen="results"] .advisor-title,
+  .advisor-shell[data-screen="direct"] .advisor-title {
+    font-size: clamp(29px, 9.6vw, 36px);
+  }
+
+  .advisor-subtitle {
+    font-size: 14px;
+  }
+
+  .advisor-result-title {
+    font-size: 23px;
+  }
+
+  .advisor-result-cta {
+    grid-template-columns: 1fr;
+  }
+
+  .advisor-result-cta .advisor-button {
+    width: 100%;
+  }
+
+  .advisor-footer-actions {
+    grid-template-columns: .82fr 1.18fr;
+  }
+}
+
+/* Direct access product cards — product recognition matters when the visitor skips the guided flow */
+.advisor-direct-item {
+  min-height: 98px;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 8px 12px 8px 8px;
+}
+
+.advisor-direct-media {
+  width: 86px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #eef5f2;
+  color: #286a76;
+}
+
+.advisor-direct-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+
+.advisor-direct-item:hover .advisor-direct-media img {
+  transform: scale(1.05);
+}
+
+.advisor-direct-media--fallback svg {
+  width: 26px;
+  height: 26px;
+}
+
+.advisor-direct-copy {
+  min-width: 0;
+}
+
+.advisor-direct-name {
+  font-size: 13px;
+  line-height: 1.18;
+}
+
+.advisor-direct-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 5px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .advisor-direct-groups {
+    gap: 20px;
+    margin-top: 22px;
+  }
+
+  .advisor-direct-list {
+    gap: 10px;
+  }
+
+  .advisor-direct-item {
+    grid-template-columns: 92px minmax(0, 1fr) 20px;
+    min-height: 96px;
+    border-radius: 18px;
+  }
+
+  .advisor-direct-media {
+    width: 92px;
+    height: 74px;
+  }
+}

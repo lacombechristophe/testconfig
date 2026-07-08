@@ -19,46 +19,46 @@
   var CANDIDATES = Object.freeze([
     candidate('ore_compact', 'Oré Compact', 'Couverture 4 saisons', 'cover', 'cov', 'cm',
       'Une protection discrète pensée pour les bassins compacts.',
-      'assets/produits/ore/ore-fermee.jpg', ['clean', 'safety', 'automatic', 'aesthetics'], '5_10'),
+      'assets/produits/conseiller/ore-fermee.webp', ['clean', 'safety', 'automatic', 'aesthetics'], '5_10'),
     candidate('ore_essential', 'Oré Essential', 'Couverture 4 saisons', 'cover', 'cov', 'cm',
       'Une solution quatre saisons qui protège le bassin toute l’année.',
-      'assets/produits/ore/ore-ouverte.jpg', ['clean', 'safety', 'automatic', 'season', 'aesthetics'], '10_15'),
+      'assets/produits/conseiller/ore-ouverte.webp', ['clean', 'safety', 'automatic', 'season', 'aesthetics'], '10_15'),
     candidate('auto', 'Coverseal automatique', 'Couverture haut de gamme', 'coverseal', 'cov', 'cm',
       'Sécurité, confort d’usage et ouverture entièrement motorisée.',
-      '', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
+      'assets/produits/conseiller/coverseal.webp', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
     candidate('semi', 'Coverseal semi-automatique', 'Couverture haut de gamme', 'coverseal', 'cov', 'cm',
       'Le niveau de protection Coverseal avec une commande simplifiée.',
-      '', ['clean', 'safety', 'aesthetics'], '10_15'),
+      'assets/produits/conseiller/coverseal.webp', ['clean', 'safety', 'aesthetics'], '10_15'),
     candidate('eden', 'Eden', 'Couverture sur mesure', 'custom-cover', 'cov', 'cm',
       'Une réponse premium pour les bassins et projets atypiques.',
-      '', ['clean', 'safety', 'automatic', 'aesthetics', 'space'], 'over25'),
+      'assets/produits/conseiller/eden.webp', ['clean', 'safety', 'automatic', 'aesthetics', 'space'], 'over25'),
     candidate('ul', 'Abri Neo / Ultra Bas', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Une protection très basse qui préserve les lignes du jardin.',
-      'assets/produits/abris/master-ultra-bas-1-2.jpg', ['clean', 'safety', 'season', 'aesthetics'], '15_25'),
+      'assets/produits/conseiller/abri-ultra-bas.webp', ['clean', 'safety', 'season', 'aesthetics'], '15_25'),
     candidate('m18', 'Abri Master 18', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Un abri bas équilibré pour protéger et profiter plus longtemps.',
-      'assets/produits/abris/master-bas-1-8.jpg', ['clean', 'safety', 'season'], '15_25'),
+      'assets/produits/conseiller/abri-bas.webp', ['clean', 'safety', 'season'], '15_25'),
     candidate('m30', 'Abri Master 30', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Davantage de volume pour nager sous l’abri fermé.',
-      'assets/produits/abris/master-bas-1-8.jpg', ['clean', 'safety', 'season'], '15_25'),
+      'assets/produits/conseiller/abri-bas.webp', ['clean', 'safety', 'season'], '15_25'),
     candidate('m50', 'Abri Master 50', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Un confort annuel généreux, étudié sur devis.',
-      'assets/produits/abris/master-mi-haut.jpg', ['clean', 'safety', 'season'], 'over25'),
+      'assets/produits/conseiller/abri-mi-haut.webp', ['clean', 'safety', 'season'], 'over25'),
     candidate('mid', 'Abri mi-haut', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Un compromis entre discrétion et hauteur de circulation.',
-      'assets/produits/abris/master-mi-haut.jpg', ['clean', 'safety', 'season'], 'over25'),
+      'assets/produits/conseiller/abri-mi-haut.webp', ['clean', 'safety', 'season'], 'over25'),
     candidate('bab', 'Bâche à barres Secu Classic', 'Protection essentielle', 'bar-cover', 'oth', 'otherProduct',
       'Une solution simple, robuste et sécurisante au budget contenu.',
-      'assets/produits/bab/couverture-a-barres.jpg', ['safety', 'economy'], 'under5'),
+      'assets/produits/conseiller/bab.webp', ['safety', 'economy'], 'under5'),
     candidate('volet_hs', 'Volet hors-sol', 'Volet de piscine', 'shutter', 'oth', 'otherProduct',
       'Une couverture automatique fiable, sans travaux importants dans le bassin.',
-      'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg', ['clean', 'safety', 'automatic', 'economy'], '5_10'),
+      'assets/produits/conseiller/volet-hors-sol.webp', ['clean', 'safety', 'automatic', 'economy'], '5_10'),
     candidate('volet_immerge', 'Volet immergé', 'Volet de piscine', 'shutter', 'oth', 'otherProduct',
       'Une protection automatique intégrée et très discrète.',
-      'assets/produits/volets-immerges/volet-immerge-blanc.jpg', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
+      'assets/produits/conseiller/volet-immerge.webp', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
     candidate('masterdeck', 'Terrasse mobile MasterDeck', 'Terrasse mobile', 'mobile-deck', 'oth', 'otherProduct',
       'Le bassin disparaît sous une terrasse utilisable une fois fermée.',
-      '', ['safety', 'aesthetics', 'space'], 'over25')
+      'assets/produits/conseiller/masterdeck.webp', ['safety', 'aesthetics', 'space'], 'over25')
   ]);
 
   function candidate(id, title, category, family, eq, selectionType, description, image, strengths, budget) {
@@ -156,7 +156,7 @@
     if (item.id === 'auto') return 'À partir de 13 890 €';
     if (item.id === 'semi') return 'À partir de 11 490 €';
     if (item.id === 'm50' || item.id === 'mid' || item.id === 'masterdeck' || item.id === 'eden') return 'Étude personnalisée';
-    return 'Estimation à affiner';
+    return 'Estimation personnalisée';
   }
 
   function diversify(scored, limit) {

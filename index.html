@@ -30,7 +30,7 @@
   <meta name="robots" content="index, follow">
 
   <!-- Preload image hero (LCP) — ⚠️ mettre à jour src après upload des vraies photos -->
-  <link rel="preload" as="image" href="assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg" type="image/jpeg" id="preload-hero" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/produits/conseiller/volet-hors-sol.webp" type="image/webp" id="preload-hero" fetchpriority="high">
 
   <!-- Fonts : Inter auto-hébergé via fontsource (conformité RGPD — aucun transfert vers Google) -->
   <style>
@@ -2681,7 +2681,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260708-refonte8">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260708-conversion7">
 
   <noscript>
     <style>
@@ -3703,7 +3703,7 @@
 
   <script src="config.js"></script>
   <script src="product-rules.js?v=20260707-visuals"></script>
-  <script src="advisor-engine.js?v=20260708-refonte8"></script>
+  <script src="advisor-engine.js?v=20260708-conversion7"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -4267,7 +4267,13 @@
       /* Synchronise le preload hero */
       var heroImg = el('vi-pool');
       var preload = document.getElementById('preload-hero');
-      if (heroImg && preload) preload.href = heroImg.src;
+      var initParams = new URLSearchParams(window.location.search);
+      var opensAdvisor = initParams.get('advisor') === '1'
+        || (!initParams.has('eq') && !initParams.has('cm') && !initParams.has('sm') && !initParams.has('op'));
+      if (heroImg && preload && !opensAdvisor) {
+        preload.href = heroImg.src;
+        preload.type = 'image/jpeg';
+      }
       document.querySelectorAll('img').forEach(function (img) {
         img.addEventListener('error', function () {
           img.classList.add('img-error');
@@ -6260,7 +6266,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260708-refonte8"></script>
+  <script src="advisor-v2.js?v=20260708-conversion7"></script>
 </body>
 
 </html>
