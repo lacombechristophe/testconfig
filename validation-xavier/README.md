@@ -1,10 +1,10 @@
-# Validations attendues de Xavier
+# Validations Xavier
 
-Ce dossier regroupe les décisions encore nécessaires avant de considérer les prix du configurateur comme complets et fiables.
+Ce dossier regroupe les décisions métier validées ou encore nécessaires avant de considérer les prix du configurateur comme complets et fiables.
 
 ## Fichiers
 
-- `EMAIL-A-XAVIER.md` : message synthétique prêt à copier dans un e-mail.
+- `EMAIL-A-XAVIER.md` : brouillon local uniquement, ignoré par Git et non destiné au dépôt.
 - `MATRICE-DECISIONS.md` : liste exhaustive des arbitrages, valeurs contradictoires et recommandations.
 - `STRATEGIE-AQUAMASTER-RENTABILITE.md` : position recommandée sur le rôle du catalogue AquaMaster, entre prix prospect, contraintes techniques et rentabilité interne.
 
@@ -19,4 +19,4 @@ Ce dossier regroupe les décisions encore nécessaires avant de considérer les 
 
 ## Utilisation
 
-Envoyer d'abord `EMAIL-A-XAVIER.md`. La colonne « Réponse Xavier » de `MATRICE-DECISIONS.md` peut ensuite servir de compte rendu et de base de recette avant l'intégration finale.
+Les réponses de Xavier sont intégrées dans le moteur quand elles sont exploitables. Les points encore incomplets restent sur devis ou en note interne de validation.

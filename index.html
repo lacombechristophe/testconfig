@@ -5043,7 +5043,7 @@
         html += '<div class="pf-bd-row"><span class="pf-bd-label">' + esc(l[0]) + '</span><span class="pf-bd-value">' + esc(l[1]) + '</span></div>';
       });
       html += '<div class="pf-bd-divider"></div>';
-      html += '<div class="pf-bd-row"><span class="pf-bd-label" style="font-weight:600;color:var(--ink)">Total estimatif</span><span class="pf-bd-value">' + base.toLocaleString('fr-FR') + ' €</span></div>';
+      html += '<div class="pf-bd-row"><span class="pf-bd-label" style="font-weight:600;color:var(--ink)">Total estimatif TTC</span><span class="pf-bd-value">' + base.toLocaleString('fr-FR') + ' € TTC</span></div>';
       bd.innerHTML = html;
     }
 
@@ -5574,9 +5574,8 @@
       });
       S.lastRuleResult = rr;
       updateRuleStatus(rr);
-      var isOrePrice = product === 'ore_compact' || product === 'ore_essential';
-      el('pf-title').textContent = isOrePrice ? 'Estimation indicative' : 'Prix estimatif TTC';
-      el('pf-subtitle').textContent = isOrePrice ? 'À confirmer après validation technique' : 'Estimation selon la configuration saisie';
+      el('pf-title').textContent = 'Prix estimatif TTC';
+      el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
       if (rr.status === 'quote' || rr.total === null) {
         setP(rr.eligible === false ? 'À vérifier — sur devis' : 'Sur devis', true);
         updBreakdown(0, null);
@@ -5585,7 +5584,7 @@
         var ruleLines = (rr.breakdown || []).map(function (line) {
           return [line.label, Math.round(line.amount).toLocaleString('fr-FR') + ' €'];
         });
-        setP('≈ ' + total.toLocaleString('fr-FR') + (isOrePrice ? ' €' : ' € TTC'), false);
+        setP('≈ ' + total.toLocaleString('fr-FR') + ' € TTC', false);
         updBreakdown(total, ruleLines);
       }
       el('share-btn').style.display = 'inline-flex';
@@ -5601,7 +5600,7 @@
       if (/Nombre de modules estimé/i.test(raw)) {
         return 'Le nombre de modules sera ajusté à votre bassin lors de la préparation de votre proposition.';
       }
-      if (/matrice|source|grille|document|documentée|documenté|simulateur|catalogue|hypothèse|moteur tarifaire|REGLES|ANNEXE|remise|Paiement|chiffrage|fiscal|régime|qualification/i.test(raw)) {
+      if (/matrice|source|grille|document|documentée|documenté|simulateur|catalogue|hypothèse|moteur tarifaire|REGLES|ANNEXE|remise|Paiement|chiffrage|fiscal|régime|qualification|Xavier/i.test(raw)) {
         if (/dimension|limite|largeur|longueur|module|corde|hors/i.test(raw)) {
           return 'Nous confirmerons avec vous les dimensions finales de votre projet.';
         }

@@ -50,9 +50,9 @@ Hors standard :
 - Horizon du matin / Gris clair — réf. 654 ;
 - Brun de mer / Chocolat — réf. 7534.
 
-## Grille Oré Compact — valeurs source
+## Grille Oré Compact — valeurs source HT
 
-La feuille n'indique pas explicitement HT ou TTC pour cette matrice. Ne pas attribuer un régime fiscal sans validation.
+Xavier a confirmé que les matrices Oré Compact / Essential sont en **HT**. Le configurateur applique donc la TVA 20 % pour l'affichage prospect TTC.
 
 | Longueur | 2,5 m | 3 m | 3,5 m |
 |---:|---:|---:|---:|
@@ -62,9 +62,9 @@ La feuille n'indique pas explicitement HT ou TTC pour cette matrice. Ne pas attr
 | 6 m | 4 839 € | 4 962 € | 5 151 € |
 | 7 m | 5 047 € | 5 113 € | 5 283 € |
 
-## Grille Oré Essentiel — valeurs source
+## Grille Oré Essentiel — valeurs source HT
 
-La feuille n'indique pas explicitement HT ou TTC pour cette matrice.
+Même règle : valeurs source HT, affichage prospect en TTC.
 
 | Longueur | 2,5 m | 3 m | 3,5 m | 4 m | 4,5 m | 5 m |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -116,13 +116,12 @@ Recul d'un mètre supplémentaire par largeur : `180 / 210 / 240 / 270 / 300 / 3
 - Options non incluses : panneau solaire public `520 €`, remise 25 %, soit `390 € HT`; couleur hors standard `8 €/m² × 38,48 m²`, remise 25 %, soit `230,88 € HT`.
 - Total hors base Oré : `928 € HT`, `1 113,60 € TTC`.
 
-## Conflits à arbitrer
+## Décisions Xavier intégrées
 
-- Base détaillée `7 598 €` pour un exemple `10 × 5`, alors que la matrice Essentiel donne `7 298` pour `10 × 5`.
-- Le classeur Compact reprend la base `7 598 €` et le libellé `10 × 5`, dimensions hors périmètre Compact.
-- Pose : `620 €` avec remise 50 % pour Essentiel, gratuite pour Compact, `640 €`/gratuite dans la feuille détaillée, et `500 €` facturés intégralement dans le devis.
-- Options : remise `20 %` dans la feuille simplifiée, `15 %` dans la feuille détaillée, `25 %` dans le devis.
-- Recul supplémentaire : `210 €` dans la feuille simplifiée, `280 €` dans la feuille détaillée et une ligne variable `180 à 300` dans la matrice Essentiel.
-- Couleur hors standard : `5 %` de la base dans la feuille, mais `8 €/m²` dans le devis.
-
-Le configurateur doit conserver ces valeurs paramétrables et rester en mode « estimation / sur devis » tant que Xavier n'a pas fixé la règle commerciale unique.
+- Les matrices Oré sont HT ; le configurateur affiche un prix TTC indicatif.
+- Transport systématique : `428 € HT`.
+- Pose Essential : `310 € HT` selon la feuille de prestations ; pose Compact remisée à 100 %, donc affichée comme incluse quand la pose est demandée.
+- Options automatiques : panneau solaire `416 € HT`, découpe bloc `193,60 € HT`, sangle anti-vent `40/60 € HT`, sangle hivernage `288 € HT`.
+- Recul supplémentaire : barème par largeur `180 / 210 / 240 / 270 / 300 / 300 € HT`.
+- Coloris membrane hors standard : `5 %` de la base Oré.
+- Les cas non couverts par la matrice ou par les contraintes d'implantation restent sur devis.

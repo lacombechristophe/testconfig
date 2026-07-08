@@ -394,7 +394,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
     p.plage_mecanisme ? pRow('Plage mécanisme', esc(p.plage_mecanisme)) : '',
     p.alimentation_electrique ? pRow('Alimentation électrique', esc(p.alimentation_electrique)) : '',
     p.options_produit ? pRow('Options produit', esc(p.options_produit)) : '',
-    p.prix_estime ? pRow('Estimation configurateur', `≈ ${p.prix_estime.toLocaleString('fr-FR')} ${p.produit.startsWith('ore_') ? '€ <span style="color:#999;font-weight:400">à confirmer après validation technique</span>' : '€ TTC <span style="color:#999;font-weight:400">indicative</span>'}`) : '',
+    p.prix_estime ? pRow('Estimation configurateur', `≈ ${p.prix_estime.toLocaleString('fr-FR')} € TTC <span style="color:#999;font-weight:400">indicative</span>`) : '',
   ].filter(Boolean).join('');
 
   const logRows = [
@@ -663,7 +663,7 @@ function internalHtml(p: LeadPayload, ref: string): string {
       ${p.qualification_complete ? iRow('Qualification technique', esc(p.qualification_complete)) : ''}
       ${p.informations_manquantes ? iRow('Infos manquantes', esc(p.informations_manquantes)) : ''}
       ${p.options_produit ? iRow('Options produit', esc(p.options_produit)) : ''}
-      ${p.prix_estime ? iRow('Estimation', `<strong>≈ ${p.prix_estime.toLocaleString('fr-FR')} ${p.produit.startsWith('ore_') ? '€*' : '€ TTC'}</strong> · ${p.produit.startsWith('ore_') ? 'fiscalité à confirmer' : esc(p.statut_prix || 'indicative')}`) : iRow('Prix', 'Sur devis')}
+      ${p.prix_estime ? iRow('Estimation', `<strong>≈ ${p.prix_estime.toLocaleString('fr-FR')} € TTC</strong> · ${esc(p.statut_prix || 'indicative')}`) : iRow('Prix', 'Sur devis')}
       ${p.eligibilite ? iRow('Éligibilité', esc(p.eligibilite)) : ''}
       ${p.reference_tarifaire ? iRow('Référence calcul', esc(p.reference_tarifaire)) : ''}
       ${p.donnees_techniques ? iRow('Données moteur', esc(p.donnees_techniques)) : ''}

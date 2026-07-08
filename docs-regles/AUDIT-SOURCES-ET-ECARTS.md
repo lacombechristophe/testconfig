@@ -57,26 +57,23 @@ Le devis S021 Pisceen/DERCYA est un document concurrent. Aucune référence, auc
 
 ### BAB
 
-- PU SECU CLASSIC : grille `36,04 €/m²`, devis test `35,33 €/m²`.
-- Remise client : feuille `35 %`, devis `40 %`.
-- Transport : feuille `132 € HT`, devis `128 € HT`.
-- Garantie : fiche `10 ans`, devis `3 ans`.
+- Xavier a validé pour le configurateur : PU SECU CLASSIC `36,04 €/m² HT`, remise client `35 %`, emballage `96 € HT`, transport `132 € HT`, garantie `3 ans`.
+- Le devis test (`35,33 €/m²`, remise `40 %`, transport `128 € HT`) reste un scénario de contrôle et ne doit pas devenir la grille tarifaire.
 
 ### Oré
 
 - Base 10×5 : feuille détaillée `7 598`, matrice Essentiel `7 298`.
 - Classeur Compact duplique un exemple 10×5 hors périmètre.
-- Pose : gratuite, 310, 500 ou 640 € HT selon les feuilles/devis.
-- Remise options : 15, 20 ou 25 %.
-- Recul supplémentaire : matrice 180-300 €, feuille 210 €, détaillé 280 €.
-- Couleur hors standard : 5 % de la base ou 8 €/m².
+- Xavier a confirmé que les matrices sont HT et que le prix prospect doit venir des Excel.
+- Le configurateur retient la feuille prestations pour transport `428 € HT`, pose Essential `310 € HT`, pose Compact incluse et options principales à remise `20 %`.
+- Le recul supplémentaire suit le barème par largeur `180-300 € HT`; la couleur hors standard suit `5 %` de la base.
 
 ### Abris
 
 - Prix publics des feuilles et catalogue MAJ 02/2026 non concordants.
-- Deux méthodes de prix client dans les mêmes classeurs : remise commerciale sur public ou coût d'achat + marge.
-- Pour Master 30 en 8×4 / 4 modules / corde 480, la feuille de simulation reprend `11 948 € TTC` alors que la table nommée Master 30 indique `12 200 € TTC` ; le moteur retient la ligne explicitement rattachée à Master 30 et conserve l'écart à valider.
-- Installation Master : 1 400 € dans le catalogue HT, 850 € TTC dans le catalogue TTC et la feuille.
+- Deux méthodes de prix client dans les mêmes classeurs : remise commerciale sur public ou coût d'achat + marge. Xavier confirme que l'Excel sert au prix client et le catalogue AquaMaster aux limites techniques / calculs internes.
+- Pour Master 30, Xavier demande le même taux de remise que les autres références : `33 %`.
+- Pose : `850 € TTC`. Transport : selon zone, à relier ensuite ; le moteur garde un transport de référence tant que la zone abri n'est pas automatisée.
 - La feuille 1.2/1.8 contient un lien externe vers le classeur 3.0.
 
 ### Volets
@@ -88,36 +85,13 @@ Le devis S021 Pisceen/DERCYA est un document concurrent. Aucune référence, auc
 - Scénario « 12×6 » dupliqué sur 10×5.
 - Option polycarbonate hors-sol ajoutée comme prix complet au lieu d'un delta.
 
-## Écart avec `diskoov-v15` actuel
+## Décisions encore nécessaires
 
-Le configurateur actuel utilise des montants forfaitaires :
-
-| Clé actuelle | Valeur TTC actuelle | Écart principal |
-|---|---:|---|
-| ul | 7 000 € | La source exige modèle + modules + classe de corde |
-| m18 | 8 500 € | Pas de prix unique valable pour toutes dimensions |
-| m30 | 10 920 € | Pas de prix unique valable pour toutes dimensions |
-| m50 | 11 760 € | Pas de prix unique valable pour toutes dimensions |
-| shlMotor | 650 € | Très inférieur aux motorisations catalogue, généralement 2 933 à 8 292 € HT public |
-
-Autres écarts :
-
-- Oré est actuellement « sur devis » sans matrices Essentiel/Compact ni contraintes d'emprise.
-- Volet/BAB/MasterDeck est une catégorie de contact sans moteur de prix.
-- Aucun lookup départemental de livraison/installation volet.
-- Les couleurs actuelles d'abri et de membrane ne correspondent pas complètement aux listes 2026.
-- Les formules de surface, limites dimensionnelles, supports, blocs filtrants et dépendances d'options ne sont pas codées.
-
-## Décisions nécessaires de Xavier
-
-1. Choisir pour chaque famille la grille client contractuelle : prix public/remise ou coût + marge.
-2. Confirmer si toutes les matrices sont HT ou TTC lorsqu'Excel ne le précise pas.
-3. Fixer les remises client par famille et option.
-4. Confirmer les garanties à afficher.
-5. Valider les forfaits de pose/transport et leur TVA.
-6. Corriger ou confirmer les lignes identifiées comme erreurs de formule.
-7. Définir la règle nombre de modules d'abri à partir de la longueur.
-8. Définir le traitement hors grille : estimation, blocage ou demande de devis.
+1. Volets : confirmer les remises finales à utiliser quand le devis et le simulateur divergent, ainsi que le traitement automatique des escaliers/solaire/polycarbonate.
+2. Abris : relier la livraison à une vraie zone/département et valider la formule finale du nombre de modules.
+3. Abris : préciser quelles options avancées doivent rester sur devis ou devenir automatiques.
+4. MasterDeck : corriger/valider la matrice commerciale et la correspondance moteurs.
+5. Produits non exposés du catalogue AquaMaster : confirmer s'ils restent hors configurateur pour l'instant.
 
 ## Critères d'acceptation pour l'intégration
 

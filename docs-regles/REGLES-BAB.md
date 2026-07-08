@@ -22,7 +22,7 @@
 - Trous d'évacuation des eaux pluviales.
 - Encombrement enroulé maximal : environ `30 cm` de diamètre.
 - Norme indiquée : NF P 90-308. La fiche extraite contient une coquille « NF-P90-309 » ; retenir NF P 90-308, confirmée par le devis.
-- Garantie : la fiche annonce 10 ans, le devis fabricant annonce 3 ans. **À arbitrer avant affichage.**
+- Garantie à afficher : `3 ans` selon réponse Xavier.
 - Ne rien poser sur la couverture ; déneiger en cas de neige afin d'éviter la déformation des barres.
 
 ## Tarifs publics fournisseur 2026 — HT
@@ -73,7 +73,7 @@ Pour SECU CLASSIC :
 7. `TTC = HT × 1,20`.
 8. Paiement client : acompte `50 %`, solde `50 %`.
 
-Le devis du 6 juillet 2026 applique toutefois une remise client de `40 %`, un transport de `128 € HT` et facture un contre-remboursement de `40 €`. Ces valeurs contredisent la feuille et doivent être arbitrées.
+Xavier a confirmé la logique Excel `Prix TEST` pour le configurateur prospect : `36,04 €/m² HT`, remise `35 %`, emballage `96 € HT` et transport `132 € HT`. Le devis du 6 juillet 2026 reste un scénario de contrôle, pas la grille commerciale à utiliser.
 
 ## Exemple de contrôle — devis DV0003845
 
@@ -85,7 +85,7 @@ Le devis du 6 juillet 2026 applique toutefois une remise client de `40 %`, un tr
 - Total : `1 015,92 € HT`, TVA `195,18 €`, total `1 211,10 € TTC`.
 - Options non incluses : anti-abrasion `103,68 € TTC` et Rolling-Up `649,21 € TTC`.
 
-Le PU de `35,33 € HT` ne correspond à aucun PU de la grille 2026 (`36,04 €` pour CLASSIC). **Ne pas utiliser ce devis comme grille tarifaire sans validation.**
+Le PU de `35,33 € HT` ne correspond à aucun PU de la grille 2026 (`36,04 €` pour CLASSIC). Ne pas utiliser ce devis comme grille tarifaire.
 
 ## Anomalies de formule à ne pas reproduire
 

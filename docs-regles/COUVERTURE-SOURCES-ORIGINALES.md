@@ -32,7 +32,7 @@ Le PDF fournisseur contient davantage de gammes que le parcours Diskoov actuel :
 | S004 | `Simu Abri Aquamaster/TARIF 2026 AQUAMASTER HT VERSION AC - ABRIS.pdf` | 34 pages | Contrôle croisé HT, options et divergences | `8ded9b0ed79f` |
 | S005 | `Simu Abri Aquamaster/TARIF 2026 AQUAMASTER TTC VERSION AC - ABRIS.pdf` | 34 pages | Limites techniques, références et prestations TTC | `ef83d15ef53c` |
 | S006 | `Simu Abri Aquamaster/Tarifs Abris 1.2 & 1.8.xls` | 1 feuille | Remise 33 %, transport, pose et scénario commercial | `62ac582eb4e9` |
-| S007 | `Simu Abri Aquamaster/Tarifs ABRIS 3.0.xls` | 2 feuilles | Prix publics Excel par modèle, remise 28 % Master 30 | `e7c8c73569c1` |
+| S007 | `Simu Abri Aquamaster/Tarifs ABRIS 3.0.xls` | 2 feuilles | Prix publics Excel par modèle, remise Master 30 ramenée à 33 % après validation Xavier | `e7c8c73569c1` |
 | S008 | `Simu BAB/BAB Rolling up.JPG` | Image 310×315 | Visuel secondaire Rolling-Up | `9711bc94243f` |
 | S009 | `Simu BAB/BAB.JPG` | Image 2592×1936 | Visuel principal BAB | `8c44c0f5a4d2` |
 | S010 | `Simu BAB/Devis BAB 2026.xls` | 3 feuilles | Surface, PU, remise, options, emballage et transport | `6750807ec200` |

@@ -4,6 +4,17 @@ Date de préparation : 7 juillet 2026.
 
 Statuts proposés : `VALIDÉ`, `À MODIFIER`, `SUR DEVIS`, `NON PROPOSÉ`.
 
+## Réponses Xavier intégrées — 8 juillet 2026
+
+- Prix prospect : utiliser les simulateurs Excel Diskoov ; le catalogue AquaMaster sert surtout aux limites techniques, références produits et calculs internes de rentabilité.
+- Valeurs HT confirmées : matrices Oré Compact/Essential et table livraison/installation volets.
+- Hors tableau ou cas non prévu : afficher `sur devis`.
+- Oré : transport `428 € HT`, options depuis Excel, prix de base + options en détail.
+- BAB : `36,04 €/m² HT`, remise `35 %`, transport `132 € HT`, emballage `96 €`, garantie `3 ans`.
+- Volets : remises/options selon les simulateurs Excel ; l'immergé dépend de modèles selon dimensions.
+- Abris : remise `33 %` pour chaque référence exposée, pose `850 € TTC`, transport selon zone ; Master 50 et Mi-haut restent sur devis.
+- Produits AquaMaster non encore exposés : laisser de côté pour l'instant.
+
 ## A. Règles générales
 
 | ID | Décision attendue | Valeurs ou problème identifié | Recommandation | Réponse Xavier |

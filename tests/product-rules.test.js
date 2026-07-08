@@ -118,9 +118,10 @@ test('Oré Compact sélectionne le palier supérieur', function () {
   var r = rules.calculate('ore_compact', Object.assign({ length: 6.2, width: 3.1 }, ORE_COMMON));
   assert.equal(r.status, 'indicative');
   assert.equal(r.eligible, true);
-  assert.equal(r.total, 5283);
+  assert.equal(r.total, 6853.2);
   assert.equal(r.technical.selectedLength, 7);
   assert.equal(r.technical.selectedWidth, 3.5);
+  assert.equal(r.technical.sourceCurrency, 'HT');
 });
 
 test('Oré refuse les dimensions hors matrice', function () {
@@ -245,15 +246,19 @@ test('abri 8 × 4 reproduit 4 modules et la corde 480', function () {
   assert.equal(r.total, 9380.76);
 });
 
-test('Oré avec option contradictoire reste sur devis sans faux total', function () {
+test('Oré avec option validée ajoute le prix option au détail TTC', function () {
   var r = rules.calculate('ore_essential', Object.assign({
     length: 8,
     width: 4,
     options: { oreSolar: true }
   }, ORE_COMMON));
-  assert.equal(r.status, 'quote');
-  assert.equal(r.total, null);
-  assert.equal(r.technical.basePrice, 6174);
+  assert.equal(r.status, 'indicative');
+  assert.equal(r.total, 8793.6);
+  assert.ok(r.breakdown.some(function (line) { return line.label.indexOf('Panneau solaire') !== -1; }));
+});
+
+test('Master 30 applique la remise Xavier de 33 %', function () {
+  assert.equal(rules._data.abriCommercial.m30.discount, 0.33);
 });
 
 test('Oré bloque aussi les dimensions sous le premier palier', function () {

@@ -83,8 +83,8 @@ Ne pas extrapoler entre deux lignes : sélectionner une référence exacte. En d
 
 ### Master Bas 3.0
 
-- Même logique, mais remise de vente base `28 %`.
-- Exemple 8 × 4 : prix client calculé `9 978,16 € TTC`.
+- Même logique, avec la remise de vente base `33 %` confirmée par Xavier pour chaque référence.
+- Exemple 8 × 4 : prix client calculé `9 549,60 € TTC` avec le transport de référence actuellement câblé.
 
 ### Échéanciers de la feuille
 
@@ -118,13 +118,13 @@ Ces valeurs sont une simplification et ne remplacent pas les options détaillée
 
 ## Installation et livraison
 
-Les feuilles utilisent un forfait fixe `850 € TTC` de pose et `525,60 € TTC` de transport pour l'exemple. Le catalogue contient des forfaits par gamme et zones de livraison. Les catalogues HT et TTC ne sont pas une simple conversion TVA et se contredisent notamment sur la pose :
+Les feuilles utilisent un forfait fixe `850 € TTC` de pose et `525,60 € TTC` de transport pour l'exemple. Xavier a confirmé la pose à `850 € TTC` et un transport **selon zone**. Le configurateur conserve donc `525,60 € TTC` comme transport de référence tant que la table zone/département des abris n'est pas reliée.
 
 - catalogue HT : installation Master/Bas/Ultra Bas/Spa `1 400 €` ;
 - catalogue TTC : même référence à `850 € TTC` ;
 - feuille : `850 € TTC`.
 
-La table catalogue par zone doit être reliée au département client seulement après validation de la grille commerciale à retenir.
+La table catalogue par zone doit être reliée au département client avant de transformer le transport de référence en prix automatique définitif.
 
 ## Master Deck
 

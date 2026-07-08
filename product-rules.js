@@ -39,6 +39,17 @@
       11: [6279, 6510, 6731, 6941, 7245, 7371], 12: [6668, 6836, 6972, 7119, 7340, 7508]
     }
   };
+  var ORE_LINE_ITEMS_HT = {
+    transport: 428,
+    poseCompact: 0,
+    poseEssential: 310,
+    solar: 416,
+    blockCut: 193.6,
+    antiWind7: 40,
+    antiWind10: 60,
+    winterStrap: 288
+  };
+  var ORE_EXTRA_RETREAT_HT = { 2.5: 180, 3: 210, 3.5: 240, 4: 270, 4.5: 300, 5: 300 };
 
   var LAME_TIERS = [
     [3, 219.41, 449.99], [3.5, 248.53, 513.34], [4, 277.65, 576.70],
@@ -82,7 +93,7 @@
       }
     },
     m30: {
-      discount: 0.28,
+      discount: 0.33,
       tiers: {
         2: [[390, 5497.5], [480, 6175.833333333334]],
         3: [[390, 7490], [480, 8169.166666666667], [530, 9159.166666666668]],
@@ -243,38 +254,54 @@
       });
     }
     var base = table.prices[lTier][table.widths.indexOf(wTier)];
-    var selectedOptions = [];
     var oreOptions = input.options || {};
-    if (oreOptions.oreSolar) selectedOptions.push('Panneau solaire d’appoint sélectionné.');
-    if (oreOptions.oreBlockCut) selectedOptions.push('Découpe pour bloc filtration sélectionnée.');
-    if (oreOptions.oreAntiWind) selectedOptions.push('Sangle anti-vent sélectionnée.');
-    if (oreOptions.oreWinterStrap) selectedOptions.push('Sangle d’hivernage longitudinale sélectionnée.');
-    if (oreOptions.oreExtraRetreat) selectedOptions.push('Recul supplémentaire sélectionné.');
-    if (oreOptions.oreSpecialColor) selectedOptions.push('Coloris personnalisé à confirmer dans la proposition.');
-    if (selectedOptions.length) {
-      return manualReview(product, 'Les options sélectionnées nécessitent une validation personnalisée avant estimation.', 'REGLES-ORE — options à valider', {
-        selectedLength: lTier,
-        selectedWidth: wTier,
-        selectedOptions: selectedOptions,
-        basePrice: money(base)
-      });
+    var selectedOptions = [];
+    var lines = [{ label: 'Base Oré ' + lTier + ' × ' + String(wTier).replace('.', ',') + ' m', amount: money(base) }];
+    lines.push({ label: 'Transport', amount: ORE_LINE_ITEMS_HT.transport });
+    if (input.installation === 'fourniture_pose') {
+      var pose = product === 'ore_compact' ? ORE_LINE_ITEMS_HT.poseCompact : ORE_LINE_ITEMS_HT.poseEssential;
+      if (pose > 0) lines.push({ label: 'Pose Diskoov', amount: pose });
+      else selectedOptions.push('Pose Diskoov incluse.');
+    }
+    if (oreOptions.oreSolar) {
+      lines.push({ label: 'Panneau solaire d’appoint', amount: ORE_LINE_ITEMS_HT.solar });
+      selectedOptions.push('Panneau solaire d’appoint.');
+    }
+    if (oreOptions.oreBlockCut) {
+      lines.push({ label: 'Découpe bloc filtration', amount: ORE_LINE_ITEMS_HT.blockCut });
+      selectedOptions.push('Découpe bloc filtration.');
+    }
+    if (oreOptions.oreAntiWind) {
+      lines.push({ label: 'Sangle anti-vent', amount: lTier <= 7 ? ORE_LINE_ITEMS_HT.antiWind7 : ORE_LINE_ITEMS_HT.antiWind10 });
+      selectedOptions.push('Sangle anti-vent.');
+    }
+    if (oreOptions.oreWinterStrap) {
+      lines.push({ label: 'Sangle hivernage longitudinale', amount: ORE_LINE_ITEMS_HT.winterStrap });
+      selectedOptions.push('Sangle hivernage longitudinale.');
+    }
+    if (oreOptions.oreExtraRetreat) {
+      lines.push({ label: 'Recul supplémentaire d’un mètre', amount: ORE_EXTRA_RETREAT_HT[wTier] || 210 });
+      selectedOptions.push('Recul supplémentaire d’un mètre.');
+    }
+    if (oreOptions.oreSpecialColor) {
+      lines.push({ label: 'Coloris membrane hors standard', amount: money(base * 0.05) });
+      selectedOptions.push('Coloris membrane hors standard.');
     }
     var warnings = [
-      'Estimation indicative à confirmer après validation technique.',
+      'Estimation TTC indicative selon le tarif Oré 2026.',
       'Prévoir 60 cm de roulement et 80 cm d’encombrement total côté mécanisme.',
       input.installation === 'fourniture' ? 'Fourniture seule : les contraintes de pose seront vérifiées avec vous.' : 'Pose demandée : les accès et conditions de pose seront vérifiés avec vous.'
     ];
-    if (product === 'ore_compact' && input.installation === 'fourniture_pose') {
-      warnings.push('Pose par 2 techniciens Diskoov incluse pour Oré Compact.');
-    }
+    if (product === 'ore_compact' && input.installation === 'fourniture_pose') warnings.push('Pose Diskoov incluse pour Oré Compact.');
+    var totalHT = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
     return result(product, {
       status: STATUS.INDICATIVE,
       eligible: true,
-      total: money(base),
-      breakdown: [{ label: 'Base produit ' + lTier + ' × ' + String(wTier).replace('.', ',') + ' m', amount: money(base) }],
+      total: money(totalHT * VAT),
+      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
       warnings: warnings.concat(selectedOptions),
       reference: 'REGLES-ORE — matrice tarifaire source',
-      technical: { selectedLength: lTier, selectedWidth: wTier, rollingClearanceCm: 60, totalClearanceCm: 80, mechanismHeightCm: 45, selectedOptions: selectedOptions, installationIncluded: product === 'ore_compact' && input.installation === 'fourniture_pose' }
+      technical: { selectedLength: lTier, selectedWidth: wTier, sourceCurrency: 'HT', rollingClearanceCm: 60, totalClearanceCm: 80, mechanismHeightCm: 45, selectedOptions: selectedOptions, installationIncluded: input.installation === 'fourniture_pose' }
     });
   }
 
@@ -318,8 +345,8 @@
       status: STATUS.INDICATIVE,
       eligible: true,
       total: money(total * VAT),
-      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
-      warnings: ['Estimation TTC indicative : le devis test et la grille 2026 divergent sur le PU, la remise et le transport.', input.support === 'bois' ? 'Support bois déclaré : ancrage sur lambourdes/plots béton à valider.' : 'Ancrage sous réserve d’un support compatible.', input.margelles === 'debord' ? 'Margelles avec débord : bandes anti-abrasion et frottements à contrôler.' : 'Validation de la forme, des renforts et des découpes par Diskoov.', input.installation === 'fourniture_pose' ? 'Pose demandée : non incluse dans cette estimation BAB source.' : 'Installation client suivant notice fabricant.', 'Paiement documenté : 50 % à la commande, 50 % au solde.'],
+      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
+      warnings: ['Estimation TTC indicative selon le tarif BAB 2026, emballage et transport inclus.', input.support === 'bois' ? 'Support bois déclaré : ancrage sur lambourdes/plots béton à valider.' : 'Ancrage sous réserve d’un support compatible.', input.margelles === 'debord' ? 'Margelles avec débord : bandes anti-abrasion et frottements à contrôler.' : 'Validation de la forme, des renforts et des découpes par Diskoov.', input.installation === 'fourniture_pose' ? 'Pose demandée : non incluse dans cette estimation BAB.' : 'Installation client suivant notice fabricant.', 'Garantie : 3 ans.'],
       reference: 'REGLES-BAB — grille 2026, remise de vente et frais',
       technical: { billingSurface: surface, maxLength: 12, maxWidth: 5.4, maxRollingUpWidth: 5.3 }
     });
@@ -449,7 +476,7 @@
       status: STATUS.INDICATIVE,
       eligible: true,
       total: money(total * VAT),
-      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
+      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
       warnings: warnings,
       reference: 'REGLES-VOLETS — structures, lames, remises et transport',
       technical: { structureRef: structureRef, bladeWidthTier: tier[0], material: wantsPolycarbonate ? 'polycarbonate' : 'PVC', installationIncluded: input.installation === 'fourniture_pose' }
@@ -537,8 +564,8 @@
       status: STATUS.INDICATIVE,
       eligible: true,
       total: money(total * VAT),
-      breakdown: lines.map(function (line) { return { label: line.label + ' HT', amount: money(line.amount * VAT) }; }),
-      warnings: ['Transport et pose de référence intégrés à cette estimation.', 'Estimation TTC 2026 à confirmer après vérification des options, des accès et du support.', 'Nombre de modules estimé à partir de la largeur maximale par élément du catalogue : validation AquaMaster obligatoire.'],
+      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
+      warnings: ['Pose de référence 850 € TTC intégrée.', 'Transport de référence intégré ; le transport final dépendra de la zone.', 'Estimation TTC 2026 à confirmer après vérification des options, des accès et du support.', 'Nombre de modules estimé à partir de la largeur maximale par élément du catalogue : validation AquaMaster obligatoire.'],
       reference: 'REGLES-ABRIS-AQUAMASTER — classeurs Excel Diskoov 2026 + limites catalogue',
       technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, excelPublicHT: excelPublicHT, installationIncluded: true }
     });
