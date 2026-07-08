@@ -39,6 +39,8 @@
   var footer = shell.querySelector('[data-advisor-footer]');
   var modal = shell.querySelector('[data-advisor-modal]');
   var modalImage = shell.querySelector('[data-advisor-modal-image]');
+  var detailModal = shell.querySelector('[data-advisor-detail-modal]');
+  var detailContent = shell.querySelector('[data-advisor-detail-content]');
 
   prepareLegacyConfigurator();
   bindEvents();
@@ -76,6 +78,9 @@
       + '<div class="advisor-modal" data-advisor-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Photo du produit agrandie">'
       + '  <button type="button" class="advisor-modal-close" data-action="close-preview" aria-label="Fermer">×</button>'
       + '  <img data-advisor-modal-image alt="">'
+      + '</div>'
+      + '<div class="advisor-detail-modal" data-advisor-detail-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails de la solution recommandée">'
+      + '  <div class="advisor-detail-card" data-advisor-detail-content></div>'
       + '</div>';
   }
 
@@ -99,12 +104,14 @@
       else if (action === 'delay') setStateValue('delay', target.getAttribute('data-value'));
       else if (action === 'back') goBack();
       else if (action === 'next') goNext();
-      else if (action === 'show-all') { state.showAll = !state.showAll; render(); }
-      else if (action === 'compare') { state.compare = !state.compare; trackAdvisor('advisor_compare_open', { open: state.compare }); render(); }
+      else if (action === 'show-all') { state.showAll = !state.showAll; render({ preserveScroll: true, focusTitle: false }); }
+      else if (action === 'compare') { state.compare = !state.compare; trackAdvisor('advisor_compare_open', { open: state.compare }); render({ preserveScroll: true, focusTitle: false }); }
       else if (action === 'choose') openConfigurator(target.getAttribute('data-product'), 'guided');
       else if (action === 'direct-product') openConfigurator(target.getAttribute('data-product'), 'direct');
+      else if (action === 'details') openProductDetails(target.getAttribute('data-product'));
       else if (action === 'preview') openPreview(target.getAttribute('data-image'), target.getAttribute('data-alt'));
       else if (action === 'close-preview') closePreview();
+      else if (action === 'close-details') closeProductDetails();
       else if (action === 'restart') restartAdvisor();
     });
 
@@ -120,9 +127,13 @@
     modal.addEventListener('click', function (event) {
       if (event.target === modal) closePreview();
     });
+    detailModal.addEventListener('click', function (event) {
+      if (event.target === detailModal) closeProductDetails();
+    });
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && modal.classList.contains('is-open')) closePreview();
+      if (event.key === 'Escape' && detailModal.classList.contains('is-open')) closeProductDetails();
     });
   }
 
@@ -132,7 +143,7 @@
     if (!keepHistory) state.history = [];
     root.classList.add('advisor-active');
     setLegacyInert(true);
-    render();
+    render({ resetScroll: true });
     trackAdvisor('advisor_view', { screen: state.screen });
   }
 
@@ -155,7 +166,7 @@
     state.history = ['welcome'];
     state.screen = 'priorities';
     trackAdvisor('advisor_start', { mode: 'guided' });
-    render();
+    render({ resetScroll: true });
   }
 
   function resumeGuided() {
@@ -163,7 +174,7 @@
     Object.assign(state, savedState, { history: ['welcome'] });
     if (state.screen === 'welcome' || state.screen === 'direct') state.screen = 'priorities';
     trackAdvisor('advisor_resume', { screen: state.screen });
-    render();
+    render({ resetScroll: true });
   }
 
   function restartAdvisor() {
@@ -174,7 +185,7 @@
       budget: 'unknown', delay: 'unknown', results: null, showAll: false, compare: false, activeProduct: ''
     };
     document.body.classList.remove('diskoov-guided-config');
-    render();
+    render({ resetScroll: true });
   }
 
   function navigate(screen) {
@@ -188,13 +199,13 @@
         excluded_count: state.results.excluded.length
       });
     }
-    render();
+    render({ resetScroll: true });
   }
 
   function goBack() {
     var previous = state.history.pop();
     state.screen = previous || 'welcome';
-    render();
+    render({ resetScroll: true });
   }
 
   function goNext() {
@@ -218,22 +229,32 @@
       }
     }
     trackAdvisor('advisor_priority_select', { priority: value, selected: state.priorities.indexOf(value) !== -1 });
-    render();
+    render({ preserveScroll: true, focusTitle: false });
   }
 
   function setStateValue(key, value) {
     state[key] = value;
-    render();
+    render({ preserveScroll: true, focusTitle: false });
   }
 
-  function render() {
+  function render(options) {
+    options = options || {};
+    var previousTop = body.scrollTop || 0;
     shell.setAttribute('data-screen', state.screen);
     updateProgress();
     updateVisualCopy();
     body.innerHTML = screenTemplate();
     footer.innerHTML = footerTemplate();
-    body.scrollTop = 0;
+    if (options.preserveScroll) {
+      body.scrollTop = Math.min(previousTop, body.scrollHeight);
+      requestAnimationFrame(function () {
+        body.scrollTop = Math.min(previousTop, body.scrollHeight);
+      });
+    } else {
+      body.scrollTop = 0;
+    }
     if (state.screen !== 'welcome' && state.screen !== 'direct') saveState();
+    if (options.focusTitle === false) return;
     requestAnimationFrame(function () {
       var title = body.querySelector('h1, h2');
       if (title) {
@@ -393,24 +414,103 @@
       + '<div class="advisor-result-content"><div class="advisor-result-category">' + escapeHtml(item.category) + '</div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
       + '<div class="advisor-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
       + '<div class="advisor-reasons">' + item.reasons.map(function (reason) { return '<span class="advisor-reason">' + escapeHtml(reason) + '</span>'; }).join('') + '</div></div>'
-      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Choisir cette solution <span aria-hidden="true">→</span></button></div>'
+      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Infos</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Choisir cette solution <span aria-hidden="true">→</span></button></div></div>'
       + '</article>';
   }
 
   function commercialBenefits(item) {
     var map = {
-      ore_compact: ['Pose incluse', 'Discret'],
-      ore_essential: ['4 saisons', 'Automatique'],
-      auto: ['Pose fabricant', 'Motorisé'],
-      semi: ['Sécurité homologuée', 'Commande simplifiée'],
-      eden: ['Sur mesure', 'Finition premium'],
-      bab: ['Budget maîtrisé', 'Robuste'],
-      volet_hs: ['Pose intégrée', 'Sans travaux lourds'],
-      volet_immerge: ['Pose intégrée', 'Très discret'],
-      masterdeck: ['Espace récupéré', 'Sur mesure']
+      ore_compact: ['Pose incluse', 'Jusqu’à 7 × 3,5 m'],
+      ore_essential: ['4 saisons', 'Jusqu’à 12 × 5 m'],
+      auto: ['Rails 10 mm', 'Pose fabricant'],
+      semi: ['NF P90-308', 'Prix maîtrisé'],
+      eden: ['Sur mesure', 'NF P90-308'],
+      bab: ['Garantie 3 ans', 'Budget maîtrisé'],
+      volet_hs: ['Jusqu’à 12 × 6 m', 'Automatique'],
+      volet_immerge: ['Jusqu’à 14 × 6 m', 'Très discret'],
+      masterdeck: ['3 en 1', 'Pose incluse']
     };
     if (item.family === 'shelter') return ['Saison prolongée', 'Abri télescopique'];
     return map[item.id] || [];
+  }
+
+  function openProductDetails(productId) {
+    var item = findResultProduct(productId);
+    if (!item || !detailModal || !detailContent) return;
+    detailContent.innerHTML = productDetailTemplate(item);
+    detailModal.classList.add('is-open');
+    detailModal.setAttribute('aria-hidden', 'false');
+    var close = detailContent.querySelector('[data-action="close-details"]');
+    if (close) close.focus({ preventScroll: true });
+    trackAdvisor('advisor_product_detail_open', { product: item.id });
+  }
+
+  function closeProductDetails() {
+    if (!detailModal || !detailContent) return;
+    detailModal.classList.remove('is-open');
+    detailModal.setAttribute('aria-hidden', 'true');
+    detailContent.innerHTML = '';
+  }
+
+  function findResultProduct(productId) {
+    var lists = [];
+    if (state.results) lists = lists.concat(state.results.recommendations || [], state.results.compatible || []);
+    for (var i = 0; i < lists.length; i += 1) {
+      if (lists[i] && lists[i].id === productId) return lists[i];
+    }
+    return engine.findCandidate(productId);
+  }
+
+  function productDetailTemplate(item) {
+    var benefits = commercialBenefits(item);
+    var bullets = productSalesBullets(item);
+    var reasons = Array.isArray(item.reasons) ? item.reasons : [];
+    var media = item.image
+      ? '<div class="advisor-detail-media"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy"></div>'
+      : '<div class="advisor-detail-media advisor-detail-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</div>';
+    return '<button type="button" class="advisor-detail-close" data-action="close-details" aria-label="Fermer">×</button>'
+      + media
+      + '<div class="advisor-detail-body">'
+      + '<div class="advisor-step-label">Pourquoi cette solution</div>'
+      + '<h2 class="advisor-detail-title">' + escapeHtml(item.title) + '</h2>'
+      + '<p class="advisor-detail-lead">' + escapeHtml(productSalesIntro(item)) + '</p>'
+      + '<div class="advisor-benefits advisor-detail-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
+      + '<ul class="advisor-detail-list">' + bullets.map(function (bullet) { return '<li>' + escapeHtml(bullet) + '</li>'; }).join('') + '</ul>'
+      + (reasons.length ? '<div class="advisor-detail-fit"><strong>Adapté à votre projet</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
+      + '<div class="advisor-detail-footer"><span>' + escapeHtml(item.estimate || 'Estimation personnalisée') + '</span><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Choisir cette solution <span aria-hidden="true">→</span></button></div>'
+      + '</div>';
+  }
+
+  function productSalesIntro(item) {
+    var map = {
+      ore_compact: 'Une couverture motorisée Oré pensée pour les bassins compacts, avec la pose incluse lorsque la prestation est demandée.',
+      ore_essential: 'Une couverture Oré plus large, conçue pour protéger le bassin toute l’année avec un guidage motorisé discret.',
+      auto: 'La Coverseal automatique privilégie le confort : une couverture tendue, motorisée, très discrète et posée par les techniciens fabricant.',
+      semi: 'La Coverseal semi-automatique garde l’esprit Coverseal avec une solution plus accessible et une commande simplifiée.',
+      eden: 'Eden est une couverture motorisée sur mesure, intéressante quand le projet demande une finition premium et une intégration soignée.',
+      bab: 'La bâche à barres Secu Classic est une solution robuste pour sécuriser le bassin avec un budget plus cadré.',
+      volet_hs: 'Le volet hors-sol apporte le confort d’une couverture automatique avec une installation plus simple qu’un système immergé.',
+      volet_immerge: 'Le volet immergé protège le bassin avec un mécanisme intégré, plus discret visuellement autour de la piscine.',
+      masterdeck: 'MasterDeck transforme la couverture en vraie surface utile : terrasse, plage et protection du bassin.'
+    };
+    if (item.family === 'shelter') return 'Un abri télescopique pour prolonger les baignades et protéger le bassin plus longtemps dans l’année.';
+    return map[item.id] || item.description || 'Une solution à étudier selon les dimensions et les contraintes de votre bassin.';
+  }
+
+  function productSalesBullets(item) {
+    var map = {
+      ore_compact: ['Adaptée aux bassins jusqu’à 7 × 3,5 m.', 'Deux blocs de guidage avec axe inox et motorisation.', 'Sangles de sécurité, anti-vent et hivernage prévues.'],
+      ore_essential: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Pose par deux techniciens selon la prestation retenue.', 'Options utiles possibles : solaire, découpe bloc, sangles et recul.'],
+      auto: ['Système breveté avec rails extra-plats de 10 mm.', 'Membrane PVC armé et conformité NF P90-308.', 'Ouverture/fermeture rapide avec motorisation solaire selon modèle.'],
+      semi: ['Même logique de couverture tendue Coverseal.', 'Conforme NF P90-308 selon la page Diskoov.', 'Compromis pertinent pour une solution premium au meilleur prix.'],
+      eden: ['Conforme NF P90-308.', 'Ouverture et fermeture motorisées sans effort.', 'Limite l’évaporation, les pertes de chaleur et l’entretien.'],
+      bab: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Surface prévue avec débord autour du bassin.', 'Garantie 3 ans.'],
+      volet_hs: ['Adapté aux bassins jusqu’à 12 × 6 m.', 'Lames dimensionnées pour respecter la sécurité.', 'Livraison et pose qualifiées selon le département.'],
+      volet_immerge: ['Adapté aux bassins jusqu’à 14 × 6 m.', 'Très pertinent pour une intégration simple avec flasques sur paroi.', 'Fond de bassin, caillebotis ou mur étudiés sur mesure.'],
+      masterdeck: ['Solution 3 en 1 : terrasse, plage et protection.', 'Disponible en 1 ou 2 plateaux selon dimensions.', 'Options possibles : motorisation solaire et finitions bois.']
+    };
+    if (item.family === 'shelter') return ['Prolonge la saison de baignade.', 'Protège le bassin des feuilles et salissures.', 'Plusieurs hauteurs selon le niveau de confort voulu.'];
+    return map[item.id] || ['Compatibilité vérifiée selon vos réponses.', 'Estimation affinée avec les détails de pose.', 'Accompagnement humain avant proposition finale.'];
   }
 
   function compareTemplate(products) {
