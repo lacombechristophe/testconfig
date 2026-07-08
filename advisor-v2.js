@@ -100,8 +100,8 @@
       else if (action === 'direct') navigate('direct');
       else if (action === 'priority') togglePriority(target.getAttribute('data-value'));
       else if (action === 'shape') setStateValue('shape', target.getAttribute('data-value'));
-      else if (action === 'budget') setStateValue('budget', target.getAttribute('data-value'));
-      else if (action === 'delay') setStateValue('delay', target.getAttribute('data-value'));
+      else if (action === 'budget') setSimpleChoice('budget', target.getAttribute('data-value'));
+      else if (action === 'delay') setSimpleChoice('delay', target.getAttribute('data-value'));
       else if (action === 'back') goBack();
       else if (action === 'next') goNext();
       else if (action === 'show-all') { state.showAll = !state.showAll; render({ preserveScroll: true, focusTitle: false }); }
@@ -229,12 +229,51 @@
       }
     }
     trackAdvisor('advisor_priority_select', { priority: value, selected: state.priorities.indexOf(value) !== -1 });
+    if (state.screen === 'priorities') {
+      updatePriorityDom();
+      updateFooterOnly();
+      saveState();
+      return;
+    }
     render({ preserveScroll: true, focusTitle: false });
   }
 
   function setStateValue(key, value) {
     state[key] = value;
     render({ preserveScroll: true, focusTitle: false });
+  }
+
+  function setSimpleChoice(key, value) {
+    state[key] = value;
+    updateChoiceDom(key, value);
+    updateFooterOnly();
+    saveState();
+  }
+
+  function updatePriorityDom() {
+    body.querySelectorAll('[data-action="priority"]').forEach(function (button) {
+      var selected = state.priorities.indexOf(button.getAttribute('data-value')) !== -1;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    var hint = body.querySelector('.advisor-hint');
+    if (hint) {
+      hint.textContent = state.priorities.length
+        ? state.priorities.length + ' priorité' + (state.priorities.length > 1 ? 's' : '') + ' sélectionnée' + (state.priorities.length > 1 ? 's' : '')
+        : 'Sélectionnez au moins une réponse pour continuer.';
+    }
+  }
+
+  function updateChoiceDom(action, value) {
+    body.querySelectorAll('[data-action="' + action + '"]').forEach(function (button) {
+      var selected = button.getAttribute('data-value') === value;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  }
+
+  function updateFooterOnly() {
+    footer.innerHTML = footerTemplate();
   }
 
   function render(options) {
@@ -669,10 +708,10 @@
   function updateVisualCopy() {
     var copies = {
       welcome: ['Une solution pensée pour votre bassin.', 'Quelques réponses suffisent pour comparer les protections réellement adaptées à votre projet.'],
-      priorities: ['Votre usage avant le produit.', 'Nous partons de vos attentes pour éviter de vous imposer une technologie ou une gamme.'],
+      priorities: ['Vos besoins guident le conseil.', 'Les réponses servent à classer les protections selon votre usage réel.'],
       pool: ['Chaque bassin a ses contraintes.', 'La forme et les dimensions servent d’abord à vérifier la compatibilité, avant de parler de prix.'],
       project: ['Un conseil adapté à votre rythme.', 'Budget et délai orientent le classement sans fermer prématurément les possibilités.'],
-      results: ['Des options claires, pas une liste infinie.', 'Trois recommandations expliquées, puis toutes les solutions compatibles si vous souhaitez aller plus loin.'],
+      results: ['Les solutions les plus cohérentes ressortent en premier.', 'Vous voyez d’abord les protections adaptées à votre bassin, avec la possibilité de comparer les autres solutions compatibles.'],
       direct: ['Vous savez déjà ce que vous cherchez.', 'Accédez directement au produit, tout en conservant les contrôles techniques et tarifaires du configurateur.']
     };
     var copy = copies[state.screen] || copies.welcome;
