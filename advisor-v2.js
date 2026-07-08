@@ -393,6 +393,7 @@
       + '  <h1 class="advisor-title">Les solutions recommandées.</h1>'
       + '  <p class="advisor-subtitle">Pour votre bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m, classées selon vos priorités.</p>'
       + '</div><div class="advisor-result-actions"><button type="button" class="advisor-button advisor-button--secondary" data-action="compare">' + (state.compare ? 'Masquer le comparatif' : 'Comparer') + '</button><button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
+      + resultsSummaryTemplate()
       + (state.compare ? compareTemplate(top) : '')
       + '<div class="advisor-result-list">' + products.map(resultCard).join('') + '</div>'
       + (state.results.compatible.length > 3 ? '<button type="button" class="advisor-more" data-action="show-all">' + (state.showAll ? 'Afficher seulement les 3 recommandations' : 'Voir les ' + state.results.compatible.length + ' solutions compatibles') + '</button>' : '')
@@ -400,21 +401,34 @@
       + '</div>';
   }
 
+  function resultsSummaryTemplate() {
+    var area = Math.round((state.length * state.width) * 10) / 10;
+    return '<div class="advisor-results-summary" aria-label="Résumé de votre projet">'
+      + '<div><strong>' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m</strong><span>Bassin déclaré · ' + numberLabel(area) + ' m²</span></div>'
+      + '<div><strong>' + state.results.recommendations.length + ' recommandations</strong><span>Classées selon vos attentes</span></div>'
+      + '<div><strong>Estimation prudente</strong><span>Prix affiché seulement si les données suffisent</span></div>'
+      + '</div>';
+  }
+
   function resultCard(item, index) {
     var benefits = commercialBenefits(item);
+    var tradeoff = productTradeoff(item);
+    var match = priorityFit(item);
     var fallback = '<div class="advisor-fallback-visual advisor-fallback-visual--' + safeClass(item.family) + '">'
       + '<span class="advisor-fallback-icon">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>'
       + '<span class="advisor-fallback-label">' + escapeHtml(item.category) + '</span>'
       + '</div>';
     var media = item.image
-      ? '<button type="button" class="advisor-result-media" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</button>'
+      ? '<button type="button" class="advisor-result-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</button>'
       : '<div class="advisor-result-media advisor-result-media--fallback" aria-hidden="true">' + fallback + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</div>';
     return '<article class="advisor-result">'
       + media
-      + '<div class="advisor-result-content"><div class="advisor-result-category">' + escapeHtml(item.category) + '</div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
+      + '<div class="advisor-result-content"><div class="advisor-result-category"><span>' + escapeHtml(item.category) + '</span><span class="advisor-result-match">' + (index === 0 && !state.showAll ? 'Recommandée' : 'Compatible') + '</span></div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
       + '<div class="advisor-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
-      + '<div class="advisor-reasons">' + item.reasons.map(function (reason) { return '<span class="advisor-reason">' + escapeHtml(reason) + '</span>'; }).join('') + '</div></div>'
-      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Infos</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Choisir cette solution <span aria-hidden="true">→</span></button></div></div>'
+      + '<div class="advisor-reasons">' + item.reasons.map(function (reason) { return '<span class="advisor-reason">' + escapeHtml(reason) + '</span>'; }).join('') + '</div>'
+      + '<p class="advisor-card-proof"><strong>Pourquoi elle ressort</strong><span>' + escapeHtml(match) + '</span></p>'
+      + '<p class="advisor-tradeoff"><strong>À savoir</strong> ' + escapeHtml(tradeoff) + '</p></div>'
+      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Détails</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Configurer <span aria-hidden="true">→</span></button></div><span class="advisor-cta-note">Sans engagement</span></div>'
       + '</article>';
   }
 
@@ -432,6 +446,47 @@
     };
     if (item.family === 'shelter') return ['Saison prolongée', 'Abri télescopique'];
     return map[item.id] || [];
+  }
+
+  function priorityFit(item) {
+    var selected = state.priorities.filter(function (priority) { return priority !== 'unsure'; });
+    if (!selected.length) return 'Solution équilibrée si vous souhaitez être conseillé sans préférence arrêtée.';
+    var hits = selected.filter(function (priority) { return item.strengths.indexOf(priority) !== -1; });
+    if (hits.length === selected.length) return 'Couvre vos ' + selected.length + ' priorité' + (selected.length > 1 ? 's' : '') + ' principale' + (selected.length > 1 ? 's' : '') + '.';
+    if (hits.length) return 'Répond à ' + hits.length + ' priorité' + (hits.length > 1 ? 's' : '') + ' sur ' + selected.length + '.';
+    return 'Reste compatible, mais répond moins directement à vos priorités.';
+  }
+
+  function productTradeoff(item) {
+    var map = {
+      ore_compact: 'Très pertinente sur petit bassin ; les plages et le support doivent rester cohérents avec la pose.',
+      ore_essential: 'Demande un espace suffisant pour le mécanisme et une validation des plages autour du bassin.',
+      auto: 'Positionnement premium : excellent confort, budget plus élevé qu’une solution simple.',
+      semi: 'Très bon compromis Coverseal, avec une manipulation moins automatique que la version motorisée.',
+      eden: 'Projet sur mesure : la finition est intéressante, mais l’étude est nécessaire avant estimation fiable.',
+      bab: 'Budget contenu et sécurité, avec une manipulation plus manuelle au quotidien.',
+      volet_hs: 'Mécanisme visible en bout de bassin, mais installation plus simple qu’un volet immergé.',
+      volet_immerge: 'Très discret, mais demande plus d’intégration technique au bassin.',
+      masterdeck: 'Très fort en usage et esthétique, mais projet plus spécifique à étudier avant chiffrage.'
+    };
+    if (item.family === 'shelter') return 'Plus de confort et de saison de baignade, avec un encombrement visuel supérieur à une couverture.';
+    return map[item.id] || 'Les points de pose et d’accès seront vérifiés avant proposition.';
+  }
+
+  function productBestFor(item) {
+    var map = {
+      ore_compact: 'Vous avez un bassin compact et vous cherchez une couverture motorisée simple à vivre.',
+      ore_essential: 'Vous voulez une protection 4 saisons plus polyvalente, avec un bon équilibre confort / discrétion.',
+      auto: 'Vous voulez le meilleur confort quotidien et une couverture haut de gamme très intégrée.',
+      semi: 'Vous aimez l’approche Coverseal mais souhaitez maîtriser davantage le budget.',
+      eden: 'Votre projet demande une finition très soignée ou une réponse plus personnalisée.',
+      bab: 'Vous cherchez surtout une solution fiable, sécurisante et économique.',
+      volet_hs: 'Vous voulez automatiser sans lancer une intégration lourde dans le bassin.',
+      volet_immerge: 'Vous voulez garder les abords du bassin très propres visuellement.',
+      masterdeck: 'Vous voulez récupérer l’espace au-dessus du bassin lorsqu’il n’est pas utilisé.'
+    };
+    if (item.family === 'shelter') return 'Vous voulez prolonger la saison et protéger le bassin avec une solution visible mais confortable.';
+    return map[item.id] || 'Votre bassin correspond aux limites connues et mérite une vérification plus précise.';
   }
 
   function openProductDetails(productId) {
@@ -466,7 +521,7 @@
     var bullets = productSalesBullets(item);
     var reasons = Array.isArray(item.reasons) ? item.reasons : [];
     var media = item.image
-      ? '<div class="advisor-detail-media"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy"></div>'
+      ? '<div class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" loading="lazy"></div>'
       : '<div class="advisor-detail-media advisor-detail-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</div>';
     return '<button type="button" class="advisor-detail-close" data-action="close-details" aria-label="Fermer">×</button>'
       + media
@@ -475,9 +530,11 @@
       + '<h2 class="advisor-detail-title">' + escapeHtml(item.title) + '</h2>'
       + '<p class="advisor-detail-lead">' + escapeHtml(productSalesIntro(item)) + '</p>'
       + '<div class="advisor-benefits advisor-detail-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
+      + '<div class="advisor-detail-section"><strong>Idéal si</strong><p>' + escapeHtml(productBestFor(item)) + '</p></div>'
       + '<ul class="advisor-detail-list">' + bullets.map(function (bullet) { return '<li>' + escapeHtml(bullet) + '</li>'; }).join('') + '</ul>'
+      + '<div class="advisor-detail-section advisor-detail-section--notice"><strong>À vérifier ensemble</strong><p>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + (reasons.length ? '<div class="advisor-detail-fit"><strong>Adapté à votre projet</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
-      + '<div class="advisor-detail-footer"><span>' + escapeHtml(item.estimate || 'Estimation personnalisée') + '</span><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Choisir cette solution <span aria-hidden="true">→</span></button></div>'
+      + '<div class="advisor-detail-footer"><span>' + escapeHtml(item.estimate || 'Estimation personnalisée') + '</span><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Configurer cette solution <span aria-hidden="true">→</span></button></div>'
       + '</div>';
   }
 
@@ -537,16 +594,16 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Accès direct</div>'
       + '<h1 class="advisor-title">Choisissez votre produit.</h1>'
-      + '<p class="advisor-subtitle">Si vous hésitez, revenez au conseiller à tout moment.</p>'
+      + '<p class="advisor-subtitle">Si vous connaissez déjà la solution souhaitée, commencez ici. Vous pouvez aussi ouvrir les détails pour comparer rapidement les usages avant de configurer.</p>'
       + '<div class="advisor-direct-groups">'
       + groups.map(function (group) {
         return '<section><h2 class="advisor-direct-group-title">' + group[0] + '</h2><div class="advisor-direct-list">'
           + group[1].map(function (id) {
             var item = engine.findCandidate(id);
             var media = item.image
-              ? '<span class="advisor-direct-media"><img src="' + escapeHtml(item.image) + '" alt="" loading="lazy"></span>'
+              ? '<span class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" loading="lazy"></span>'
               : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
-            return '<button type="button" class="advisor-direct-item" data-action="direct-product" data-product="' + id + '">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span></span><span class="advisor-direct-arrow" aria-hidden="true">→</span></button>';
+            return '<article class="advisor-direct-item">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span></span><span class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Détails</button><button type="button" class="advisor-direct-main" data-action="direct-product" data-product="' + id + '">Configurer <span aria-hidden="true">→</span></button></span></article>';
           }).join('') + '</div></section>';
       }).join('')
       + '</div></div>';
@@ -570,6 +627,12 @@
     var current = stageForScreen(state.screen);
     var percent = state.screen === 'welcome' ? 0 : ((current + 1) / STAGES.length) * 100;
     var progress = shell.querySelector('[data-advisor-progress]');
+    if (state.screen === 'direct') {
+      progress.innerHTML = '<div class="advisor-progress-meta"><span>Produits Diskoov</span><span>Accès direct</span></div>'
+        + '<div class="advisor-progress-stages advisor-progress-stages--direct"><span class="advisor-progress-stage is-current">Choisir un produit</span><span class="advisor-progress-stage">Configurer</span><span class="advisor-progress-stage">Recevoir une réponse</span></div>'
+        + '<div class="advisor-progress-track" role="progressbar" aria-label="Progression" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><div class="advisor-progress-fill" style="width:25%"></div></div>';
+      return;
+    }
     progress.innerHTML = '<div class="advisor-progress-meta"><span>' + (state.screen === 'welcome' ? 'Votre projet piscine' : STAGES[current]) + '</span><span>' + (state.screen === 'welcome' ? 'Conseil personnalisé' : (current + 1) + ' sur ' + STAGES.length) + '</span></div>'
       + '<div class="advisor-progress-stages">' + STAGES.map(function (label, index) { return '<span class="advisor-progress-stage' + (index === current ? ' is-current' : index < current ? ' is-done' : '') + '">' + label + '</span>'; }).join('') + '</div>'
       + '<div class="advisor-progress-track" role="progressbar" aria-label="Progression" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(percent) + '"><div class="advisor-progress-fill" style="width:' + percent + '%"></div></div>';
