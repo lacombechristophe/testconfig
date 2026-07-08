@@ -287,6 +287,12 @@
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Voir directement les produits</button>'
       + '</div>'
       + resume
+      + '<div class="advisor-solution-preview" aria-label="Familles de protections comparées">'
+      + solutionPreviewItem('Couvertures', 'Oré · Coverseal · Eden', 'Protection discrète et confort quotidien')
+      + solutionPreviewItem('Volets', 'Hors-sol · Immergé', 'Automatisation et sécurité du bassin')
+      + solutionPreviewItem('Abris', 'Ultra bas · Bas · Mi-haut', 'Baignade prolongée et bassin protégé')
+      + solutionPreviewItem('Terrasse mobile', 'MasterDeck', 'Espace récupéré au-dessus de l’eau')
+      + '</div>'
       + '<div class="advisor-trust">'
       + trustItem(icon('clock'), '<strong>3 minutes environ</strong><br>pour être orienté')
       + trustItem(icon('shield'), '<strong>Compatibilité vérifiée</strong><br>avant toute estimation')
@@ -295,12 +301,26 @@
       + '</div>';
   }
 
+  function solutionPreviewItem(title, meta, text) {
+    return '<div class="advisor-solution-preview-item"><strong>' + title + '</strong><span>' + meta + '</span><p>' + text + '</p></div>';
+  }
+
   function trustItem(svg, text) {
     return '<div class="advisor-trust-item"><span class="advisor-trust-icon">' + svg + '</span><span>' + text + '</span></div>';
   }
 
   function prioritiesTemplate() {
     var labels = engine.PRIORITIES;
+    var descriptions = {
+      clean: 'Limiter feuilles, saletés et entretien.',
+      safety: 'Sécuriser l’accès au bassin au quotidien.',
+      season: 'Profiter plus longtemps de la piscine.',
+      aesthetics: 'Garder des abords élégants et discrets.',
+      automatic: 'Réduire les manipulations manuelles.',
+      space: 'Récupérer une vraie surface utilisable.',
+      economy: 'Comparer sans partir sur du surdimensionné.',
+      unsure: 'Laisser Diskoov vous orienter simplement.'
+    };
     var values = ['clean', 'safety', 'season', 'aesthetics', 'automatic', 'space', 'economy', 'unsure'];
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre besoin</div>'
@@ -311,7 +331,7 @@
         var selected = state.priorities.indexOf(value) !== -1;
         return '<button type="button" class="advisor-choice' + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '">'
           + '<span class="advisor-choice-icon">' + icon(value) + '</span>'
-          + '<span class="advisor-choice-title">' + labels[value] + '</span>'
+          + '<span class="advisor-choice-copy"><span class="advisor-choice-title">' + labels[value] + '</span><span class="advisor-choice-desc">' + descriptions[value] + '</span></span>'
           + '<span class="advisor-choice-check" aria-hidden="true"></span>'
           + '</button>';
       }).join('')
@@ -421,7 +441,7 @@
     var media = item.image
       ? '<button type="button" class="advisor-result-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="' + escapeHtml(item.title) + '" loading="lazy">' + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</button>'
       : '<div class="advisor-result-media advisor-result-media--fallback" aria-hidden="true">' + fallback + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</div>';
-    return '<article class="advisor-result">'
+    return '<article class="advisor-result' + (index === 0 && !state.showAll ? ' advisor-result--featured' : '') + '">'
       + media
       + '<div class="advisor-result-content"><div class="advisor-result-category"><span>' + escapeHtml(item.category) + '</span><span class="advisor-result-match">' + (index === 0 && !state.showAll ? 'Recommandée' : 'Compatible') + '</span></div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
       + '<div class="advisor-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
@@ -600,10 +620,11 @@
         return '<section><h2 class="advisor-direct-group-title">' + group[0] + '</h2><div class="advisor-direct-list">'
           + group[1].map(function (id) {
             var item = engine.findCandidate(id);
+            var directBenefits = commercialBenefits(item).slice(0, 2);
             var media = item.image
               ? '<span class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" loading="lazy"></span>'
               : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
-            return '<article class="advisor-direct-item">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span></span><span class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Détails</button><button type="button" class="advisor-direct-main" data-action="direct-product" data-product="' + id + '">Configurer <span aria-hidden="true">→</span></button></span></article>';
+            return '<article class="advisor-direct-item">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-category">' + escapeHtml(item.category) + '</span><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span><span class="advisor-direct-benefits">' + directBenefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</span></span><span class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Détails</button><button type="button" class="advisor-direct-main" data-action="direct-product" data-product="' + id + '">Configurer <span aria-hidden="true">→</span></button></span></article>';
           }).join('') + '</div></section>';
       }).join('')
       + '</div></div>';
