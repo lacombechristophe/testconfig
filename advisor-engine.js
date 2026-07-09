@@ -138,9 +138,15 @@
     });
     return {
       compatible: result.eligible !== false,
-      certainty: result.eligible === true ? 'compatible' : 'to_confirm',
+      certainty: certaintyFor(item, result),
       rule: result
     };
+  }
+
+  function certaintyFor(item, result) {
+    if (item.id === 'masterdeck' || item.id === 'm50' || item.id === 'mid') return 'custom';
+    if (result.eligible === true) return 'compatible';
+    return 'to_confirm';
   }
 
   function reasonsFor(item, input, compatibility) {
@@ -149,12 +155,14 @@
     if (!reasons.length) reasons.push(item.description);
     if (compatibility.certainty === 'compatible') reasons.push('Dimensions compatibles à ce stade');
     if (compatibility.certainty === 'custom') reasons.push('Étudié sur mesure pour votre bassin');
+    if (compatibility.certainty === 'to_confirm') reasons.push('Compatibilité à confirmer avec les détails du bassin');
     return reasons.slice(0, 3);
   }
 
   function estimateFor(item, compatibility) {
     if (item.id === 'auto') return 'À partir de 13 890 €';
     if (item.id === 'semi') return 'À partir de 11 490 €';
+    if (compatibility.certainty === 'custom') return 'Étude personnalisée';
     if (item.id === 'm50' || item.id === 'mid' || item.id === 'masterdeck' || item.id === 'eden') return 'Étude personnalisée';
     return 'Estimation personnalisée';
   }

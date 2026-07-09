@@ -26,6 +26,7 @@
 
   <link rel="canonical" href="https://configurateur.diskoov.fr">
   <meta name="theme-color" content="#111111">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23c49a52'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%2310251c'%3ED%3C/text%3E%3C/svg%3E">
   <!-- Robots : indexer la page mais pas les données de formulaire -->
   <meta name="robots" content="index, follow">
 
@@ -2910,8 +2911,8 @@
             <span class="pill">Facultatif</span>
           </div>
           <div class="ntc inf photo-lead-note" role="note">
-            Une photo du bassin aide à vérifier les margelles, l’accès et les contraintes de pose.
-            Elle permet de préparer une réponse plus précise.
+            Ajoutez une photo si vous l’avez : elle nous aide à repérer les margelles, l’accès chantier et
+            l’emplacement du mécanisme. Vous pouvez continuer sans photo.
           </div>
           <div class="fl">
             <label for="plan-file">Joindre une photo ou un plan <span
@@ -2927,7 +2928,7 @@
                 <path d="M4 8a2 2 0 012-2h2l1.4-1.8A2 2 0 0111 3.5h2a2 2 0 011.6.7L16 6h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2z" />
                 <circle cx="12" cy="13" r="3.4" />
               </svg>
-              <div class="file-zone-text">Ajouter une photo de ma piscine</div>
+              <div class="file-zone-text">Ajouter une photo pour accélérer l’étude</div>
               <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · envoi sécurisé</div>
             </div>
             <div class="file-preview" id="file-preview" style="display:none">
@@ -3406,8 +3407,8 @@
         <div class="s hide" id="s-tl" role="group" aria-labelledby="lbl-tl">
           <div class="sh"><span class="sl" id="lbl-tl">Délai souhaité</span></div>
           <div class="tg g4" role="group" aria-labelledby="lbl-tl">
-            <button type="button" class="tb" aria-pressed="false" id="tl-urg" onclick="selTL('urg',this)">Avant
-              l'été</button>
+            <button type="button" class="tb" aria-pressed="false" id="tl-urg" onclick="selTL('urg',this)">Dès que
+              possible</button>
             <button type="button" class="tb" aria-pressed="false" id="tl-6m" onclick="selTL('6m',this)">6
               mois</button>
             <button type="button" class="tb" aria-pressed="false" id="tl-1a" onclick="selTL('1a',this)">1
@@ -3659,7 +3660,7 @@
         <div class="pf-breakdown" id="pf-breakdown" role="region" aria-label="Détail du prix"></div>
         <div style="display:flex;gap:8px;align-items:center">
           <button class="cta" id="cta" type="button" disabled onclick="doSubmit()" aria-live="polite" style="flex:1">
-            Obtenir mon devis gratuit
+            Recevoir mon devis personnalisé
           </button>
           <button type="button" class="share-btn" id="share-btn" onclick="shareConfig()"
             title="Partager ma configuration" style="display:none">
@@ -5466,7 +5467,7 @@
       else if (!S.fn || !S.ln || !S.em || !S.ph || !S.dept) lbl = 'Complétez vos coordonnées';
       else if (S.ph && !phoneOk) lbl = 'Numéro de téléphone invalide';
       else if (!S.ok) lbl = 'Cochez le consentement';
-      else lbl = 'Obtenir mon devis gratuit';
+      else lbl = 'Recevoir mon devis personnalisé';
       btn.textContent = lbl;
     }
 
@@ -5675,7 +5676,7 @@
       btn.disabled = true;
       btn.classList.add('spin');
 
-      var TLS = { urg: "Avant l'été (URGENT)", '6m': 'Dans les 6 mois', '1a': "Dans l'année", ref: 'En réflexion' };
+      var TLS = { urg: "Dès que possible", '6m': 'Dans les 6 mois', '1a': "Dans l'année", ref: 'En réflexion' };
       var SHAPES_LABEL = { rect: 'Rectangulaire', oval: 'Arrondie / Ovale', libre: 'Forme libre' };
       var surface = S.shape === 'oval' ? Math.PI * (S.len / 2) * (S.wid / 2) : S.len * S.wid;
       var selectedProduct = S.cm || S.sm || S.otherProduct || S.eq;
@@ -5868,7 +5869,7 @@
       var rows = [];
       var CATS = { cov: 'Couverture', shl: 'Abri télescopique', oth: 'Bâche / Volet / MasterDeck' };
       var SHAPES_L = { rect: 'Rectangulaire', oval: 'Arrondie', libre: 'Forme libre' };
-      var TLS = { urg: "Avant l'été", '6m': '6 mois', '1a': '1 an', ref: 'En réflexion' };
+      var TLS = { urg: "Dès que possible", '6m': '6 mois', '1a': '1 an', ref: 'En réflexion' };
       rows.push(['Forme', SHAPES_L[S.shape] || 'Rectangulaire']);
       if (S.shape !== 'libre') {
         rows.push(['Bassin', S.len.toFixed(1).replace('.', ',') + ' × ' + S.wid.toFixed(1).replace('.', ',') + ' m']);

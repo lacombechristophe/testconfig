@@ -26,6 +26,8 @@
   };
   var savedState = loadSavedState();
   var lastFocus = null;
+  var modalLastFocus = null;
+  var detailLastFocus = null;
 
   var shell = document.createElement('section');
   shell.className = 'advisor-shell';
@@ -68,7 +70,7 @@
       + '  <header class="advisor-header">'
       + '    <div class="advisor-header-row">'
       + '      <a class="advisor-brand" href="https://diskoov.fr" aria-label="Diskoov, retour au site"><span class="advisor-brand-mark" aria-hidden="true">D</span><span>Diskoov</span></a>'
-      + '      <button type="button" class="advisor-help" data-action="direct" aria-label="Voir directement les produits">Produits</button>'
+      + '      <button type="button" class="advisor-help" data-action="direct" aria-label="Accès direct aux produits">Accès direct</button>'
       + '    </div>'
       + '    <div class="advisor-progress" data-advisor-progress></div>'
       + '  </header>'
@@ -108,8 +110,8 @@
       else if (action === 'compare') { state.compare = !state.compare; trackAdvisor('advisor_compare_open', { open: state.compare }); render({ preserveScroll: true, focusTitle: false }); }
       else if (action === 'choose') openConfigurator(target.getAttribute('data-product'), 'guided');
       else if (action === 'direct-product') openConfigurator(target.getAttribute('data-product'), 'direct');
-      else if (action === 'details') openProductDetails(target.getAttribute('data-product'));
-      else if (action === 'preview') openPreview(target.getAttribute('data-image'), target.getAttribute('data-alt'));
+      else if (action === 'details') openProductDetails(target.getAttribute('data-product'), target);
+      else if (action === 'preview') openPreview(target.getAttribute('data-image'), target.getAttribute('data-alt'), target);
       else if (action === 'close-preview') closePreview();
       else if (action === 'close-details') closeProductDetails();
       else if (action === 'restart') restartAdvisor();
@@ -134,6 +136,8 @@
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && modal.classList.contains('is-open')) closePreview();
       if (event.key === 'Escape' && detailModal.classList.contains('is-open')) closeProductDetails();
+      if (event.key === 'Tab' && detailModal.classList.contains('is-open')) trapFocus(event, detailContent);
+      else if (event.key === 'Tab' && modal.classList.contains('is-open')) trapFocus(event, modal);
     });
   }
 
@@ -322,8 +326,8 @@
       + '<h1 class="advisor-title">Trouvez la protection adaptée à votre piscine.</h1>'
       + '<p class="advisor-subtitle">Vous n’avez pas besoin de connaître les produits. Décrivez simplement votre bassin et ce qui compte pour vous : nous comparerons les solutions compatibles.</p>'
       + '<div class="advisor-welcome-actions">'
-      + '  <button type="button" class="advisor-button" data-action="start">Trouver ma solution <span aria-hidden="true">→</span></button>'
-      + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Voir directement les produits</button>'
+      + '  <button type="button" class="advisor-button" data-action="start">Trouver la protection adaptée <span aria-hidden="true">→</span></button>'
+      + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Je sais déjà quel produit je veux</button>'
       + '</div>'
       + resume
       + '<div class="advisor-solution-preview" aria-label="Familles de protections comparées">'
@@ -419,7 +423,7 @@
       ['under5', 'Moins de 5 000 €'], ['5_10', '5 000 à 10 000 €'], ['10_15', '10 000 à 15 000 €'],
       ['15_25', '15 000 à 25 000 €'], ['over25', 'Plus de 25 000 €'], ['unknown', 'Je ne sais pas encore']
     ];
-    var delays = [['urg', 'Avant l’été'], ['6m', 'Dans les 6 mois'], ['1a', 'Dans l’année'], ['ref', 'Je réfléchis'], ['unknown', 'Pas de date précise']];
+    var delays = [['urg', 'Dès que possible'], ['6m', 'Dans les 6 mois'], ['1a', 'Dans l’année'], ['ref', 'Je réfléchis'], ['unknown', 'Pas de date précise']];
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre projet</div>'
       + '<h1 class="advisor-title">Deux dernières indications pour mieux vous guider.</h1>'
@@ -464,8 +468,8 @@
     var area = Math.round((state.length * state.width) * 10) / 10;
     return '<div class="advisor-results-summary" aria-label="Résumé de votre projet">'
       + '<div><strong>' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m</strong><span>Bassin déclaré · ' + numberLabel(area) + ' m²</span></div>'
-      + '<div><strong>' + state.results.recommendations.length + ' recommandations</strong><span>Classées selon vos attentes</span></div>'
-      + '<div><strong>Estimation prudente</strong><span>Prix affiché seulement si les données suffisent</span></div>'
+      + '<div><strong>' + state.results.recommendations.length + ' solutions proposées</strong><span>À confirmer avec l’équipe Diskoov</span></div>'
+      + '<div><strong>Estimation indicative</strong><span>Affichée quand les informations sont suffisantes</span></div>'
       + '</div>';
   }
 
@@ -473,6 +477,7 @@
     var benefits = commercialBenefits(item);
     var tradeoff = productTradeoff(item);
     var match = priorityFit(item);
+    var status = resultStatusLabel(item, index);
     var fallback = '<div class="advisor-fallback-visual advisor-fallback-visual--' + safeClass(item.family) + '">'
       + '<span class="advisor-fallback-icon">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>'
       + '<span class="advisor-fallback-label">' + escapeHtml(item.category) + '</span>'
@@ -482,22 +487,29 @@
       : '<div class="advisor-result-media advisor-result-media--fallback" aria-hidden="true">' + fallback + (index === 0 ? '<span class="advisor-result-rank">Meilleur choix</span>' : '') + '</div>';
     return '<article class="advisor-result' + (index === 0 && !state.showAll ? ' advisor-result--featured' : '') + '">'
       + media
-      + '<div class="advisor-result-content"><div class="advisor-result-category"><span>' + escapeHtml(item.category) + '</span><span class="advisor-result-match">' + (index === 0 && !state.showAll ? 'Recommandée' : 'Compatible') + '</span></div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
+      + '<div class="advisor-result-content"><div class="advisor-result-category"><span>' + escapeHtml(item.category) + '</span><span class="advisor-result-match advisor-result-match--' + safeClass(status.key) + '">' + escapeHtml(status.label) + '</span></div><h2 class="advisor-result-title">' + escapeHtml(item.title) + '</h2><p class="advisor-result-description">' + escapeHtml(item.description) + '</p>'
       + '<div class="advisor-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
       + '<div class="advisor-reasons">' + item.reasons.map(function (reason) { return '<span class="advisor-reason">' + escapeHtml(reason) + '</span>'; }).join('') + '</div>'
       + '<p class="advisor-card-proof"><strong>Pourquoi elle ressort</strong><span>' + escapeHtml(match) + '</span></p>'
       + '<p class="advisor-tradeoff"><strong>À savoir</strong> ' + escapeHtml(tradeoff) + '</p></div>'
-      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Détails</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Configurer <span aria-hidden="true">→</span></button></div><span class="advisor-cta-note">Sans engagement</span></div>'
+      + '<div class="advisor-result-cta"><div class="advisor-estimate">' + escapeHtml(item.estimate) + '</div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Détails</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Continuer avec cette solution <span aria-hidden="true">→</span></button></div><span class="advisor-cta-note">Sans engagement</span></div>'
       + '</article>';
+  }
+
+  function resultStatusLabel(item, index) {
+    if (item.certainty === 'custom') return { key: 'custom', label: 'Sur mesure' };
+    if (item.certainty === 'to_confirm') return { key: 'to-confirm', label: 'À vérifier' };
+    if (index === 0 && !state.showAll) return { key: 'recommended', label: 'Recommandée' };
+    return { key: 'compatible', label: 'Compatible' };
   }
 
   function commercialBenefits(item) {
     var map = {
       ore_compact: ['Pose incluse', 'Jusqu’à 7 × 3,5 m'],
       ore_essential: ['4 saisons', 'Jusqu’à 12 × 5 m'],
-      auto: ['Rails 10 mm', 'Pose fabricant'],
-      semi: ['NF P90-308', 'Prix maîtrisé'],
-      eden: ['Sur mesure', 'NF P90-308'],
+      auto: ['Rails extra-plats', 'Pose fabricant'],
+      semi: ['Norme sécurité', 'Prix maîtrisé'],
+      eden: ['Sur mesure', 'Norme sécurité'],
       bab: ['Garantie 3 ans', 'Budget maîtrisé'],
       volet_hs: ['Jusqu’à 12 × 6 m', 'Automatique'],
       volet_immerge: ['Jusqu’à 14 × 6 m', 'Très discret'],
@@ -548,9 +560,10 @@
     return map[item.id] || 'Votre bassin correspond aux limites connues et mérite une vérification plus précise.';
   }
 
-  function openProductDetails(productId) {
+  function openProductDetails(productId, trigger) {
     var item = findResultProduct(productId);
     if (!item || !detailModal || !detailContent) return;
+    detailLastFocus = trigger || document.activeElement;
     detailContent.innerHTML = productDetailTemplate(item);
     detailModal.classList.add('is-open');
     detailModal.setAttribute('aria-hidden', 'false');
@@ -564,6 +577,8 @@
     detailModal.classList.remove('is-open');
     detailModal.setAttribute('aria-hidden', 'true');
     detailContent.innerHTML = '';
+    restoreFocus(detailLastFocus);
+    detailLastFocus = null;
   }
 
   function findResultProduct(productId) {
@@ -593,7 +608,7 @@
       + '<ul class="advisor-detail-list">' + bullets.map(function (bullet) { return '<li>' + escapeHtml(bullet) + '</li>'; }).join('') + '</ul>'
       + '<div class="advisor-detail-section advisor-detail-section--notice"><strong>À vérifier ensemble</strong><p>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + (reasons.length ? '<div class="advisor-detail-fit"><strong>Adapté à votre projet</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
-      + '<div class="advisor-detail-footer"><span>' + escapeHtml(item.estimate || 'Estimation personnalisée') + '</span><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Configurer cette solution <span aria-hidden="true">→</span></button></div>'
+      + '<div class="advisor-detail-footer"><span>' + escapeHtml(item.estimate || 'Estimation personnalisée') + '</span><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Continuer avec cette solution <span aria-hidden="true">→</span></button></div>'
       + '</div>';
   }
 
@@ -617,9 +632,9 @@
     var map = {
       ore_compact: ['Adaptée aux bassins jusqu’à 7 × 3,5 m.', 'Deux blocs de guidage avec axe inox et motorisation.', 'Sangles de sécurité, anti-vent et hivernage prévues.'],
       ore_essential: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Pose par deux techniciens selon la prestation retenue.', 'Options utiles possibles : solaire, découpe bloc, sangles et recul.'],
-      auto: ['Système breveté avec rails extra-plats de 10 mm.', 'Membrane PVC armé et conformité NF P90-308.', 'Ouverture/fermeture rapide avec motorisation solaire selon modèle.'],
-      semi: ['Même logique de couverture tendue Coverseal.', 'Conforme NF P90-308 selon la page Diskoov.', 'Compromis pertinent pour une solution premium au meilleur prix.'],
-      eden: ['Conforme NF P90-308.', 'Ouverture et fermeture motorisées sans effort.', 'Limite l’évaporation, les pertes de chaleur et l’entretien.'],
+      auto: ['Système breveté avec rails extra-plats de 10 mm.', 'Membrane PVC armé et norme sécurité NF P90-308.', 'Ouverture/fermeture rapide avec motorisation solaire selon modèle.'],
+      semi: ['Même logique de couverture tendue Coverseal.', 'Norme sécurité NF P90-308 selon la page Diskoov.', 'Compromis pertinent pour une solution premium au meilleur prix.'],
+      eden: ['Norme sécurité NF P90-308.', 'Ouverture et fermeture motorisées sans effort.', 'Limite l’évaporation, les pertes de chaleur et l’entretien.'],
       bab: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Surface prévue avec débord autour du bassin.', 'Garantie 3 ans.'],
       volet_hs: ['Adapté aux bassins jusqu’à 12 × 6 m.', 'Lames dimensionnées pour respecter la sécurité.', 'Livraison et pose qualifiées selon le département.'],
       volet_immerge: ['Adapté aux bassins jusqu’à 14 × 6 m.', 'Très pertinent pour une intégration simple avec flasques sur paroi.', 'Fond de bassin, caillebotis ou mur étudiés sur mesure.'],
@@ -637,10 +652,17 @@
       ['Saison prolongée', function (p) { return p.strengths.indexOf('season') !== -1 ? 'Oui' : 'Protection principalement'; }],
       ['Estimation', function (p) { return p.estimate; }]
     ];
+    var mobileCards = '<div class="advisor-compare-mobile">'
+      + products.map(function (p) {
+        return '<article class="advisor-compare-card"><h3>' + escapeHtml(p.title) + '</h3>'
+          + criteria.map(function (row) { return '<p><strong>' + escapeHtml(row[0]) + '</strong><span>' + escapeHtml(row[1](p)) + '</span></p>'; }).join('')
+          + '</article>';
+      }).join('')
+      + '</div>';
     return '<section class="advisor-compare" aria-label="Comparatif des solutions"><h2 class="advisor-compare-title">Comparatif rapide</h2><table><thead><tr><th>Critère</th>'
       + products.map(function (p) { return '<th>' + escapeHtml(p.title) + '</th>'; }).join('') + '</tr></thead><tbody>'
       + criteria.map(function (row) { return '<tr><td>' + row[0] + '</td>' + products.map(function (p) { return '<td>' + escapeHtml(row[1](p)) + '</td>'; }).join('') + '</tr>'; }).join('')
-      + '</tbody></table></section>';
+      + '</tbody></table>' + mobileCards + '</section>';
   }
 
   function directTemplate() {
@@ -653,7 +675,7 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Accès direct</div>'
       + '<h1 class="advisor-title">Choisissez votre produit.</h1>'
-      + '<p class="advisor-subtitle">Si vous connaissez déjà la solution souhaitée, commencez ici. Vous pouvez aussi ouvrir les détails pour comparer rapidement les usages avant de configurer.</p>'
+      + '<p class="advisor-subtitle">Si vous connaissez déjà la solution souhaitée, commencez ici. Le configurateur vérifiera ensuite vos dimensions, les accès et les contraintes de pose.</p>'
       + '<div class="advisor-direct-groups">'
       + groups.map(function (group) {
         return '<section><h2 class="advisor-direct-group-title">' + group[0] + '</h2><div class="advisor-direct-list">'
@@ -663,7 +685,7 @@
             var media = item.image
               ? '<span class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" loading="lazy"></span>'
               : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
-            return '<article class="advisor-direct-item">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-category">' + escapeHtml(item.category) + '</span><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span><span class="advisor-direct-benefits">' + directBenefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</span></span><span class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Détails</button><button type="button" class="advisor-direct-main" data-action="direct-product" data-product="' + id + '">Configurer <span aria-hidden="true">→</span></button></span></article>';
+            return '<article class="advisor-direct-item">' + media + '<span class="advisor-direct-copy"><span class="advisor-direct-category">' + escapeHtml(item.category) + '</span><span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(item.description) + '</span><span class="advisor-direct-benefits">' + directBenefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</span></span><span class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Détails</button><button type="button" class="advisor-direct-main" data-action="direct-product" data-product="' + id + '">Vérifier ce produit <span aria-hidden="true">→</span></button></span></article>';
           }).join('') + '</div></section>';
       }).join('')
       + '</div></div>';
@@ -674,13 +696,21 @@
     var nextDisabled = state.screen === 'priorities' && !state.priorities.length;
     var nextLabel = state.screen === 'project' ? 'Voir mes recommandations' : 'Continuer';
     var showNext = ['priorities', 'pool', 'project'].indexOf(state.screen) !== -1;
-    var backLabel = state.screen === 'results' ? 'Modifier mes réponses' : 'Retour';
+    var backLabel = state.screen === 'results' ? 'Modifier' : 'Retour';
     var recommended = state.screen === 'results' && state.results && state.results.recommendations && state.results.recommendations[0];
     return '<div class="advisor-footer-note">L’estimation sera affinée avec les détails de pose et d’accès.</div><div class="advisor-footer-actions">'
       + '<button type="button" class="advisor-button advisor-button--text" data-action="back">← ' + backLabel + '</button>'
-      + (recommended ? '<button type="button" class="advisor-button" data-action="choose" data-product="' + recommended.id + '">Choisir cette solution <span aria-hidden="true">→</span></button>' : '')
+      + (recommended ? '<button type="button" class="advisor-button" data-action="choose" data-product="' + recommended.id + '">Continuer avec ' + escapeHtml(shortProductTitle(recommended)) + ' <span aria-hidden="true">→</span></button>' : '')
       + (showNext ? '<button type="button" class="advisor-button" data-action="next"' + (nextDisabled ? ' disabled' : '') + '>' + nextLabel + ' <span aria-hidden="true">→</span></button>' : '')
       + '</div>';
+  }
+
+  function shortProductTitle(item) {
+    return String(item && item.title || 'cette solution')
+      .replace('Coverseal automatique', 'Coverseal auto')
+      .replace('Coverseal semi-automatique', 'Coverseal semi-auto')
+      .replace('Terrasse mobile ', '')
+      .replace('Bâche à barres ', '');
   }
 
   function updateProgress() {
@@ -728,21 +758,28 @@
     if (source === 'guided') {
       syncPoolState();
       document.body.classList.add('diskoov-guided-config');
-      updateGuidedSummary(item);
+      updateConfiguratorSummary(item, 'guided');
     } else {
       document.body.classList.remove('diskoov-guided-config');
-      removeGuidedSummary();
+      updateConfiguratorSummary(item, 'direct');
     }
 
+    var canSelectExact = source !== 'direct' || directSelectionAllowed(item);
     if (typeof window.selEq === 'function') window.selEq(item.eq);
-    if (item.selectionType === 'cm' && typeof window.selCM === 'function') window.selCM(item.selectionValue);
-    if (item.selectionType === 'sm' && typeof window.selSM === 'function') window.selSM(item.selectionValue);
-    if (item.selectionType === 'otherProduct' && typeof window.selOtherProduct === 'function') window.selOtherProduct(item.selectionValue);
+    if (canSelectExact && item.selectionType === 'cm' && typeof window.selCM === 'function') window.selCM(item.selectionValue);
+    if (canSelectExact && item.selectionType === 'sm' && typeof window.selSM === 'function') window.selSM(item.selectionValue);
+    if (canSelectExact && item.selectionType === 'otherProduct' && typeof window.selOtherProduct === 'function') window.selOtherProduct(item.selectionValue);
 
     if (source === 'guided' && state.delay !== 'unknown') syncDelay();
     closeAdvisor();
     var panelBody = document.getElementById('pbdy');
-    if (panelBody) panelBody.scrollTo({ top: 0, behavior: 'smooth' });
+    if (panelBody) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          panelBody.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
     trackAdvisor(source === 'guided' ? 'advisor_recommendation_select' : 'advisor_direct_select', { product: productId });
   }
 
@@ -761,13 +798,32 @@
     if (button && typeof window.selTL === 'function') window.selTL(state.delay, button);
   }
 
+  function directSelectionAllowed(item) {
+    if (item.id === 'auto' || item.id === 'semi' || item.id === 'eden') return true;
+    if (!rules || typeof rules.calculate !== 'function') return true;
+    var result = rules.calculate(item.id, {
+      length: state.length,
+      width: state.width,
+      shape: state.shape,
+      installation: 'fourniture_pose',
+      support: 'beton',
+      margelles: 'niveau',
+      clearance: '80_plus',
+      electricity: 'oui',
+      department: '69 - Rhône',
+      immergedIntegration: 'paroi',
+      options: {}
+    });
+    return !result || result.eligible !== false;
+  }
+
   function prepareLegacyConfigurator() {
     var photo = document.getElementById('s-pool-photo');
     var form = document.getElementById('s-frm');
     if (photo && form && form.parentNode) form.parentNode.insertBefore(photo, form);
   }
 
-  function updateGuidedSummary(item) {
+  function updateConfiguratorSummary(item, mode) {
     var summary = document.getElementById('guided-summary');
     if (!summary) {
       summary = document.createElement('div');
@@ -776,8 +832,13 @@
       var pbdy = document.getElementById('pbdy');
       if (pbdy) pbdy.insertBefore(summary, pbdy.firstChild);
     }
-    summary.innerHTML = '<div class="guided-summary-kicker">Solution recommandée</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">Bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m · finalisez les détails techniques</div></div><button type="button" data-open-advisor>Changer</button></div>';
-    summary.querySelector('[data-open-advisor]').addEventListener('click', function () { openAdvisor('results', true); });
+    var guided = mode === 'guided';
+    var meta = guided
+      ? 'Cohérente avec votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Il reste quelques détails à confirmer pour préparer une première estimation fiable.'
+      : 'Renseignez vos dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
+    var proof = guided ? '<div class="guided-summary-proof">' + escapeHtml(priorityFit(item)) + '</div>' : '';
+    summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Solution conseillée' : 'Produit à vérifier') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor>' + (guided ? 'Changer' : 'Comparer') + '</button></div>';
+    summary.querySelector('[data-open-advisor]').addEventListener('click', function () { openAdvisor(guided ? 'results' : 'direct', true); });
   }
 
   function removeGuidedSummary() {
@@ -797,8 +858,9 @@
     header.appendChild(button);
   }
 
-  function openPreview(src, alt) {
+  function openPreview(src, alt, trigger) {
     if (!src) return;
+    modalLastFocus = trigger || document.activeElement;
     modalImage.src = src;
     modalImage.alt = alt || 'Photo du produit';
     modal.classList.add('is-open');
@@ -810,6 +872,33 @@
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     modalImage.removeAttribute('src');
+    restoreFocus(modalLastFocus);
+    modalLastFocus = null;
+  }
+
+  function restoreFocus(node) {
+    if (node && document.contains(node) && typeof node.focus === 'function') {
+      node.focus({ preventScroll: true });
+    }
+  }
+
+  function trapFocus(event, container) {
+    if (!container) return;
+    var focusable = Array.prototype.slice.call(container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+      .filter(function (node) { return node.offsetParent !== null || node === document.activeElement; });
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   function updateSurfaceLabel() {

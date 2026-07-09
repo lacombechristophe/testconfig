@@ -1077,7 +1077,7 @@
     font-size: 0;
     text-decoration: none;
   }
-  .advisor-help::after { content: 'Produits'; font-size: 11px; }
+  .advisor-help::after { content: 'Accès direct'; font-size: 11px; }
 
   .advisor-screen {
     width: 100%;
@@ -1873,7 +1873,7 @@
   }
 
   .advisor-help::after {
-    content: 'Produits';
+    content: 'Accès direct';
     font-size: 12px;
   }
 
@@ -3433,4 +3433,207 @@
 .advisor-choice.is-selected:focus-visible {
   outline-color: rgba(59, 131, 149, .24);
   box-shadow: 0 10px 26px rgba(16, 37, 28, .055);
+}
+
+/* Conversion/QA pass: clearer status semantics and stronger mobile resilience */
+.advisor-result-match--to-confirm {
+  background: #fff7e8;
+  color: #806126;
+}
+
+.advisor-result-match--custom {
+  background: #eef3f8;
+  color: #36556f;
+}
+
+.advisor-result-match--compatible,
+.advisor-result-match--recommended {
+  background: #eef7f5;
+  color: #2b6670;
+}
+
+.guided-summary-proof {
+  margin-top: 7px;
+  color: #365f66;
+  font-size: 10px;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.advisor-compare-mobile {
+  display: none;
+}
+
+.advisor-compare-card {
+  padding: 14px;
+  border: 1px solid rgba(16, 37, 28, .08);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.advisor-compare-card h3 {
+  margin: 0 0 10px;
+  color: var(--v2-forest);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.advisor-compare-card p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 10px 0;
+  border-top: 1px solid rgba(16, 37, 28, .08);
+}
+
+.advisor-compare-card strong {
+  color: #52635a;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.advisor-compare-card span {
+  color: var(--v2-ink);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.advisor-detail-card {
+  max-height: min(760px, calc(100svh - 36px));
+}
+
+.advisor-detail-body {
+  min-height: 0;
+}
+
+.advisor-detail-footer {
+  position: sticky;
+  bottom: -1px;
+  z-index: 1;
+  margin: 20px -34px -28px;
+  padding: 14px 34px 16px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 -14px 28px rgba(16, 37, 28, .07);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 900px) {
+  .advisor-shell[data-screen="results"] .advisor-screen {
+    padding-bottom: 26px;
+  }
+
+  .advisor-result {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  .advisor-result-media {
+    grid-column: 1 !important;
+    width: auto;
+    min-height: 180px;
+    margin: 10px 10px 0 !important;
+  }
+
+  .advisor-result-content {
+    grid-column: 1 !important;
+    padding: 14px 14px 8px !important;
+  }
+
+  .advisor-result-cta {
+    grid-column: 1 !important;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px 14px 14px !important;
+  }
+
+  .advisor-result-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .advisor-result-buttons .advisor-button,
+  .advisor-result-buttons .advisor-info-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .advisor-compare table {
+    display: none;
+  }
+
+  .advisor-compare-mobile {
+    display: grid;
+    gap: 10px;
+  }
+
+  .advisor-footer {
+    display: block;
+  }
+
+  .advisor-footer-note {
+    display: none;
+  }
+
+  .advisor-shell[data-screen="results"] .advisor-footer-actions {
+    grid-template-columns: minmax(0, .58fr) minmax(0, 1.42fr);
+  }
+
+  .advisor-footer .advisor-button--text {
+    padding-inline: 8px;
+  }
+
+  .advisor-direct-main {
+    white-space: normal;
+  }
+
+  .advisor-detail-modal {
+    padding: 12px;
+  }
+
+  .advisor-detail-card {
+    width: min(560px, 96vw);
+    max-height: calc(100svh - 24px);
+    grid-template-columns: 1fr;
+    overflow: auto;
+    border-radius: 20px;
+  }
+
+  .advisor-detail-media {
+    min-height: 180px;
+    max-height: 220px;
+  }
+
+  .advisor-detail-body {
+    overflow: visible;
+    padding: 22px;
+  }
+
+  .advisor-detail-footer {
+    margin: 18px -22px -22px;
+    padding: 12px 22px 14px;
+  }
+}
+
+@media (max-width: 430px) {
+  .advisor-result-media {
+    min-height: 168px;
+  }
+
+  .advisor-result-category {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .advisor-result-buttons .advisor-button {
+    min-height: 46px;
+    font-size: 11px;
+  }
+
+  .advisor-shell[data-screen="results"] .advisor-footer-actions {
+    grid-template-columns: minmax(82px, .52fr) minmax(0, 1.48fr);
+  }
 }
