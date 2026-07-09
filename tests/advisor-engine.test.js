@@ -17,6 +17,14 @@ test('une contrainte technique dure exclut le produit des recommandations', func
   assert.equal(result.excluded.some(function (r) { return r.id === 'ore_compact'; }), true);
 });
 
+test('le conseiller ne confond pas plage dimensionnelle et compatibilité de pose', function () {
+  var result = advisor.recommend({ priorities: ['safety', 'clean'], shape: 'rect', length: 8, width: 4 }, rules);
+  var checked = result.compatible.filter(function (item) { return item.certainty === 'dimension_fit'; });
+  assert.ok(checked.length > 0);
+  assert.equal(result.compatible.some(function (item) { return item.certainty === 'compatible'; }), false);
+  assert.ok(checked.every(function (item) { return item.reasons.indexOf('Dimensions dans la plage connue') !== -1; }));
+});
+
 test('une forme libre privilégie les solutions étudiées sur mesure', function () {
   var result = advisor.recommend({ priorities: ['aesthetics', 'space'], shape: 'libre', length: 8, width: 4 }, rules);
   assert.ok(['eden', 'masterdeck'].indexOf(result.recommendations[0].id) !== -1);
