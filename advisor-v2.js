@@ -17,6 +17,7 @@
     shape: 'rect',
     length: 8,
     width: 4,
+    projectStage: 'unknown',
     budget: 'unknown',
     delay: 'unknown',
     results: null,
@@ -29,6 +30,7 @@
   var lastFocus = null;
   var modalLastFocus = null;
   var detailLastFocus = null;
+  var focusScreenTitleOnRender = false;
 
   var shell = document.createElement('section');
   shell.className = 'advisor-shell';
@@ -108,6 +110,7 @@
       else if (action === 'shape') setStateValue('shape', target.getAttribute('data-value'));
       else if (action === 'budget') setSimpleChoice('budget', target.getAttribute('data-value'));
       else if (action === 'delay') setSimpleChoice('delay', target.getAttribute('data-value'));
+      else if (action === 'project-stage') setSimpleChoice('projectStage', target.getAttribute('data-value'));
       else if (action === 'back') goBack();
       else if (action === 'next') goNext();
       else if (action === 'show-all') { state.showAll = !state.showAll; render({ preserveScroll: true, focusTitle: false }); }
@@ -137,7 +140,11 @@
       if (event.target === detailModal) closeProductDetails();
     });
 
+    document.addEventListener('pointerdown', function () {
+      focusScreenTitleOnRender = false;
+    }, true);
     document.addEventListener('keydown', function (event) {
+      if (event.key === 'Tab' || event.key === 'Enter' || event.key === ' ') focusScreenTitleOnRender = true;
       if (event.key === 'Escape' && modal.classList.contains('is-open')) closePreview();
       if (event.key === 'Escape' && detailModal.classList.contains('is-open')) closeProductDetails();
       if (event.key === 'Tab' && detailModal.classList.contains('is-open')) trapFocus(event, detailContent);
@@ -190,7 +197,7 @@
     savedState = null;
     state = {
       screen: 'welcome', history: [], priorities: [], shape: 'rect', length: 8, width: 4,
-      budget: 'unknown', delay: 'unknown', results: null, showAll: false, compare: false, directFamily: '', activeProduct: ''
+      projectStage: 'unknown', budget: 'unknown', delay: 'unknown', results: null, showAll: false, compare: false, directFamily: '', activeProduct: ''
     };
     document.body.classList.remove('diskoov-guided-config');
     render({ resetScroll: true });
@@ -286,6 +293,8 @@
 
   function render(options) {
     options = options || {};
+    var shouldFocusTitle = options.focusTitle !== false && focusScreenTitleOnRender;
+    focusScreenTitleOnRender = false;
     var previousTop = body.scrollTop || 0;
     shell.setAttribute('data-screen', state.screen);
     updateHeaderAction();
@@ -302,7 +311,7 @@
       body.scrollTop = 0;
     }
     if (state.screen !== 'welcome' && state.screen !== 'direct') saveState();
-    if (options.focusTitle === false) return;
+    if (!shouldFocusTitle) return;
     requestAnimationFrame(function () {
       var title = body.querySelector('h1, h2');
       if (title) {
@@ -416,15 +425,24 @@
       ['15_25', '15 000 à 25 000 €'], ['over25', 'Plus de 25 000 €'], ['unknown', 'Je ne sais pas encore']
     ];
     var delays = [['urg', 'Dès que possible'], ['6m', 'Dans les 6 mois'], ['1a', 'Dans l’année'], ['ref', 'Je réfléchis'], ['unknown', 'Pas de date précise']];
+    var stages = [['existing', 'Déjà construite'], ['construction', 'En construction'], ['renovation', 'À rénover'], ['planning', 'En réflexion']];
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre projet</div>'
       + '<h1 class="advisor-title">Deux dernières indications pour mieux vous guider.</h1>'
       + '<p class="advisor-subtitle">Ces réponses nous aident à classer les solutions. Vous pouvez rester approximatif : les détails seront confirmés ensuite.</p>'
+      + '<fieldset class="advisor-project-context"><legend>Où en est votre piscine ? <span>Facultatif</span></legend>'
+      + '<p>Cette information aide Diskoov à préparer les bons points techniques pour votre étude.</p>'
+      + '<div class="advisor-project-context-options">' + stages.map(projectStageButton).join('') + '</div></fieldset>'
       + '<div class="advisor-options-grid">'
       + optionGroup('Budget envisagé', 'budget', budgets, state.budget)
       + optionGroup('Horizon du projet', 'delay', delays, state.delay)
       + '</div>'
       + '</div>';
+  }
+
+  function projectStageButton(option) {
+    var selected = option[0] === state.projectStage;
+    return '<button type="button" class="advisor-project-stage-option' + (selected ? ' is-selected' : '') + '" data-action="project-stage" data-value="' + option[0] + '" aria-pressed="' + selected + '">' + option[1] + '</button>';
   }
 
   function optionGroup(title, action, options, selectedValue) {
@@ -447,7 +465,7 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-results-head"><div>'
       + '  <div class="advisor-step-label">Nos recommandations</div>'
-      + '  <h1 class="advisor-title">Voici les pistes à étudier.</h1>'
+      + '  <h1 class="advisor-title">Les pistes les plus pertinentes pour votre projet.</h1>'
       + '  <p class="advisor-subtitle">Pour votre bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m, classées selon vos attentes. Les conditions de pose sont vérifiées avant tout devis.</p>'
       + '</div><div class="advisor-result-actions"><button type="button" class="advisor-button advisor-button--secondary" data-action="compare">' + (state.compare ? 'Masquer le comparatif' : 'Comparer les pistes') + '</button><button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
       + resultsSummaryTemplate()
@@ -490,7 +508,8 @@
       + '<h2>' + escapeHtml(item.title) + '</h2><p class="advisor-primary-lead">' + escapeHtml(productBestFor(item)) + '</p>'
       + '<div class="advisor-benefits">' + benefits.map(function (benefit) { return '<span>' + escapeHtml(benefit) + '</span>'; }).join('') + '</div>'
       + '<dl class="advisor-primary-facts"><div><dt>Pourquoi cette piste</dt><dd>' + escapeHtml(match) + '</dd></div><div><dt>À vérifier</dt><dd>' + escapeHtml(tradeoff) + '</dd></div></dl>'
-      + '<div class="advisor-primary-actions"><div><strong>' + escapeHtml(item.estimate) + '</strong><span>Sans engagement</span></div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Voir les détails</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Obtenir une étude <span aria-hidden="true">→</span></button></div></div></div>'
+      + '<div class="advisor-primary-actions"><div><strong>' + escapeHtml(item.estimate) + '</strong><span>Étude de pose avant devis</span></div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Voir les détails</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Obtenir une étude <span aria-hidden="true">→</span></button></div></div>'
+      + '<p class="advisor-primary-next"><strong>Après votre choix :</strong> précisez l’installation et, si vous en avez une, joignez une photo du bassin. Elle aide à vérifier les abords et l’accès.</p></div>'
       + '</article>';
   }
 
@@ -730,6 +749,7 @@
 
   function footerTemplate() {
     if (state.screen === 'welcome') return '<div class="advisor-footer-note">Conseil sans engagement · Vos réponses restent sur cet appareil jusqu’à l’envoi du formulaire.</div>';
+    if (state.screen === 'direct') return '<div class="advisor-footer-actions advisor-footer-actions--direct"><button type="button" class="advisor-button advisor-button--text" data-action="back">← Retour</button></div>';
     var nextDisabled = state.screen === 'priorities' && !state.priorities.length;
     var nextLabel = state.screen === 'project' ? 'Voir mes pistes' : 'Continuer';
     var showNext = ['priorities', 'pool', 'project'].indexOf(state.screen) !== -1;
@@ -812,9 +832,11 @@
 
     if (source === 'guided') {
       syncPoolState();
+      if (typeof window.setAdvisorProjectStage === 'function') window.setAdvisorProjectStage(projectStageLabel(state.projectStage));
       document.body.classList.add('diskoov-guided-config');
       updateConfiguratorSummary(item, 'guided');
     } else {
+      if (typeof window.setAdvisorProjectStage === 'function') window.setAdvisorProjectStage('');
       document.body.classList.remove('diskoov-guided-config');
       updateConfiguratorSummary(item, 'direct');
     }
@@ -888,11 +910,15 @@
       if (pbdy) pbdy.insertBefore(summary, pbdy.firstChild);
     }
     var guided = mode === 'guided';
+    var projectStage = guided ? projectStageLabel(state.projectStage) : '';
     var meta = guided
-      ? 'Pré-sélectionnée pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Il reste les détails de pose et d’accès à vérifier avant toute proposition détaillée.'
+      ? 'Pré-sélectionnée pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m' + (projectStage ? ' · ' + projectStage : '') + '. Il reste les détails de pose et d’accès à vérifier avant toute proposition détaillée.'
       : 'Renseignez vos dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
     var proof = guided ? '<div class="guided-summary-proof">' + escapeHtml(priorityFit(item)) + '</div>' : '';
-    summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Piste sélectionnée' : 'Produit à vérifier') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor>' + (guided ? 'Comparer' : 'Voir les familles') + '</button></div>';
+    var next = guided
+      ? '<div class="guided-summary-next"><strong>Prochaine étape</strong><span>Précisez la pose et les accès. Une photo, si vous en avez une, aide à vérifier les abords du bassin.</span></div>'
+      : '<div class="guided-summary-next"><strong>Prochaine étape</strong><span>Indiquez les dimensions et les détails de pose pour préparer votre demande.</span></div>';
+    summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Votre sélection Diskoov' : 'Produit à vérifier') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor>' + (guided ? 'Revoir les pistes' : 'Voir les familles') + '</button></div>' + next;
     summary.querySelector('[data-open-advisor]').addEventListener('click', function () { openAdvisor(guided ? 'results' : 'direct', true); });
   }
 
@@ -979,6 +1005,16 @@
     return Number(value).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
   }
 
+  function projectStageLabel(value) {
+    var labels = {
+      existing: 'Bassin déjà construit',
+      construction: 'Piscine en construction',
+      renovation: 'Piscine à rénover',
+      planning: 'Projet en réflexion'
+    };
+    return labels[value] || '';
+  }
+
   function saveState() {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -987,6 +1023,7 @@
         shape: state.shape,
         length: state.length,
         width: state.width,
+        projectStage: state.projectStage,
         budget: state.budget,
         delay: state.delay,
         activeProduct: state.activeProduct

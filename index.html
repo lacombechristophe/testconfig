@@ -2682,7 +2682,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260709-conversion17">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260710-guidance19">
 
   <noscript>
     <style>
@@ -3799,8 +3799,12 @@
       babAntiAbrasion: false, babBlockCut: false, babRollingUp: false, babCutCorners: false,
       oreSolar: false, oreBlockCut: false, oreAntiWind: false, oreWinterStrap: false, oreExtraRetreat: false, oreSpecialColor: false,
       voletPoly: false, voletSolar: false, lastRuleResult: null,
-      tl: '',
+      tl: '', advisorProjectStage: '',
       fn: '', ln: '', em: '', ph: '', dept: '', src: '', note: '', ok: false, ok2: false
+    };
+
+    window.setAdvisorProjectStage = function (stage) {
+      S.advisorProjectStage = String(stage || '');
     };
 
     /* ── HELPERS ────────────────────────────────────────── */
@@ -5739,6 +5743,7 @@
         avertissements_tarifaires: rr ? (rr.warnings || []).join(' | ') : '',
         donnees_techniques: rr ? JSON.stringify(rr.technical || {}) : '',
         departement: S.dept,
+        contexte_projet: S.advisorProjectStage || '',
         delai: TLS[S.tl] || S.tl,
         commentaire: S.note || '',
         description_forme: S.planDesc || '',
@@ -5915,6 +5920,7 @@
         if (S.voletSolar) rows.push(['Alimentation volet', 'Solaire / à chiffrer']);
       }
       if (S.loc === 'int') rows.push(['Emplacement', 'Intérieur']);
+      if (S.advisorProjectStage) rows.push(['Projet', S.advisorProjectStage]);
       if (S.dept) rows.push(['Département', S.dept]);
       if (S.tl) rows.push(['Délai', TLS[S.tl] || S.tl]);
       /* Prix estimatif */
@@ -6267,7 +6273,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260709-conversion17"></script>
+  <script src="advisor-v2.js?v=20260710-guidance19"></script>
 </body>
 
 </html>
