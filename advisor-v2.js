@@ -572,7 +572,7 @@
     var title = products.length >= 3 ? 'Ce qui distingue ces trois approches' : products.length === 2 ? 'Ce qui distingue ces deux approches' : 'Ce qui caractérise cette approche';
     return '<section class="advisor-family-overview" aria-label="Vue d’ensemble des approches proposées"><div class="advisor-family-overview-head"><span class="advisor-section-kicker">En un coup d’œil</span><h2>' + title + '</h2></div><div class="advisor-family-overview-grid" style="--advisor-family-count:' + Math.max(1, products.length) + '">'
       + products.map(function (item, index) {
-        return '<article class="advisor-family-overview-item advisor-prospect--' + safeClass(item.prospectFamily) + (index === 0 ? ' is-primary' : '') + '"><span class="advisor-family-overview-icon">' + icon(familyIconName(item)) + '</span><div><strong>' + escapeHtml(prospectFamilyLabel(item)) + '</strong><span>' + escapeHtml(comparisonOperation(item)) + ' · ' + escapeHtml(comparisonPresence(item)) + '</span></div>' + (index === 0 ? '<small>Piste prioritaire</small>' : '') + '</article>';
+        return '<article class="advisor-family-overview-item advisor-prospect--' + safeClass(item.prospectFamily) + (index === 0 ? ' is-primary' : '') + '"><span class="advisor-family-overview-icon">' + icon(familyIconName(item)) + '</span><div class="advisor-family-overview-copy"><strong>' + escapeHtml(prospectFamilyLabel(item)) + '</strong><span>' + escapeHtml(comparisonOperation(item)) + ' · ' + escapeHtml(comparisonPresence(item)) + '</span>' + (index === 0 ? '<small>Piste prioritaire</small>' : '') + '</div></article>';
       }).join('') + '</div></section>';
   }
 
@@ -1480,10 +1480,10 @@
       pool: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 10c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0M6 14c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0"/>',
       install: '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/>',
       mechanism: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1"/><path d="M12 12h8M17 9v6"/>',
-      cover: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 10h16M8 6v12M16 6v12"/>',
+      cover: '<rect x="3.5" y="6" width="17" height="12" rx="1.75"/><path d="M4 10h16M9 6.5v11M15 6.5v11"/>',
       bars: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 8h16M4 12h16M4 16h16"/>',
-      shutter: '<rect x="3" y="6" width="18" height="13" rx="2"/><circle cx="17" cy="10" r="2.5"/><path d="M4 14h16M7 14v4M11 14v4M15 14v4"/>',
-      shelter: '<path d="M3 18h18M5 18v-5a7 7 0 0 1 14 0v5M9 18v-6a3 3 0 0 1 6 0v6"/>',
+      shutter: '<circle cx="7" cy="12" r="3.5"/><path d="M10.5 8.5H20v7h-9.5M5.5 12h3M13 10.75h4.5M13 13.75h4.5"/>',
+      shelter: '<path d="M3 18h18M5 18v-5a7 7 0 0 1 14 0v5"/><path d="M9 18v-5a3 3 0 0 1 6 0v5"/>',
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
       unsure: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/>'
     };

@@ -2811,6 +2811,10 @@
   color: var(--advisor-forest);
 }
 
+.advisor-shell[data-screen='welcome'] .advisor-header {
+  padding-bottom: 12px;
+}
+
 .advisor-dimension-mode .advisor-segmented {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -2925,10 +2929,10 @@
   position: relative;
   min-width: 0;
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-columns: 36px minmax(0, 1fr);
   align-items: center;
   gap: 10px;
-  padding: 14px 14px;
+  padding: 14px;
 }
 
 .advisor-family-overview-item + .advisor-family-overview-item {
@@ -2955,18 +2959,20 @@
 }
 
 .advisor-family-overview-icon {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   border-radius: var(--advisor-radius-sm);
+  border: 1px solid rgba(47, 125, 139, .12);
   background: var(--advisor-water-soft);
   color: var(--advisor-water-dark);
 }
 
 .advisor-family-overview-icon svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .advisor-prospect--bar-cover .advisor-family-overview-icon {
@@ -2989,9 +2995,9 @@
   color: #725a42;
 }
 
-.advisor-family-overview-item strong,
-.advisor-family-overview-item span,
-.advisor-family-overview-item small {
+.advisor-family-overview-copy strong,
+.advisor-family-overview-copy > span,
+.advisor-family-overview-copy small {
   display: block;
 }
 
@@ -3001,7 +3007,7 @@
   line-height: 1.35;
 }
 
-.advisor-family-overview-item div > span {
+.advisor-family-overview-copy > span {
   margin-top: 3px;
   color: var(--advisor-muted);
   font-size: 10.5px;
@@ -3009,11 +3015,16 @@
 }
 
 .advisor-family-overview-item small {
-  grid-column: 1 / -1;
-  margin-top: -3px;
+  width: max-content;
+  margin-top: 5px;
+  padding: 2px 5px;
+  border: 1px solid #c9dcda;
+  border-radius: 4px;
+  background: #fff;
   color: var(--advisor-water-dark);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
@@ -3176,7 +3187,7 @@
   }
 
   .advisor-family-overview-item {
-    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-columns: 36px minmax(0, 1fr);
     padding: 11px 0;
   }
 
@@ -3187,12 +3198,6 @@
 
   .advisor-family-overview-item.is-primary {
     padding-inline: 10px;
-  }
-
-  .advisor-family-overview-item small {
-    grid-column: auto;
-    margin: 0;
-    text-align: right;
   }
 
   .advisor-primary-result {
@@ -3248,9 +3253,4 @@
     grid-template-columns: 34px minmax(0, 1fr);
   }
 
-  .advisor-family-overview-item small {
-    grid-column: 1 / -1;
-    padding-left: 44px;
-    text-align: left;
-  }
 }

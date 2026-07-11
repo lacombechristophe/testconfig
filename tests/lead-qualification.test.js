@@ -130,3 +130,14 @@ test('le filet local conserve un lead même si la pièce jointe dépasse le quot
   assert.match(html, /plan_base64:\s*''/);
   assert.match(html, /lightweightLeads\.map\(pendingLeadWithoutAttachment\)/);
 });
+
+test('la comparaison garde ses icones centrees et son badge dans la copie', function () {
+  assert.match(advisor, /class="advisor-family-overview-copy"[\s\S]*?\+ \(index === 0 \? '<small>Piste prioritaire<\/small>' : ''\) \+ '<\/div><\/article>'/);
+  assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item small\s*\{[^}]*grid-column/);
+  assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item span\s*[,\{]/);
+  assert.match(advisorCss, /\.advisor-family-overview-icon svg\s*\{[^}]*display:\s*block/);
+});
+
+test('l entete d accueil conserve un espace sous le bouton d acces direct', function () {
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-header\s*\{\s*padding-bottom:\s*12px;/);
+});
