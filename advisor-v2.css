@@ -197,27 +197,17 @@
 }
 
 .advisor-brand {
-  min-width: 40px;
+  min-width: 0;
   min-height: 40px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: var(--advisor-forest);
-  font-size: 14px;
-  font-weight: 800;
   text-decoration: none;
 }
 
-.advisor-brand-mark {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--advisor-radius-sm);
-  background: var(--advisor-brass);
-  color: var(--advisor-forest-deep);
-  font-size: 15px;
-  font-weight: 850;
+.advisor-brand-logo {
+  width: 110px;
+  height: auto;
+  display: block;
 }
 
 .advisor-help {
@@ -2702,8 +2692,8 @@
     padding-inline: 15px;
   }
 
-  .advisor-brand > span:last-child {
-    display: none;
+  .advisor-brand-logo {
+    width: 98px;
   }
 
   .advisor-title {

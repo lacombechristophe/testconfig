@@ -71,7 +71,7 @@
       + '<div class="advisor-panel">'
       + '  <header class="advisor-header">'
       + '    <div class="advisor-header-row">'
-      + '      <a class="advisor-brand" href="https://diskoov.fr" aria-label="Diskoov, retour au site"><span class="advisor-brand-mark" aria-hidden="true">D</span><span>Diskoov</span></a>'
+      + '      <a class="advisor-brand" href="https://diskoov.fr" aria-label="Diskoov, retour au site"><img class="advisor-brand-logo" src="assets/marque/logo-diskoov-bleu-orange.png" alt="" width="273" height="75"></a>'
       + '      <button type="button" class="advisor-help" data-action="direct" aria-label="Accès direct aux produits">Accès direct</button>'
       + '    </div>'
       + '    <div class="advisor-progress" data-advisor-progress></div>'

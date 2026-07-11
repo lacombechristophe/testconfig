@@ -141,3 +141,12 @@ test('la comparaison garde ses icones centrees et son badge dans la copie', func
 test('l entete d accueil conserve un espace sous le bouton d acces direct', function () {
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-header\s*\{\s*padding-bottom:\s*12px;/);
 });
+
+test('le logo Diskoov officiel remplace tous les monogrammes temporaires', function () {
+  var logoPath = 'assets/marque/logo-diskoov-bleu-orange.png';
+  assert.equal(fs.existsSync(path.join(root, logoPath)), true);
+  assert.match(advisor, /class="advisor-brand-logo"[^>]*src="assets\/marque\/logo-diskoov-bleu-orange\.png"[^>]*width="273" height="75"/);
+  assert.equal((html.match(/assets\/marque\/logo-diskoov-bleu-orange\.png/g) || []).length, 2);
+  assert.doesNotMatch(advisor, /advisor-brand-mark/);
+  assert.doesNotMatch(html, /class="(?:vi|ph)-mark"/);
+});
