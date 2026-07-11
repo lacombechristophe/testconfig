@@ -586,15 +586,15 @@
       }).join('') + '</div></section>';
   }
 
-  function productMedia(item, className, rank) {
+  function productMedia(item, className) {
     var fallback = '<div class="advisor-fallback-visual advisor-fallback-visual--' + safeClass(item.family) + '">'
       + '<span class="advisor-fallback-icon">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>'
       + '<span class="advisor-fallback-label">' + escapeHtml(prospectFamilyLabel(item)) + '</span>'
       + '</div>';
     if (item.image) {
-      return '<button type="button" class="' + className + ' advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + (rank ? '<span class="advisor-result-rank">Piste prioritaire</span>' : '') + '</button>';
+      return '<button type="button" class="' + className + ' advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="" width="1200" height="800" loading="lazy" decoding="async"><span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>';
     }
-    return '<div class="' + className + ' advisor-result-media--fallback" aria-hidden="true">' + fallback + (rank ? '<span class="advisor-result-rank">Piste prioritaire</span>' : '') + '</div>';
+    return '<div class="' + className + ' advisor-result-media--fallback" aria-hidden="true">' + fallback + '</div>';
   }
 
   function primaryResultTemplate(item) {
@@ -605,7 +605,7 @@
     var status = resultStatusLabel(item, 0);
     var proof = productSalesProof(item);
     return '<article class="advisor-primary-result advisor-family--' + safeClass(item.family) + '">'
-      + productMedia(item, 'advisor-primary-media', true)
+      + productMedia(item, 'advisor-primary-media')
       + '<div class="advisor-primary-body"><div class="advisor-result-category">' + productCategoryTemplate(item, true) + '<span class="advisor-result-match advisor-result-match--' + safeClass(status.key) + '">' + escapeHtml(status.label) + '</span></div>'
       + '<h2>' + escapeHtml(item.title) + '</h2><p class="advisor-primary-lead">' + escapeHtml(productBestFor(item)) + '</p>'
       + benefitsTemplate(item, benefits, '')
@@ -619,7 +619,7 @@
   function alternativeResultTemplate(item) {
     var status = resultStatusLabel(item, 1);
     return '<article class="advisor-alternative advisor-family--' + safeClass(item.family) + '">'
-      + productMedia(item, 'advisor-alternative-media', false)
+      + productMedia(item, 'advisor-alternative-media')
       + '<div class="advisor-alternative-copy"><div class="advisor-result-category">' + productCategoryTemplate(item, true) + '<span class="advisor-result-match advisor-result-match--' + safeClass(status.key) + '">' + escapeHtml(status.label) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p class="advisor-alternative-fit">' + escapeHtml(productBestFor(item)) + '</p><p class="advisor-alternative-check"><strong>À savoir</strong>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + '<div class="advisor-alternative-actions"><span>' + escapeHtml(item.estimate) + '</span><div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Étudier ce projet <span aria-hidden="true">→</span></button></div></div>'
       + '</article>';
@@ -808,11 +808,12 @@
       ? '<div class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" width="1200" height="800" decoding="async"></div>'
       : '<div class="advisor-detail-media advisor-detail-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</div>';
     var directBlocked = detailSource === 'direct' && !directSelectionAllowed(item);
+    var blockedCopy = directBlocked ? directUnavailableCopy(item) : null;
     var action = detailSource === 'direct' ? 'direct-product' : 'choose';
-    var actionLabel = directBlocked ? 'Hors plage connue' : 'Étudier mon projet';
+    var actionLabel = directBlocked ? blockedCopy.label : 'Étudier mon projet';
     var actionAttributes = directBlocked ? ' disabled' : ' data-action="' + action + '" data-product="' + item.id + '" data-source="' + detailSource + '"';
     var directNotice = directBlocked
-      ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>Ce modèle ne correspond pas aux informations déjà saisies</strong><p>Revenez aux autres modèles ou modifiez la forme et les dimensions du bassin.</p></div>'
+      ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>' + escapeHtml(blockedCopy.title) + '</strong><p>' + escapeHtml(blockedCopy.text) + '</p></div>'
       : '';
     return '<button type="button" class="advisor-detail-close" data-action="close-details" aria-label="Fermer">×</button>'
       + media
@@ -1044,13 +1045,14 @@
     var item = engine.findCandidate(id);
     if (!item) return '';
     var selectable = directSelectionAllowed(item);
+    var unavailable = selectable ? null : directUnavailableCopy(item);
     var proof = productSalesProof(item);
     var media = item.image
-      ? '<button type="button" class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(item.image) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"></button>'
+      ? '<button type="button" class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(item.image) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"><span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>'
       : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
     return '<article class="advisor-direct-item advisor-family--' + safeClass(item.family) + (selectable ? '' : ' is-unavailable') + '">' + media
       + '<div class="advisor-direct-copy">' + productCategoryTemplate(item) + '<span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(productBestFor(item)) + '</span>' + (proof ? '<span class="advisor-product-proof">' + icon('check') + '<span>' + escapeHtml(proof) + '</span></span>' : '') + decisionFactsTemplate(item, 'advisor-model-facts') + '</div>'
-      + '<div class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Découvrir</button><button type="button" class="advisor-direct-main"' + (selectable ? ' data-action="direct-product" data-product="' + id + '">Étudier ce modèle <span aria-hidden="true">→</span>' : ' disabled>Hors plage connue') + '</button></div></article>';
+      + '<div class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Découvrir</button><button type="button" class="advisor-direct-main"' + (selectable ? ' data-action="direct-product" data-product="' + id + '">Étudier ce modèle <span aria-hidden="true">→</span>' : ' disabled>' + escapeHtml(unavailable.label)) + '</button></div></article>';
   }
 
   function footerTemplate() {
@@ -1246,6 +1248,29 @@
     return !result || result.eligible !== false;
   }
 
+  function directUnavailableCopy(item) {
+    var acceptsCustomShape = item && ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item.id) !== -1;
+    if (state.poolCompleted && state.shape !== 'rect' && !acceptsCustomShape) {
+      return {
+        label: 'Forme à étudier',
+        title: 'Cette forme demande une étude sur mesure',
+        text: 'Découvrez les modèles prévus pour les bassins atypiques ou modifiez la forme déclarée.'
+      };
+    }
+    if (state.poolCompleted && state.dimensionsKnown) {
+      return {
+        label: 'Dimensions non adaptées',
+        title: 'Ce modèle ne couvre pas les dimensions saisies',
+        text: 'Découvrez les autres modèles ou modifiez les dimensions du bassin.'
+      };
+    }
+    return {
+      label: 'Étude nécessaire',
+      title: 'Ce modèle demande une étude complémentaire',
+      text: 'Découvrez les autres modèles ou précisez les informations de votre bassin.'
+    };
+  }
+
   function prepareLegacyConfigurator() {
     var photo = document.getElementById('s-pool-photo');
     var form = document.getElementById('s-frm');
@@ -1276,7 +1301,7 @@
         : 'Renseignez les dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
     var proof = guided ? '<div class="guided-summary-proof">' + escapeHtml(priorityFit(item)) + '</div>' : '';
     var next = '<div class="guided-summary-next"><strong>À préciser maintenant</strong><span>L’état du projet, la prestation et les abords du bassin. Si vous choisissez la pose, nous préciserons aussi l’accès au chantier. Une photo facultative aide à repérer les obstacles et les équipements.</span></div>';
-    summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Piste retenue' : 'Produit à vérifier') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor data-advisor-destination="' + (guided ? 'results' : 'direct') + '">' + (guided ? 'Revoir les solutions' : 'Voir les familles') + '</button></div>' + next;
+    summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Solution retenue' : 'Modèle choisi') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor data-advisor-destination="' + (guided ? 'results' : 'direct') + '">' + (guided ? 'Revoir les solutions' : 'Voir les familles') + '</button></div>' + next;
   }
 
   function handleConfiguratorSelection(productId, pool) {
@@ -1536,6 +1561,7 @@
       shutter: '<circle cx="7" cy="12" r="3.5"/><path d="M10.5 8.5H20v7h-9.5M5.5 12h3M13 10.75h4.5M13 13.75h4.5"/>',
       shelter: '<path d="M3 18h18M5 18v-5a7 7 0 0 1 14 0v5"/><path d="M9 18v-5a3 3 0 0 1 6 0v5"/>',
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
+      zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4M10.5 7.5v6M7.5 10.5h6"/>',
       unsure: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/>'
     };
     return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.unsure) + '</svg>';

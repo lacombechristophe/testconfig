@@ -163,8 +163,21 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /Un seul rail de guidage, positionné du côté choisi avec vous/);
   assert.match(advisor, /Enroulement par manivelle et déroulement par sangle de rappel/);
   assert.match(advisor, /Étudier ce modèle/);
+  assert.match(advisor, /Dimensions non adaptées/);
+  assert.match(advisor, /Cette forme demande une étude sur mesure/);
+  assert.match(advisor, /function directUnavailableCopy\(item\)/);
+  assert.doesNotMatch(advisor, /Hors plage connue/);
+  assert.match(advisor, /advisor-media-zoom/);
+  assert.doesNotMatch(advisor, /advisor-result-rank/);
   assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
+  assert.match(advisorCss, /\.advisor-direct-main:not\(:disabled\):hover/);
   assert.doesNotMatch(advisor, /Vérifier ce modèle|Vérifier mon projet/);
+});
+
+test('le passage au configurateur garde un langage prospect', function () {
+  assert.match(advisor, /Solution retenue/);
+  assert.match(advisor, /Modèle choisi/);
+  assert.doesNotMatch(advisor, /Produit à vérifier|Piste retenue/);
 });
 
 test('les preuves commerciales restent limitees aux affirmations documentees', function () {

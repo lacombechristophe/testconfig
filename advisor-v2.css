@@ -960,19 +960,27 @@
   transition: transform .32s cubic-bezier(.22, 1, .36, 1);
 }
 
-.advisor-primary-media .advisor-result-rank {
+.advisor-media-zoom {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 7px 9px;
-  border-radius: var(--advisor-radius-sm);
-  background: var(--advisor-forest-deep);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0;
-  line-height: 1.2;
-  text-transform: uppercase;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(18, 53, 42, .12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .94);
+  color: var(--advisor-forest);
+  box-shadow: 0 5px 16px rgba(8, 29, 23, .15);
+  pointer-events: none;
+  transition: transform .2s cubic-bezier(.22, 1, .36, 1), background-color .18s ease;
+}
+
+.advisor-media-zoom svg {
+  width: 15px;
+  height: 15px;
 }
 
 .advisor-primary-body {
@@ -1219,6 +1227,7 @@
 }
 
 .advisor-alternative-media {
+  position: relative;
   width: 108px;
   height: 82px;
   overflow: hidden;
@@ -1666,6 +1675,7 @@
 }
 
 .advisor-direct-media {
+  position: relative;
   width: 144px;
   height: 140px;
   display: block;
@@ -2138,8 +2148,9 @@ button.advisor-direct-media img {
 }
 
 .guided-summary:focus-visible {
-  outline: 2px solid var(--advisor-water);
-  outline-offset: 3px;
+  outline: 0;
+  border-color: var(--advisor-water);
+  box-shadow: 0 0 0 3px rgba(52, 127, 142, .16);
 }
 
 .guided-summary-kicker {
@@ -2254,7 +2265,7 @@ button.advisor-direct-media img {
   }
 
   .advisor-button:not(:disabled):not(.advisor-button--secondary):not(.advisor-button--text):hover,
-  .advisor-direct-main:hover {
+  .advisor-direct-main:not(:disabled):hover {
     border-color: var(--advisor-water-dark);
     background: var(--advisor-water-dark);
   }
@@ -2286,6 +2297,11 @@ button.advisor-direct-media img {
 
   button.advisor-direct-media:hover img {
     transform: scale(1.025);
+  }
+
+  button:hover > .advisor-media-zoom {
+    transform: scale(1.08);
+    background: #fff;
   }
 }
 
@@ -2913,6 +2929,20 @@ button.advisor-direct-media img {
   .advisor-family--bar-cover > .advisor-direct-media {
     width: 84px;
     height: 112px;
+  }
+
+  .advisor-direct-media .advisor-media-zoom,
+  .advisor-alternative-media .advisor-media-zoom {
+    right: 5px;
+    bottom: 5px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .advisor-direct-media .advisor-media-zoom svg,
+  .advisor-alternative-media .advisor-media-zoom svg {
+    width: 13px;
+    height: 13px;
   }
 
   .advisor-model-facts {
