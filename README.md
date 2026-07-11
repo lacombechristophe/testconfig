@@ -171,10 +171,18 @@ Pour activer, ajouter AVANT l'iframe dans la page WordPress :
 
 | Événement | Déclencheur | Paramètres |
 |---|---|---|
+| `advisor_start` / `advisor_resume` | Démarrage ou reprise du conseil | `mode` ou `screen`, `advisor_version` |
+| `advisor_step_view` / `advisor_step_exit` | Entrée et sortie d'une étape | `screen`, `reason`, `duration_seconds`, `advisor_version` |
+| `advisor_results_view` | Affichage des résultats | `first_product`, `families`, `compatible_count`, `excluded_count` |
+| `advisor_configurator_open` | Passage au configurateur | `product`, `source`, `dimensions_known` |
 | `config_equipment` | Sélection équipement | `equipment` |
 | `config_model` | Sélection modèle | `model`, `category` |
-| `form_start` | Première saisie coordonnées | — |
-| `lead_submitted` | Soumission réussie | `equipment`, `model`, `department`, `timeline`, `priority`, `email_sent` |
+| `config_attachment_added` / `config_attachment_failed` | Ajout ou échec d'une photo/plan | `kind`, `optimized`, `size_kb` ou `reason` |
+| `form_start` | Première saisie coordonnées | `entry_field` |
+| `form_validation_error` | Email ou téléphone invalide à la sortie du champ | `field` |
+| `lead_submit_attempt` | Tentative d'envoi | `equipment`, `model`, `timeline`, `has_photo` |
+| `lead_submitted` | Succès réseau réel, initial ou après retry | `equipment`, `model`, `department`, `timeline`, `priority`, `email_sent`, `retry` |
+| `lead_submit_failed` / `lead_retry_failed` | Échec initial ou échec définitif | `equipment`, `model`, `retry_scheduled` |
 
 ---
 

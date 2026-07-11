@@ -31,7 +31,7 @@
   <meta name="robots" content="index, follow">
 
   <!-- Preload image hero (LCP) — ⚠️ mettre à jour src après upload des vraies photos -->
-  <link rel="preload" as="image" href="assets/produits/conseiller/volet-hors-sol.webp" type="image/webp" id="preload-hero" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/produits/conseiller/ore-fermee.webp" type="image/webp" id="preload-hero" fetchpriority="high">
 
   <!-- Fonts : Inter auto-hébergé via fontsource (conformité RGPD — aucun transfert vers Google) -->
   <style>
@@ -409,7 +409,7 @@
    PANEL (right, independently scrollable)
 ───────────────────────────────────────────────────────── */
     .panel {
-      width: 360px;
+      width: clamp(420px, 38vw, 560px);
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
@@ -486,7 +486,7 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 0 24px;
+      padding: 0 clamp(24px, 2.6vw, 36px);
       /* Scroll momentum iOS */
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
@@ -514,10 +514,12 @@
     }
 
     .progress-fill {
+      width: 100%;
       height: 100%;
       background: var(--gold);
-      transition: width .35s cubic-bezier(.4, 0, .2, 1);
-      width: 0%;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform .35s cubic-bezier(.22, 1, .36, 1);
     }
 
     /* ─────────────────────────────────────────────────────────
@@ -1178,6 +1180,15 @@
       margin-bottom: 5px;
     }
 
+    .field-optional {
+      margin-left: 5px;
+      color: var(--faint);
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
     .fl input,
     .fl select,
     .fl textarea {
@@ -1253,7 +1264,7 @@
       padding: 10px 12px;
       background: #f8f8f6;
       border-radius: var(--r);
-      border-left: 2.5px solid var(--line);
+      border: 1px solid var(--line);
       margin-top: 2px;
     }
 
@@ -1300,8 +1311,8 @@
       line-height: 1.55;
       margin-top: 10px;
       padding: 9px 12px;
-      border-left: 2.5px solid;
-      border-radius: 0 4px 4px 0;
+      border: 1px solid;
+      border-radius: var(--r);
     }
 
     .ntc.inf {
@@ -1321,7 +1332,7 @@
 ───────────────────────────────────────────────────────── */
     .pfoot {
       border-top: 1px solid var(--line);
-      padding: 16px 24px 22px;
+      padding: 16px clamp(24px, 2.6vw, 36px) 22px;
       padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
       flex-shrink: 0;
       background: var(--w);
@@ -1355,6 +1366,7 @@
       line-height: 1;
       transition: opacity .15s;
       white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .pfv.na {
@@ -1362,6 +1374,13 @@
       font-weight: 500;
       color: var(--faint);
       letter-spacing: 0
+    }
+
+    .ph-sum,
+    .di,
+    .pfv,
+    .pf-bd-value {
+      font-variant-numeric: tabular-nums;
     }
 
     /* CTA button */
@@ -1504,12 +1523,12 @@
     }
 
     #suc.on .sico {
-      animation: scaleIn .3s cubic-bezier(.34, 1.56, .64, 1)
+      animation: scaleIn .24s cubic-bezier(.22, 1, .36, 1)
     }
 
     @keyframes scaleIn {
       from {
-        transform: scale(0);
+        transform: scale(.84);
         opacity: 0
       }
 
@@ -1716,7 +1735,7 @@
       font-weight: 600;
       color: var(--mid);
       cursor: pointer;
-      transition: all .12s;
+      transition: border-color .12s ease, background-color .12s ease, color .12s ease;
       white-space: nowrap;
     }
 
@@ -1967,7 +1986,7 @@
       place-items: center;
       font-size: 14px;
       color: var(--mid);
-      transition: all .12s;
+      transition: background-color .12s ease, color .12s ease, transform .12s ease;
       flex-shrink: 0
     }
 
@@ -2345,7 +2364,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      transition: all .12s;
+      transition: border-color .12s ease, color .12s ease, background-color .12s ease, transform .12s ease;
     }
 
     .share-btn:hover {
@@ -2378,7 +2397,6 @@
         flex: none;
         width: 100%;
         transition: height .22s ease, min-height .22s ease;
-        will-change: height;
       }
 
       .root.mobile-compact .vis {
@@ -2682,7 +2700,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260710-redesign22">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260711-v3-final8">
 
   <noscript>
     <style>
@@ -2912,7 +2930,7 @@
           </div>
           <div class="ntc inf photo-lead-note" role="note">
             Une photo nous aide à repérer les margelles, l’escalier, les accès et l’espace disponible autour du
-            bassin. Elle accélère l’étude et évite des échanges inutiles. Vous pouvez continuer sans photo.
+            bassin. Elle permet de préparer un premier échange plus précis. Vous pouvez continuer sans photo.
           </div>
           <div class="fl">
             <label for="plan-file">Joindre une photo ou un plan <span
@@ -3426,41 +3444,41 @@
               <div class="fl">
                 <label for="fn">Prénom *</label>
                 <input type="text" id="fn" name="given-name" placeholder="Jean" autocomplete="given-name"
-                  maxlength="100" oninput="if(!S.fn)track('form_start',{});S.fn=this.value.trim();chk()">
+                  maxlength="100" oninput="markFormStart('first_name');S.fn=this.value.trim();chk()">
               </div>
               <div class="fl">
                 <label for="ln">Nom *</label>
                 <input type="text" id="ln" name="family-name" placeholder="Dupont" autocomplete="family-name"
-                  maxlength="100" oninput="S.ln=this.value.trim();chk()">
+                  maxlength="100" oninput="markFormStart('last_name');S.ln=this.value.trim();chk()">
               </div>
             </div>
             <div class="fl">
               <label for="em">Email *</label>
               <input type="email" id="em" name="email" placeholder="jean@email.com" autocomplete="email" maxlength="254"
-                inputmode="email" oninput="S.em=this.value.trim();validateEmail(this);chk()">
+                inputmode="email" oninput="markFormStart('email');S.em=this.value.trim();validateEmail(this);chk()" onblur="trackContactValidation('email')">
               <p class="ferr" id="em-err" role="alert">Adresse email invalide</p>
             </div>
             <div class="fl">
               <label for="ph">Téléphone *</label>
               <input type="tel" id="ph" name="tel" placeholder="06 XX XX XX XX" autocomplete="tel" maxlength="14"
-                inputmode="tel" oninput="fmtPhone(this);S.ph=this.value;chk()">
+                inputmode="tel" oninput="markFormStart('phone');fmtPhone(this);S.ph=this.value;chk()" onblur="trackContactValidation('phone')">
               <p class="ferr" id="ph-err" role="alert">Numéro invalide (ex : 06 12 34 56 78)</p>
             </div>
             <div class="fl">
               <label for="dept">Département *</label>
-              <select id="dept" name="departement" autocomplete="address-level2" onchange="S.dept=this.value;updP();chk()">
+              <select id="dept" name="departement" autocomplete="address-level2" onchange="markFormStart('department');S.dept=this.value;updP();chk()">
                 <option value="">Sélectionner...</option>
               </select>
             </div>
             <div class="fl">
-              <label for="loc-sel">Emplacement de la piscine</label>
+              <label for="loc-sel">Emplacement de la piscine <span class="field-optional">Facultatif</span></label>
               <select id="loc-sel" name="emplacement" onchange="S.loc=this.value">
                 <option value="ext">Extérieure (jardin, terrasse)</option>
                 <option value="int">Intérieure (véranda, SPA)</option>
               </select>
             </div>
             <div class="fl">
-              <label for="src">Comment avez-vous connu Diskoov ?</label>
+              <label for="src">Comment avez-vous connu Diskoov ? <span class="field-optional">Facultatif</span></label>
               <select id="src" name="source" onchange="S.src=this.value">
                 <option value="">–</option>
                 <option value="Google">Google</option>
@@ -3472,7 +3490,7 @@
               </select>
             </div>
             <div class="fl">
-              <label for="note">Informations complémentaires</label>
+              <label for="note">Informations complémentaires <span class="field-optional">Facultatif</span></label>
               <textarea id="note" name="commentaire" rows="3" maxlength="800"
                 placeholder="Type de margelles, travaux à prévoir (électricité, terrassement), accès particulier..."
                 oninput="S.note=this.value;updCharCount(this,'note-count',800)"></textarea>
@@ -3704,7 +3722,7 @@
 
   <script src="config.js"></script>
   <script src="product-rules.js?v=20260707-visuals"></script>
-  <script src="advisor-engine.js?v=20260709-conversion16"></script>
+  <script src="advisor-engine.js?v=20260711-v3-final8"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -3805,6 +3823,31 @@
 
     window.setAdvisorProjectStage = function (stage) {
       S.advisorProjectStage = String(stage || '');
+    };
+
+    window.clearAdvisorPoolDimensions = function (shape) {
+      S.len = 0;
+      S.wid = 0;
+      var lengthInput = el('d-l');
+      var widthInput = el('d-w');
+      if (lengthInput) lengthInput.value = '';
+      if (widthInput) widthInput.value = '';
+      document.querySelectorAll('.dim-pre').forEach(function (button) { button.classList.remove('on'); });
+      selShape(['rect', 'oval', 'libre'].indexOf(shape) !== -1 ? shape : 'rect', { silent: true });
+      updSurface();
+      updSummary();
+      updP();
+      chk();
+    };
+
+    window.getDiskoovConfiguratorSelection = function () {
+      return {
+        equipment: S.eq,
+        product: activeProduct(),
+        shape: S.shape,
+        length: S.len,
+        width: S.wid
+      };
     };
 
     /* ── HELPERS ────────────────────────────────────────── */
@@ -4010,7 +4053,10 @@
       var active = activeProduct();
       if (!active) return;
       var av = dimensionAvailability(active);
-      if (av.available) return;
+      if (av.available) {
+        notifyAdvisorSelection(active);
+        return;
+      }
 
       if (S.cm === active) {
         S.cm = '';
@@ -4031,6 +4077,7 @@
         showImg('vi-pool');
       }
       if (options.toast !== false) showToast('Modèle désélectionné : ' + av.detail, true);
+      notifyAdvisorInvalidation(active, av.detail);
       S.lastRuleResult = null;
       updP(); chk();
     }
@@ -4060,6 +4107,22 @@
       if (S.eq === 'shl') return S.sm || '';
       if (S.eq === 'oth') return S.otherProduct || '';
       return '';
+    }
+
+    function advisorPoolSnapshot() {
+      return { shape: S.shape, length: S.len, width: S.wid };
+    }
+
+    function notifyAdvisorSelection(product) {
+      if (typeof window.notifyAdvisorConfiguratorSelection === 'function') {
+        window.notifyAdvisorConfiguratorSelection(product || '', advisorPoolSnapshot());
+      }
+    }
+
+    function notifyAdvisorInvalidation(product, detail) {
+      if (typeof window.notifyAdvisorProductInvalidated === 'function') {
+        window.notifyAdvisorProductInvalidated(product || '', detail || '', advisorPoolSnapshot());
+      }
     }
 
     function hasTechnicalQualification(product) {
@@ -4100,8 +4163,11 @@
       var steps = 0, done = 0;
       /* Forme — toujours sélectionnée */
       steps += 1; done += 1;
-      /* Dimensions — toujours remplies (sauf forme libre) */
-      if (S.shape !== 'libre') { steps += 1; done += 1; }
+      /* Dimensions — obligatoires hors forme libre */
+      if (S.shape !== 'libre') {
+        steps += 1;
+        if (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12) done += 1;
+      }
       else { steps += 1; if (S.planDesc || S.planB64) done += 1; }
       /* Escalier */
       steps += 1; done += 1; /* toujours renseigné : sans=défaut */
@@ -4131,7 +4197,7 @@
       var pct = Math.round((done / steps) * 100);
       var fill = el('prog-fill');
       var bar = el('prog-bar');
-      if (fill) fill.style.width = pct + '%';
+      if (fill) fill.style.transform = 'scaleX(' + (pct / 100) + ')';
       if (bar) bar.setAttribute('aria-valuenow', pct);
     }
 
@@ -4144,6 +4210,20 @@
         }
         if (window.gtag) window.gtag('event', event, params || {});
       } catch (e) { }
+    }
+
+    var formStartTracked = false;
+    function markFormStart(field) {
+      if (formStartTracked) return;
+      formStartTracked = true;
+      track('form_start', { entry_field: field || '' });
+    }
+
+    function trackContactValidation(field) {
+      var valid = true;
+      if (field === 'email') valid = !S.em || EMAIL_RE.test(S.em);
+      if (field === 'phone') valid = !S.ph || PHONE_RE.test(S.ph.replace(/\s/g, ''));
+      if (!valid) track('form_validation_error', { field: field });
     }
 
     var mobileChromeLastTop = 0;
@@ -4359,6 +4439,7 @@
       /* Mettre à jour le max de largeur escalier si les dimensions changent */
       updStairMax();
       updateDimensionAvailability();
+      chk();
     }
 
     /* ── ESCALIER : largeur dynamique ─────────────────── */
@@ -4502,25 +4583,36 @@
     }
 
     function updD() {
-      S.len = parseFloat(el('d-l').value) || 8;
-      S.wid = parseFloat(el('d-w').value) || 4;
+      var nextLength = parseFloat(el('d-l').value);
+      var nextWidth = parseFloat(el('d-w').value);
+      S.len = Number.isFinite(nextLength) ? nextLength : 0;
+      S.wid = Number.isFinite(nextWidth) ? nextWidth : 0;
       /* Clear preset highlight when free-typing */
       document.querySelectorAll('.dim-pre').forEach(function (b) { b.classList.remove('on'); });
       updSurface(); updSummary(); updP();
       updateDimensionAvailability();
+      chk();
     }
     function fixD(id, mn, mx) {
       var e = el(id);
-      var v = parseFloat(e.value) || mn;
+      var v = parseFloat(e.value);
+      if (!Number.isFinite(v)) {
+        e.value = '';
+        if (id === 'd-l') S.len = 0; else if (id === 'd-w') S.wid = 0;
+        updSurface(); updSummary(); updP(); chk();
+        updateDimensionAvailability();
+        return;
+      }
       v = Math.min(mx, Math.max(mn, Math.round(v * 2) / 2));
       e.value = v;
       if (id === 'd-l') S.len = v; else if (id === 'd-w') S.wid = v;
       updSurface(); updSummary(); updP();
       updateDimensionAvailability();
+      chk();
     }
 
     /* ── SHAPE SELECTION ─────────────────────────────── */
-    function selShape(v) {
+    function selShape(v, options) {
       S.shape = v;
       ['rect', 'oval', 'libre'].forEach(function (k) {
         var b = el('sh-' + k);
@@ -4534,9 +4626,10 @@
         el('s-dim').style.display = '';
         conceal('s-libre');
       }
-      track('config_shape', { shape: v });
+      if (!options || !options.silent) track('config_shape', { shape: v });
       updSurface(); updSummary(); updP();
       updateDimensionAvailability();
+      chk();
       requestAnimationFrame(function () { updProgress(); });
     }
 
@@ -4549,6 +4642,7 @@
       btn.classList.add('on');
       updSurface(); updSummary(); updP();
       updateDimensionAvailability();
+      chk();
     }
 
     /* ── SURFACE CALCULATION ─────────────────────────── */
@@ -4556,6 +4650,10 @@
       var tag = el('surface-tag');
       if (S.shape === 'libre') {
         if (tag) { tag.textContent = 'Sur mesure'; tag.style.display = ''; }
+        return;
+      }
+      if (!S.len || !S.wid) {
+        if (tag) { tag.textContent = 'À renseigner'; tag.style.display = ''; }
         return;
       }
       var surface;
@@ -4676,11 +4774,13 @@
       var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
       var isImage = /^image\//.test(file.type) || /\.(jpe?g|png|webp)$/i.test(file.name);
       if (!isPdf && !isImage) {
+        track('config_attachment_failed', { reason: 'unsupported_format' });
         showToast('Format non supporté (photo JPG, PNG, WebP ou PDF)', true);
         return;
       }
       if (isPdf) {
         if (file.size > 4 * 1024 * 1024) {
+          track('config_attachment_failed', { reason: 'pdf_too_large' });
           showToast('PDF trop volumineux (max 4 Mo)', true);
           return;
         }
@@ -4689,6 +4789,7 @@
         return;
       }
       if (file.size > 12 * 1024 * 1024) {
+        track('config_attachment_failed', { reason: 'image_too_large' });
         showToast('Photo trop volumineuse (max 12 Mo avant optimisation)', true);
         return;
       }
@@ -4697,11 +4798,13 @@
       prepareImageFile(file, function (prepared, optimized) {
         if (!prepared) {
           S.planPending = false;
+          track('config_attachment_failed', { reason: 'image_unreadable' });
           showToast('Photo illisible : utilisez JPG, PNG ou WebP', true);
           return;
         }
         if (prepared.size > 3 * 1024 * 1024) {
           S.planPending = false;
+          track('config_attachment_failed', { reason: 'optimized_image_too_large' });
           showToast('Photo encore trop lourde après optimisation (max 3 Mo)', true);
           return;
         }
@@ -4752,20 +4855,24 @@
       reader.onload = function (e) {
         S.planB64 = e.target.result;
         S.planPending = false;
+        track('config_attachment_added', { kind: S.planKind, optimized: !!optimized, size_kb: Math.round(file.size / 1024) });
         requestAnimationFrame(function () { updProgress(); });
       };
       reader.onerror = function () {
         S.planPending = false;
         S.planB64 = '';
+        track('config_attachment_failed', { reason: 'file_read_error' });
         showToast('Impossible de préparer la pièce jointe', true);
       };
       reader.readAsDataURL(file);
     }
     function removeFile() {
+      var removedKind = S.planKind || '';
       S.planFile = null; S.planB64 = ''; S.planName = ''; S.planKind = ''; S.planPending = false;
       el('file-preview').style.display = 'none';
       el('file-zone').style.display = '';
       var fi = el('plan-file'); if (fi) fi.value = '';
+      track('config_attachment_removed', { kind: removedKind });
       requestAnimationFrame(function () { updProgress(); });
     }
 
@@ -4955,6 +5062,7 @@
         return;
       }
       S.eq = v; S.cm = ''; S.sm = ''; S.otherProduct = ''; S.lastRuleResult = null;
+      notifyAdvisorSelection('');
       /* Reset toutes les options pour éviter les reports entre catégories */
       S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
       S.installation = ''; S.support = ''; S.margellesLevel = ''; S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
@@ -5026,6 +5134,7 @@
       var pm = { auto: '13 890 €', semi: '11 490 €', ore_compact: 'Indicatif', ore_essential: 'Indicatif', eden: 'Sur devis' };
       el('cm-p').textContent = pm[v] || '–';
       track('config_model', { model: v, category: 'cover' });
+      notifyAdvisorSelection(v);
       reveal('s-tl'); reveal('s-frm');
       updP(); chk();
       requestAnimationFrame(function () { updSummary(); updProgress(); });
@@ -5044,6 +5153,7 @@
       reveal('s-product-detail');
       showProductImage(v);
       track('config_model', { model: v, category: 'shelter' });
+      notifyAdvisorSelection(v);
       reveal('s-tl'); reveal('s-frm');
       updP(); chk();
       requestAnimationFrame(function () { updSummary(); updProgress(); });
@@ -5065,6 +5175,7 @@
       reveal('s-product-detail'); reveal('s-tl'); reveal('s-frm');
       showProductImage(v);
       track('config_model', { model: v, category: 'other' });
+      notifyAdvisorSelection(v);
       updP(); chk();
       requestAnimationFrame(function () { updSummary(); updProgress(); });
     }
@@ -5112,7 +5223,7 @@
         },
         volet_hs: {
           title: 'Pose intégrée à l’estimation',
-          copy: 'Pour un volet hors-sol, la base de calcul exploitable comprend la livraison et l’installation.'
+          copy: 'Pour un volet hors-sol, l’estimation affichée comprend la livraison et l’installation, sous réserve de validation du site.'
         },
         volet_immerge: {
           title: 'Pose intégrée à l’estimation',
@@ -5466,6 +5577,7 @@
       else if (S.eq === 'cov' && !S.cm) lbl = 'Choisissez un modèle';
       else if (S.eq === 'shl' && !S.sm) lbl = 'Choisissez une hauteur';
       else if (S.eq === 'oth' && !S.otherProduct) lbl = 'Choisissez un produit';
+      else if (S.shape !== 'libre' && !(S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12)) lbl = 'Indiquez les dimensions du bassin';
       else if (getProductGaps().length) lbl = 'Précisez : ' + getProductGaps()[0];
       else if (!S.tl) lbl = 'Indiquez votre délai';
       else if (!S.fn || !S.ln || !S.em || !S.ph || !S.dept) lbl = 'Complétez vos coordonnées';
@@ -5485,7 +5597,8 @@
       if (S.eq === 'cov' && !S.cm) eqOk = false;
       if (S.eq === 'shl' && !S.sm) eqOk = false;
       if (S.eq === 'oth' && !S.otherProduct) eqOk = false;
-      var ok = !!(eqOk && !getProductGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && S.dept && S.ok && S.tl);
+      var dimensionsOk = S.shape === 'libre' || (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12);
+      var ok = !!(eqOk && dimensionsOk && !getProductGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && S.dept && S.ok && S.tl);
       el('cta').disabled = !ok;
       updCTA();
       updProgress();
@@ -5759,6 +5872,12 @@
 
       /* Sauvegarde locale avant tout envoi réseau */
       try { sessionStorage.setItem('dk_last_lead', JSON.stringify(payload)); } catch (e) { }
+      track('lead_submit_attempt', {
+        equipment: S.eq,
+        model: selectedProduct,
+        timeline: S.tl,
+        has_photo: !!S.planB64
+      });
 
       var withTimeout = function (p, ms) {
         return Promise.race([p, new Promise(function (_, r) {
@@ -5793,15 +5912,10 @@
           else if (r.value && !r.value.ok) console.error('[Diskoov] HTTP error #' + i, r.value.status, r.value.statusText);
         });
 
-        track('lead_submitted', {
-          equipment: S.eq, model: S.cm || S.sm || '',
-          department: S.dept, timeline: S.tl,
-          priority: payload.priorite, email_sent: emailOk
-        });
-
         var pname = PNMS[selectedProduct] || 'votre projet';
 
         if (!anyOk) {
+          track('lead_submit_failed', { equipment: S.eq, model: selectedProduct, retry_scheduled: true });
           /* Aucun canal n'a fonctionné — sauvegarder en localStorage comme filet de sécurité */
           try {
             var pendingLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
@@ -5815,18 +5929,33 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             }).then(function (r) {
-              if (r.ok) {
-                try {
-                  var pending = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-                  pending = pending.filter(function (p) { return p.timestamp !== payload.timestamp; });
-                  localStorage.setItem('dk_pending_leads', JSON.stringify(pending));
-                } catch (e2) { }
-              }
-            }).catch(function () { });
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              try {
+                var pending = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
+                pending = pending.filter(function (p) { return p.timestamp !== payload.timestamp; });
+                localStorage.setItem('dk_pending_leads', JSON.stringify(pending));
+              } catch (e2) { }
+              track('lead_submitted', {
+                equipment: S.eq, model: selectedProduct,
+                department: S.dept, timeline: S.tl,
+                priority: payload.priorite, email_sent: true, retry: true
+              });
+              showSuccess(pname);
+            }).catch(function (error) {
+              console.error('[Diskoov] Retry failed', error);
+              track('lead_retry_failed', { equipment: S.eq, model: selectedProduct });
+              btn.classList.remove('spin');
+              chk();
+              showToast('L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.', true);
+            });
           }, 3000);
-          showSuccess(pname);
-          showToast('Connexion instable — votre demande sera renvoyée automatiquement.', true);
+          showToast('Connexion instable : nouvelle tentative en cours…', true);
         } else {
+          track('lead_submitted', {
+            equipment: S.eq, model: selectedProduct,
+            department: S.dept, timeline: S.tl,
+            priority: payload.priorite, email_sent: emailOk, retry: false
+          });
           showSuccess(pname);
           if (!emailOk) {
             showToast('Votre demande est bien sauvegardée. L’équipe Diskoov vous contactera sous 48h.', true);
@@ -5939,6 +6068,7 @@
 
     /* ── RESET ────────────────────────────────────────── */
     function resetForm() {
+      formStartTracked = false;
       /* WCAG 2.2 §3.3.7 Redundant Entry — récupérer les données de contact du dernier lead soumis */
       var prevContact = null;
       try {
@@ -6273,7 +6403,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260710-redesign22"></script>
+  <script src="advisor-v2.js?v=20260711-v3-final8"></script>
 </body>
 
 </html>

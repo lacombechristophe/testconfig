@@ -16,6 +16,34 @@
     unsure: 'Être conseillé sans préférence arrêtée'
   });
 
+  var PROSPECT_FAMILIES = Object.freeze({
+    covers: Object.freeze({ id: 'covers', label: 'Couvertures motorisées' }),
+    'bar-cover': Object.freeze({ id: 'bar-cover', label: 'Couverture à barres' }),
+    shutters: Object.freeze({ id: 'shutters', label: 'Volets de piscine' }),
+    shelters: Object.freeze({ id: 'shelters', label: 'Abris télescopiques' }),
+    deck: Object.freeze({ id: 'deck', label: 'Terrasse mobile' })
+  });
+
+  var PROSPECT_FAMILY_BY_TECHNICAL_FAMILY = Object.freeze({
+    cover: 'covers',
+    coverseal: 'covers',
+    'custom-cover': 'covers',
+    'bar-cover': 'bar-cover',
+    shutter: 'shutters',
+    shelter: 'shelters',
+    'mobile-deck': 'deck'
+  });
+
+  var FAMILY_PRIORITY_BONUS = Object.freeze({
+    clean: Object.freeze({ covers: 8, shutters: 7, shelters: 6, 'bar-cover': 3, deck: 2 }),
+    safety: Object.freeze({ 'bar-cover': 7, covers: 6, shutters: 6, shelters: 5, deck: 5 }),
+    season: Object.freeze({ shelters: 18, covers: 7, shutters: 2, 'bar-cover': 0, deck: 0 }),
+    aesthetics: Object.freeze({ covers: 10, shutters: 9, deck: 9, shelters: 4, 'bar-cover': 0 }),
+    automatic: Object.freeze({ shutters: 12, covers: 10, deck: 0, shelters: 0, 'bar-cover': -12 }),
+    space: Object.freeze({ deck: 24, covers: 4, shutters: 2, shelters: 0, 'bar-cover': 0 }),
+    economy: Object.freeze({ 'bar-cover': 22, shutters: 8, covers: 3, shelters: -3, deck: -8 })
+  });
+
   var CANDIDATES = Object.freeze([
     candidate('ore_compact', 'Oré Compact', 'Couverture 4 saisons', 'cover', 'cov', 'cm',
       'Une protection discrète pensée pour les bassins compacts.',
@@ -64,9 +92,15 @@
   function candidate(id, title, category, family, eq, selectionType, description, image, strengths, budget) {
     return Object.freeze({
       id: id, title: title, category: category, family: family, eq: eq,
+      prospectFamily: prospectFamilyFor(family),
       selectionType: selectionType, selectionValue: id, description: description,
       image: image, strengths: Object.freeze(strengths), budget: budget
     });
+  }
+
+  function prospectFamilyFor(itemOrFamily) {
+    var family = typeof itemOrFamily === 'string' ? itemOrFamily : itemOrFamily && itemOrFamily.family;
+    return PROSPECT_FAMILY_BY_TECHNICAL_FAMILY[family] || family || 'other';
   }
 
   function normalise(input) {
@@ -77,6 +111,7 @@
       shape: ['rect', 'oval', 'libre'].indexOf(input.shape) !== -1 ? input.shape : 'rect',
       length: clampNumber(input.length, 3, 20, 8),
       width: clampNumber(input.width, 2, 12, 4),
+      dimensionsKnown: input.dimensionsKnown !== false,
       budget: ['under5', '5_10', '10_15', '15_25', 'over25', 'unknown'].indexOf(input.budget) !== -1 ? input.budget : 'unknown',
       delay: ['urg', '6m', '1a', 'ref', 'unknown'].indexOf(input.delay) !== -1 ? input.delay : 'unknown'
     };
@@ -93,12 +128,46 @@
     input.priorities.forEach(function (priority, index) {
       var hit = item.strengths.indexOf(priority) !== -1;
       score += hit ? (index === 0 ? 22 : 16) : -3;
+      score += familyPriorityBonus(item, priority, index);
     });
     if (!input.priorities.length || input.priorities.indexOf('unsure') !== -1) score += balancedBonus(item);
+    score += modelPriorityBonus(item, input.priorities);
     if (input.budget !== 'unknown') score += budgetScore(item.budget, input.budget);
     if (input.shape === 'libre') score += (item.id === 'eden' || item.id === 'masterdeck') ? 26 : -18;
     if (input.delay === 'urg' && (item.id === 'bab' || item.id === 'volet_hs')) score += 7;
     if (input.delay === 'ref' && (item.family === 'shelter' || item.id === 'masterdeck')) score += 3;
+    return score;
+  }
+
+  function familyPriorityBonus(item, priority, index) {
+    var bonusByFamily = FAMILY_PRIORITY_BONUS[priority];
+    if (!bonusByFamily) return 0;
+    var bonus = bonusByFamily[item.prospectFamily] || 0;
+    return index === 0 ? bonus : Math.round(bonus * .7);
+  }
+
+  function modelPriorityBonus(item, priorities) {
+    var score = 0;
+    if (priorities.indexOf('automatic') !== -1) {
+      if (item.id === 'auto') score += 6;
+      if (item.id === 'volet_immerge') score += 4;
+      if (item.id === 'volet_hs') score += 3;
+    }
+    if (priorities.indexOf('season') !== -1) {
+      if (item.id === 'ore_essential') score += 5;
+      if (item.id === 'm18') score += 3;
+    }
+    if (priorities.indexOf('aesthetics') !== -1) {
+      if (item.id === 'eden') score += 5;
+      if (item.id === 'volet_immerge') score += 5;
+      if (item.id === 'ul') score += 4;
+    }
+    if (priorities.indexOf('economy') !== -1) {
+      if (item.id === 'bab') score += 7;
+      if (item.id === 'semi') score += 4;
+      if (item.id === 'volet_hs') score += 3;
+    }
+    if (priorities.indexOf('space') !== -1 && item.id === 'masterdeck') score += 8;
     return score;
   }
 
@@ -114,6 +183,12 @@
   }
 
   function evaluateCompatibility(item, input, rules) {
+    if (input.shape !== 'rect' && !customStudyProduct(item)) {
+      return { compatible: false, certainty: 'not_available', rule: null };
+    }
+    if (!input.dimensionsKnown) {
+      return { compatible: true, certainty: customStudyProduct(item) ? 'custom' : 'to_confirm', rule: null };
+    }
     if (item.id === 'auto' || item.id === 'semi') {
       return { compatible: true, certainty: 'to_confirm', rule: null };
     }
@@ -143,6 +218,10 @@
     };
   }
 
+  function customStudyProduct(item) {
+    return ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item && item.id) !== -1;
+  }
+
   function certaintyFor(item, result) {
     if (item.id === 'masterdeck' || item.id === 'm50' || item.id === 'mid') return 'custom';
     // The advisor only knows the prospect's needs, shape and dimensions.
@@ -155,6 +234,7 @@
     var reasons = input.priorities.filter(function (p) { return item.strengths.indexOf(p) !== -1 && p !== 'unsure'; })
       .map(function (p) { return PRIORITIES[p]; });
     if (!reasons.length) reasons.push(item.description);
+    if (!input.dimensionsKnown) reasons.push('Dimensions du bassin à préciser');
     if (compatibility.certainty === 'dimension_fit') reasons.push('Dimensions dans la plage connue');
     if (compatibility.certainty === 'custom') reasons.push('Étudié sur mesure pour votre bassin');
     if (compatibility.certainty === 'to_confirm') reasons.push('Conditions de pose à vérifier avec vous');
@@ -172,15 +252,10 @@
     var result = [];
     var families = {};
     scored.forEach(function (item) {
-      if (result.length >= limit || families[item.family]) return;
-      families[item.family] = true;
+      if (result.length >= limit || families[item.prospectFamily]) return;
+      families[item.prospectFamily] = true;
       result.push(item);
     });
-    if (result.length < limit) {
-      scored.forEach(function (item) {
-        if (result.length < limit && result.indexOf(item) === -1) result.push(item);
-      });
-    }
     return result;
   }
 
@@ -216,9 +291,11 @@
 
   return Object.freeze({
     PRIORITIES: PRIORITIES,
+    PROSPECT_FAMILIES: PROSPECT_FAMILIES,
     CANDIDATES: CANDIDATES,
     recommend: recommend,
     findCandidate: findCandidate,
+    prospectFamilyFor: prospectFamilyFor,
     normalise: normalise
   });
 }));

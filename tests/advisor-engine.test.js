@@ -5,10 +5,17 @@ var assert = require('node:assert/strict');
 var advisor = require('../advisor-engine.js');
 var rules = require('../product-rules.js');
 
-test('le conseil retourne trois familles distinctes lorsque possible', function () {
+test('le conseil retourne trois familles comprises par le prospect lorsque possible', function () {
   var result = advisor.recommend({ priorities: ['safety', 'clean'], shape: 'rect', length: 8, width: 4 }, rules);
   assert.equal(result.recommendations.length, 3);
-  assert.equal(new Set(result.recommendations.map(function (r) { return r.family; })).size, 3);
+  assert.equal(new Set(result.recommendations.map(function (r) { return r.prospectFamily; })).size, 3);
+});
+
+test('les variantes Oré, Coverseal et Eden appartiennent à une seule famille prospect', function () {
+  var covers = ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden'].map(function (id) {
+    return advisor.findCandidate(id).prospectFamily;
+  });
+  assert.deepEqual(new Set(covers), new Set(['covers']));
 });
 
 test('une contrainte technique dure exclut le produit des recommandations', function () {
@@ -28,6 +35,42 @@ test('le conseiller ne confond pas plage dimensionnelle et compatibilité de pos
 test('une forme libre privilégie les solutions étudiées sur mesure', function () {
   var result = advisor.recommend({ priorities: ['aesthetics', 'space'], shape: 'libre', length: 8, width: 4 }, rules);
   assert.ok(['eden', 'masterdeck'].indexOf(result.recommendations[0].id) !== -1);
+  assert.equal(result.compatible.some(function (item) { return item.id === 'auto' || item.id === 'ore_essential'; }), false);
+});
+
+test('sans dimensions connues, le conseil compare les familles sans simuler une compatibilité', function () {
+  var result = advisor.recommend({ priorities: ['automatic'], dimensionsKnown: false, shape: 'rect' }, rules);
+  assert.equal(result.recommendations.length, 3);
+  assert.ok(result.recommendations.every(function (item) { return item.certainty === 'to_confirm' || item.certainty === 'custom'; }));
+  assert.ok(result.compatible.some(function (item) { return item.reasons.indexOf('Dimensions du bassin à préciser') !== -1; }));
+});
+
+test('des dimensions inconnues ne neutralisent jamais la contrainte de forme', function () {
+  var result = advisor.recommend({ priorities: ['automatic'], dimensionsKnown: false, shape: 'libre' }, rules);
+  assert.ok(result.compatible.length > 0);
+  assert.ok(result.compatible.every(function (item) {
+    return ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item.id) !== -1;
+  }));
+});
+
+test('les priorités structurantes orientent la première famille sans casser la diversité', function () {
+  var economy = advisor.recommend({ priorities: ['economy', 'safety'], shape: 'rect', length: 8, width: 4 }, rules);
+  var season = advisor.recommend({ priorities: ['season', 'clean'], shape: 'rect', length: 8, width: 4 }, rules);
+  var space = advisor.recommend({ priorities: ['space', 'aesthetics'], shape: 'rect', length: 8, width: 4 }, rules);
+
+  assert.equal(economy.recommendations[0].id, 'bab');
+  assert.equal(season.recommendations[0].prospectFamily, 'shelters');
+  assert.equal(space.recommendations[0].id, 'masterdeck');
+  [economy, season, space].forEach(function (result) {
+    assert.equal(new Set(result.recommendations.map(function (item) { return item.prospectFamily; })).size, 3);
+  });
+});
+
+test('le moteur ne complète jamais un résultat contraint avec un doublon de famille', function () {
+  var result = advisor.recommend({ priorities: ['safety', 'automatic'], shape: 'rect', length: 20, width: 12 }, rules);
+  var families = result.recommendations.map(function (item) { return item.prospectFamily; });
+  assert.equal(new Set(families).size, families.length);
+  assert.ok(result.recommendations.length >= 1 && result.recommendations.length <= 3);
 });
 
 test('le budget reste facultatif et ne supprime jamais les solutions compatibles', function () {
@@ -49,5 +92,6 @@ test('toutes les recommandations pointent vers une sélection V1 valide', functi
     assert.ok(['cov', 'shl', 'oth'].indexOf(item.eq) !== -1);
     assert.ok(['cm', 'sm', 'otherProduct'].indexOf(item.selectionType) !== -1);
     assert.ok(item.image === '' || item.image.indexOf('assets/produits/') === 0);
+    assert.ok(advisor.PROSPECT_FAMILIES[item.prospectFamily]);
   });
 });
