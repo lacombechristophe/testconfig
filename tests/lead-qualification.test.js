@@ -150,3 +150,26 @@ test('le logo Diskoov officiel remplace tous les monogrammes temporaires', funct
   assert.doesNotMatch(advisor, /advisor-brand-mark/);
   assert.doesNotMatch(html, /class="(?:vi|ph)-mark"/);
 });
+
+test('les listes produit aident a choisir avant de demander une etude', function () {
+  assert.match(advisor, /Quelle protection simplifiera vraiment votre quotidien/);
+  assert.doesNotMatch(advisor, /vous simplifiera vraiment la piscine/);
+  assert.match(advisor, /Qu’aimeriez-vous gagner autour de votre piscine/);
+  assert.match(advisor, /advisor-family-signals/);
+  assert.match(advisor, /advisor-model-facts/);
+  assert.match(advisor, /Manipulation[\s\S]*Présence[\s\S]*À prévoir/);
+  assert.match(advisor, /Vous recherchez l’abri le plus discret possible/);
+  assert.match(advisor, /Vous voulez davantage de volume sous un abri bas/);
+  assert.match(advisor, /Un seul rail de guidage, positionné du côté choisi avec vous/);
+  assert.match(advisor, /Enroulement par manivelle et déroulement par sangle de rappel/);
+  assert.match(advisor, /Étudier ce modèle/);
+  assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
+  assert.doesNotMatch(advisor, /Vérifier ce modèle|Vérifier mon projet/);
+});
+
+test('les preuves commerciales restent limitees aux affirmations documentees', function () {
+  assert.match(advisor, /Pose incluse lorsque Diskoov fournit et installe la couverture/);
+  assert.match(advisor, /NF P90-308 · garantie 3 ans/);
+  assert.match(advisor, /L’estimation prévoit la pose, à confirmer selon le chantier/);
+  assert.doesNotMatch(advisor, /Coverseal[^\n]{0,180}pose incluse/i);
+});
