@@ -341,6 +341,9 @@
 
   function render(options) {
     options = options || {};
+    if (state.screen === 'results' && !state.results) {
+      state.results = engine.recommend(state, rules);
+    }
     var shouldFocusTitle = options.focusTitle !== false && focusScreenTitleOnRender;
     focusScreenTitleOnRender = false;
     var previousTop = body.scrollTop || 0;
@@ -664,9 +667,9 @@
     var map = {
       ore_compact: ['Couverture motorisée', 'Pensée pour les bassins compacts'],
       ore_essential: ['Protection 4 saisons', 'Confort motorisé'],
-      auto: ['Ouverture automatique', 'Rails extra-plats'],
+      auto: ['Ouverture automatique', 'Protection basse'],
       semi: ['Couverture tendue', 'Budget plus maîtrisé'],
-      eden: ['Sur mesure', 'Ouverture motorisée'],
+      eden: ['Sur mesure', 'Finition adaptée'],
       bab: ['Sécurité essentielle', 'Garantie 3 ans'],
       volet_hs: ['Automatique', 'Sans intégration dans le bassin'],
       volet_immerge: ['Très discret', 'Mécanisme intégré'],
@@ -798,9 +801,9 @@
     var map = {
       ore_compact: 'Une couverture motorisée Oré pensée pour les bassins compacts. Si vous choisissez la fourniture avec pose, l’installation Diskoov est incluse dans l’estimation.',
       ore_essential: 'Une couverture Oré plus polyvalente, conçue pour protéger le bassin toute l’année avec un guidage motorisé discret et une pose intégrée à l’estimation lorsqu’elle est demandée.',
-      auto: 'La Coverseal automatique privilégie le confort : une couverture tendue, motorisée, discrète et posée par les techniciens du fabricant.',
+      auto: 'La Coverseal automatique privilégie le confort : une couverture tendue, motorisée et discrète, dont la pose est vérifiée avec votre bassin.',
       semi: 'La Coverseal semi-automatique garde l’esprit Coverseal avec une solution plus accessible et une commande simplifiée.',
-      eden: 'Eden est une couverture motorisée sur mesure, intéressante quand le projet demande une finition et une intégration particulièrement soignées.',
+      eden: 'Eden est une couverture étudiée sur mesure lorsque le projet demande une finition et une intégration particulièrement soignées.',
       bab: 'La bâche à barres Secu Classic est une solution robuste pour sécuriser le bassin avec un budget plus cadré.',
       volet_hs: 'Le volet hors-sol apporte le confort d’une couverture automatique avec un coffre visible et une installation plus simple qu’un système immergé.',
       volet_immerge: 'Le volet immergé protège le bassin avec un mécanisme intégré, plus discret visuellement et plus exigeant à anticiper dans le projet.',
@@ -812,11 +815,11 @@
 
   function productSalesBullets(item) {
     var map = {
-      ore_compact: ['Adaptée aux bassins jusqu’à 7 × 3,5 m.', 'Pose incluse avec la prestation fourniture et pose.', 'La plage côté mécanisme doit être mesurée avant estimation.'],
-      ore_essential: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Pose par deux techniciens lorsqu’elle est retenue.', 'Options possibles : solaire, découpe bloc, sangles et recul.'],
-      auto: ['Système breveté avec rails extra-plats de 10 mm.', 'Membrane PVC armé et norme sécurité NF P90-308.', 'Ouverture/fermeture rapide avec motorisation solaire selon modèle.'],
-      semi: ['Même logique de couverture tendue Coverseal.', 'Conçue pour sécuriser le bassin selon NF P90-308.', 'Alternative à la version automatique pour mieux maîtriser le budget.'],
-      eden: ['Norme sécurité NF P90-308.', 'Ouverture et fermeture motorisées sans effort.', 'Limite l’évaporation, les pertes de chaleur et l’entretien.'],
+      ore_compact: ['Adaptée aux bassins jusqu’à 7 × 3,5 m.', 'Conçue selon la norme de sécurité NF P90-308.', 'Pose incluse avec la prestation fourniture et pose.', 'La plage côté mécanisme doit être mesurée avant estimation.'],
+      ore_essential: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Conçue selon la norme de sécurité NF P90-308.', 'Pose par deux techniciens lorsqu’elle est retenue.', 'Options possibles : solaire, découpe bloc, sangles et recul.'],
+      auto: ['Ouverture entièrement motorisée pour simplifier l’usage quotidien.', 'Protection basse qui préserve les lignes autour du bassin.', 'Support, alimentation et conditions de pose vérifiés avant proposition.'],
+      semi: ['Même approche de couverture tendue que la version automatique.', 'Une partie de la manipulation reste à votre charge.', 'Alternative à la version automatique pour mieux maîtriser le budget.'],
+      eden: ['Étude adaptée aux dimensions, aux abords et aux finitions souhaitées.', 'Intégration pensée pour les projets atypiques ou très soignés.', 'Fonctionnement et pose définis dans la proposition personnalisée.'],
       bab: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Conçue pour sécuriser le bassin selon NF P90-308.', 'Garantie 3 ans.'],
       volet_hs: ['Adapté aux bassins jusqu’à 12 × 6 m.', 'Lames dimensionnées pour respecter la sécurité.', 'Les conditions de livraison et de pose dépendent du département.'],
       volet_immerge: ['Adapté aux bassins jusqu’à 14 × 6 m.', 'Une intégration avec flasques sur paroi est possible selon le bassin.', 'Fond de bassin, caillebotis ou mur étudiés sur mesure.'],
@@ -873,7 +876,7 @@
   function comparisonOperation(item) {
     var map = {
       ore_compact: 'Motorisée', ore_essential: 'Motorisée', auto: 'Automatique', semi: 'Semi-automatique',
-      eden: 'Motorisée', bab: 'Manuelle', volet_hs: 'Automatique', volet_immerge: 'Automatique',
+      eden: 'Définie pendant l’étude', bab: 'Manuelle', volet_hs: 'Automatique', volet_immerge: 'Automatique',
       masterdeck: 'Définie pendant l’étude'
     };
     if (item.family === 'shelter') return 'Modules télescopiques';
@@ -1111,6 +1114,7 @@
       window.clearAdvisorPoolDimensions(source === 'guided' || state.poolCompleted ? state.shape : 'rect');
     }
     if (typeof window.setAdvisorProjectStage === 'function') window.setAdvisorProjectStage('');
+    syncLeadAdvisorContext(item, source);
     document.body.classList.toggle('diskoov-guided-config', source === 'guided');
 
     if (typeof window.selEq === 'function') window.selEq(item.eq);
@@ -1149,6 +1153,25 @@
     if (length) length.value = state.length;
     if (width) width.value = state.width;
     if (typeof window.updD === 'function') window.updD();
+  }
+
+  function syncLeadAdvisorContext(item, source) {
+    if (!item || typeof window.setAdvisorContext !== 'function') return;
+    var labels = engine.PRIORITIES || {};
+    var recommendations = state.results && Array.isArray(state.results.recommendations)
+      ? state.results.recommendations.map(function (recommendation) { return recommendation.title; })
+      : [];
+    var choiceReason = source === 'guided'
+      ? priorityFit(item)
+      : 'Ce produit a été exploré directement par le prospect.';
+    window.setAdvisorContext({
+      mode: source,
+      version: 'v3',
+      priorities: state.priorities.map(function (priority) { return labels[priority] || priority; }),
+      recommendations: recommendations,
+      choiceReason: choiceReason,
+      dimensionsKnown: !!((source === 'guided' || state.poolCompleted) && state.dimensionsKnown)
+    });
   }
 
   function directSelectionAllowed(item) {
@@ -1191,13 +1214,17 @@
     summary.classList.remove('guided-summary--warning');
     var guided = mode === 'guided';
     var knownPool = mode === 'guided' && state.dimensionsKnown || mode === 'direct-known';
+    var resultItem = findResultProduct(item.id);
+    var knownDimensionalRange = !!(resultItem && resultItem.certainty === 'dimension_fit');
     var meta = knownPool
-      ? 'Retenue pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Les dimensions sont cohérentes avec la plage connue ; la pose et les accès restent à vérifier.'
+      ? (knownDimensionalRange
+        ? 'Retenue pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Les dimensions sont cohérentes avec la plage connue ; la pose et les accès restent à vérifier.'
+        : 'Retenue pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Ces dimensions sont enregistrées ; le modèle, la pose et les accès restent à confirmer avec vous.')
       : guided
         ? 'Retenue selon vos priorités. Ajoutez les dimensions et les détails de pose pour confirmer le modèle adapté.'
         : 'Renseignez les dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
     var proof = guided ? '<div class="guided-summary-proof">' + escapeHtml(priorityFit(item)) + '</div>' : '';
-    var next = '<div class="guided-summary-next"><strong>À préciser maintenant</strong><span>La prestation, le support et les accès. Une photo facultative aide à repérer les obstacles et les équipements autour du bassin.</span></div>';
+    var next = '<div class="guided-summary-next"><strong>À préciser maintenant</strong><span>L’état du projet, la prestation et les abords du bassin. Si vous choisissez la pose, nous préciserons aussi l’accès au chantier. Une photo facultative aide à repérer les obstacles et les équipements.</span></div>';
     summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Piste retenue' : 'Produit à vérifier') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor data-advisor-destination="' + (guided ? 'results' : 'direct') + '">' + (guided ? 'Revoir les solutions' : 'Voir les familles') + '</button></div>' + next;
   }
 
@@ -1215,6 +1242,7 @@
       summary.innerHTML = '<div class="guided-summary-kicker">Choix à compléter</div><div class="guided-summary-row"><div><div class="guided-summary-title">Choisissez un modèle</div><div class="guided-summary-meta">La famille a changé dans le configurateur. Sélectionnez maintenant le modèle à vérifier pour votre bassin.</div></div><button type="button" data-open-advisor data-advisor-destination="' + escapeHtml(destination) + '">Revoir les solutions</button></div>';
       return;
     }
+    syncLeadAdvisorContext(item, document.body.classList.contains('diskoov-guided-config') ? 'guided' : 'direct');
     state.activeProduct = item.id;
     saveState();
     updateConfiguratorSummary(item, destination === 'results' ? 'guided' : (state.poolCompleted && state.dimensionsKnown ? 'direct-known' : 'direct'));

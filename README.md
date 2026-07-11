@@ -31,11 +31,12 @@ Dans **Vercel → Settings → Environment Variables** :
 | Variable | Obligatoire | Description |
 |---|---|---|
 | `RESEND_API_KEY` | ✅ | Clé API Resend (resend.com) |
-| `FROM_EMAIL` | ✅ | Ex : `xavier@diskoov.fr` |
-| `INTERNAL_EMAIL` | ✅ | Email de réception des leads (xavier) |
-| `CONTACT_NAME` | Optionnel | Nom du conseiller dans les emails (défaut : `Xavier Dispot`) |
+| `FROM_EMAIL` | ✅ | Expéditeur Resend vérifié, ex. `contact@diskoov.fr` |
+| `INTERNAL_EMAIL` | ✅ | Email interne de réception des leads |
+| `PUBLIC_CONTACT_NAME` | Optionnel | Nom public dans l'email prospect (défaut : `l'équipe Diskoov`) |
+| `PUBLIC_CONTACT_EMAIL` | Optionnel | Email public dans l'email prospect (défaut : `contact@diskoov.fr`) |
 | `CONTACT_PHONE` | Optionnel | Téléphone dans les emails (défaut : `06 20 54 25 04`) |
-| `CONTACT_LOC` | Optionnel | Localisation de Xavier (défaut : `Showroom Saint-Laurent-des-Arbres`) |
+| `CONTACT_LOC` | Optionnel | Sous-titre de la carte contact (défaut : `Conseil et étude personnalisée`) |
 | `CONTACT_ADDR` | Optionnel | Adresse siège social dans le footer (défaut : `494, rue Léon Blum 34 000 Montpellier`) |
 | `SITE_URL` | Optionnel | URL du site (défaut : `https://diskoov.fr`) |
 | `LOGO_URL` | Optionnel | URL du logo dans les emails (défaut : `https://configurateur.diskoov.fr/logo-diskoov.png`) |
@@ -177,10 +178,11 @@ Pour activer, ajouter AVANT l'iframe dans la page WordPress :
 | `advisor_configurator_open` | Passage au configurateur | `product`, `source`, `dimensions_known` |
 | `config_equipment` | Sélection équipement | `equipment` |
 | `config_model` | Sélection modèle | `model`, `category` |
+| `config_qualification_field` | Avancement d'un champ de qualification, sans transmettre sa valeur | `field`, `completed`, `product` |
 | `config_attachment_added` / `config_attachment_failed` | Ajout ou échec d'une photo/plan | `kind`, `optimized`, `size_kb` ou `reason` |
 | `form_start` | Première saisie coordonnées | `entry_field` |
 | `form_validation_error` | Email ou téléphone invalide à la sortie du champ | `field` |
-| `lead_submit_attempt` | Tentative d'envoi | `equipment`, `model`, `timeline`, `has_photo` |
+| `lead_submit_attempt` | Tentative d'envoi | `equipment`, `model`, `timeline`, `has_photo`, `has_budget`, `advisor_mode`, `qualification_complete` |
 | `lead_submitted` | Succès réseau réel, initial ou après retry | `equipment`, `model`, `department`, `timeline`, `priority`, `email_sent`, `retry` |
 | `lead_submit_failed` / `lead_retry_failed` | Échec initial ou échec définitif | `equipment`, `model`, `retry_scheduled` |
 
@@ -221,12 +223,20 @@ Toutes les valeurs modifiables sont dans le fichier **`config.js`** à la racine
 
 ## Payload webhook (Make.com / Zapier)
 
+Le payload contient aussi le contexte du conseiller et les informations chantier. Les champs `advisor_*` sont réservés au traitement commercial : ils ne doivent pas être affichés tels quels au prospect. Le budget déclaré reste facultatif et ne modifie jamais le calcul tarifaire.
+
 ```json
 {
   "prenom": "Jean",
   "nom": "Dupont",
   "email": "jean@email.com",
   "tel": "06 12 34 56 78",
+  "code_postal": "34000",
+  "ville": "Montpellier",
+  "statut_projet": "Piscine existante",
+  "acces_chantier": "Accès direct et dégagé",
+  "budget_projet": "10 000 à 15 000 €",
+  "preference_contact": "Téléphone",
   "categorie": "cov",
   "produit": "auto",
   "produit_label": "Coverseal Automatique",
@@ -242,6 +252,12 @@ Toutes les valeurs modifiables sont dans le fichier **`config.js`** à la racine
   "option_rail_tout_terrain": false,
   "departement": "34 — Hérault",
   "delai": "Avant l'été (URGENT)",
+  "advisor_mode": "Conseil guidé",
+  "advisor_priorites": "Sécuriser le bassin · Tout automatiser",
+  "advisor_recommandations": "Coverseal automatique · Volet immergé · Abri Master 18",
+  "advisor_raison_choix": "Cette solution répond directement aux deux attentes exprimées.",
+  "advisor_dimensions_connues": true,
+  "advisor_version": "v3",
   "source": "Google",
   "priorite": "URGENT",
   "timestamp": "2026-03-17T10:30:00.000Z",

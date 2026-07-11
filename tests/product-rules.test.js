@@ -46,6 +46,9 @@ function assertSafeResult(product, r) {
   assert.equal(typeof r.image, 'string');
   assert.ok(Array.isArray(r.warnings), product + ' warnings doit être un tableau');
   assert.ok(Array.isArray(r.breakdown), product + ' breakdown doit être un tableau');
+  r.breakdown.forEach(function (line) {
+    assert.doesNotMatch(line.label, /Excel|grille|Xavier|référence interne|moteur tarifaire|qualification/i, product + ' expose un terme interne dans le détail de prix');
+  });
   assert.equal(typeof r.technical, 'object');
 }
 

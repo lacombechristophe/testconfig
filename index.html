@@ -115,6 +115,7 @@
     body {
       font-family: 'Inter', sans-serif;
       color: var(--ink);
+      margin: 0;
       -webkit-font-smoothing: antialiased;
       /* Prevent pull-to-refresh on iOS qui casse le layout svh */
       overscroll-behavior: none;
@@ -1189,10 +1190,24 @@
       letter-spacing: 0;
     }
 
+    .field-help {
+      display: block;
+      margin-top: 5px;
+      color: var(--faint);
+      font-size: 10.5px;
+      line-height: 1.45;
+    }
+
+    .field-help.is-confirmed {
+      color: #2e6b50;
+      font-weight: 650;
+    }
+
     .fl input,
     .fl select,
     .fl textarea {
       width: 100%;
+      min-height: 44px;
       padding: 10px 12px;
       border: 1px solid var(--line);
       border-radius: var(--r);
@@ -2339,6 +2354,17 @@
       color: var(--faint);
     }
 
+    .product-intro strong,
+    .product-intro span {
+      display: block;
+    }
+
+    .product-intro strong {
+      margin-bottom: 2px;
+      color: var(--ink);
+      font-size: 12.5px;
+    }
+
     @media (max-width: 520px) {
       .product-grid,
       .product-fields { grid-template-columns: 1fr; }
@@ -2466,7 +2492,19 @@
       }
 
       .p-hd {
+        gap: 10px;
         padding: 12px 18px
+      }
+
+      .ph-brand,
+      .advisor-entry-button {
+        flex: 0 0 auto;
+      }
+
+      .ph-sum {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
       }
 
       .pfoot {
@@ -2526,8 +2564,16 @@
 
       /* CTA plus grand au touch */
       .cta {
-        padding: 11px 12px;
+        min-height: 44px;
+        padding: 10px 12px;
         border-radius: 9px;
+      }
+
+      .share-btn {
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px 12px;
       }
 
       /* Masquer badge vidéo sur mobile (pas de place) */
@@ -2539,6 +2585,32 @@
       .panel:has(#suc.on) {
         flex: 1;
         height: auto;
+      }
+    }
+
+    @media(max-width:520px) {
+      .p-hd {
+        gap: 8px;
+        padding-inline: 16px;
+      }
+
+      .ph-name {
+        display: none;
+      }
+
+      .ph-sum {
+        display: -webkit-box;
+        overflow: hidden;
+        text-align: center;
+        font-size: 10.5px;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .advisor-entry-button {
+        min-height: 44px;
+        margin-left: 0;
+        padding-inline: 10px;
       }
     }
 
@@ -2700,7 +2772,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260711-v3-final8">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260711-v3-leads8">
 
   <noscript>
     <style>
@@ -2899,12 +2971,12 @@
             <label class="dl" for="d-w">Largeur intérieure</label>
             <div class="dinr">
               <button type="button" class="d-btn" aria-label="Réduire largeur"
-                onclick="stepD('d-w',-0.5,3,12)">−</button>
-              <input class="di" type="number" id="d-w" name="largeur" value="4" min="3" max="12" step="0.5"
+                onclick="stepD('d-w',-0.5,2,12)">−</button>
+              <input class="di" type="number" id="d-w" name="largeur" value="4" min="2" max="12" step="0.5"
                 inputmode="decimal" aria-label="Largeur intérieure en mètres" oninput="updD()"
-                onblur="fixD('d-w',3,12)">
+                onblur="fixD('d-w',2,12)">
               <button type="button" class="d-btn" aria-label="Augmenter largeur"
-                onclick="stepD('d-w',+0.5,3,12)">+</button>
+                onclick="stepD('d-w',+0.5,2,12)">+</button>
               <span class="du" aria-hidden="true">m</span>
             </div>
           </div>
@@ -2918,7 +2990,7 @@
           <div class="fl" style="margin-bottom:12px">
             <label for="libre-desc">Décrivez la forme de votre piscine</label>
             <textarea id="libre-desc" name="description_forme" rows="3" maxlength="500"
-              placeholder="Forme en haricot, en L, avec plage immergée..." oninput="S.planDesc=this.value"></textarea>
+              placeholder="Forme en haricot, en L, avec plage immergée..." oninput="S.planDesc=this.value;chk();updProgress()"></textarea>
           </div>
         </div>
 
@@ -3140,10 +3212,10 @@
             <div class="pc" id="eq-cov" role="radio" aria-checked="false" tabindex="0" onclick="selEq('cov')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('cov')}">
               <div class="pc-top">
-                <span class="pc-n">Couverture automatique Coverseal</span>
-                <span class="pc-p">dès 11 000 €</span>
+                <span class="pc-n">Couvertures motorisées</span>
+                <span class="pc-p">Estimation selon modèle</span>
               </div>
-              <div class="pc-s">Sécurité enfants homologuée · baignade en 30 sec · pose par techniciens fabricant</div>
+              <div class="pc-s">Couverture basse motorisée · confort quotidien · pose vérifiée avec votre bassin</div>
             </div>
             <div class="pc" id="eq-shl" role="radio" aria-checked="false" tabindex="0" onclick="selEq('shl')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('shl')}">
@@ -3151,7 +3223,7 @@
                 <span class="pc-n">Abri télescopique Master</span>
                 <span class="pc-p">Calcul par dimensions</span>
               </div>
-              <div class="pc-s">Baignade toute l'année · 5 hauteurs · pose selon modèle</div>
+              <div class="pc-s">Saison de baignade prolongée · 5 hauteurs · pose selon modèle</div>
             </div>
             <div class="pc" id="eq-oth" role="radio" aria-checked="false" tabindex="0" onclick="selEq('oth')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('oth')}">
@@ -3170,7 +3242,7 @@
             <span class="sl">Modèle
               <span class="tip-wrap">
                 <i class="ic" tabindex="0" role="button" aria-label="Information sur l'installation">i</i>
-                <span class="tip" role="tooltip">Automatique : motorisée, 30 sec. Semi-auto : manivelle. Oré :
+                <span class="tip" role="tooltip">Automatique : ouverture motorisée. Semi-auto : manipulation assistée. Oré :
                   couverture mobile déclinée en Compact et Essential.</span>
               </span>
             </span>
@@ -3206,7 +3278,7 @@
               <span class="pc-n">Eden</span>
               <span class="pc-p">Sur devis</span>
             </div>
-            <div class="pc-s">Matériaux haut de gamme · isolation thermique renforcée · toutes formes</div>
+            <div class="pc-s">Projet sur mesure · finitions adaptées · étude complète du bassin et des abords</div>
           </div>
         </div>
 
@@ -3240,8 +3312,7 @@
               Membrane
               <span class="tip-wrap">
                 <i class="ic" tabindex="0" role="button" aria-label="Information sur la membrane">i</i>
-                <span class="tip" role="tooltip">Membrane PVC armé Serge Ferrari — résistance UV, durée de vie 20+
-                  ans</span>
+                <span class="tip" role="tooltip">Membrane PVC armé — résistance UV et usage extérieur</span>
               </span>
               <span class="sl-val" id="mem-ral">RAL 7037</span>
             </span>
@@ -3277,8 +3348,8 @@
           <div class="or">
             <div>
               <span class="ol">Motorisation solaire autonome</span>
-              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Incluse · 2 panneaux photovoltaïques · 60
-                sec pour 13 m</div>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Autonomie et fonctionnement confirmés
+                selon la configuration retenue</div>
             </div>
             <button type="button" class="tog on" role="switch" aria-pressed="true"
               aria-label="Motorisation solaire autonome" id="t-sol" onclick="togOpt('sol',this)"></button>
@@ -3464,10 +3535,35 @@
                 inputmode="tel" oninput="markFormStart('phone');fmtPhone(this);S.ph=this.value;chk()" onblur="trackContactValidation('phone')">
               <p class="ferr" id="ph-err" role="alert">Numéro invalide (ex : 06 12 34 56 78)</p>
             </div>
+            <div class="frow">
+              <div class="fl">
+                <label for="postal-code">Code postal *</label>
+                <input type="text" id="postal-code" name="postal-code" placeholder="34000" autocomplete="postal-code"
+                  maxlength="5" inputmode="numeric"
+                  oninput="markFormStart('postal_code');syncDepartmentFromPostal(this);chk()"
+                  onblur="trackContactValidation('postal_code')">
+                <p class="ferr" id="postal-code-err" role="alert">Saisissez un code postal à 5 chiffres</p>
+              </div>
+              <div class="fl">
+                <label for="city">Ville *</label>
+                <input type="text" id="city" name="address-level2" placeholder="Montpellier"
+                  autocomplete="address-level2" maxlength="100"
+                  oninput="markFormStart('city');S.city=this.value.trim();chk()">
+              </div>
+            </div>
             <div class="fl">
-              <label for="dept">Département *</label>
-              <select id="dept" name="departement" autocomplete="address-level2" onchange="markFormStart('department');S.dept=this.value;updP();chk()">
+              <label for="dept">Département de pose *</label>
+              <select id="dept" name="departement" autocomplete="address-level1" onchange="markFormStart('department');S.dept=this.value;updP();chk()">
                 <option value="">Sélectionner...</option>
+              </select>
+              <span class="field-help" id="dept-hint">Déduit automatiquement du code postal lorsque c’est possible.</span>
+            </div>
+            <div class="fl">
+              <label for="contact-preference">Comment préférez-vous être recontacté ? <span class="field-optional">Facultatif</span></label>
+              <select id="contact-preference" name="contact_preference" onchange="S.contactPreference=this.value">
+                <option value="">Aucune préférence</option>
+                <option value="telephone">Par téléphone</option>
+                <option value="email">Par email</option>
               </select>
             </div>
             <div class="fl">
@@ -3521,7 +3617,7 @@
                 <circle cx="6" cy="6" r="5.5" stroke="currentColor" stroke-width="1" />
                 <path d="M6 5.5v3M6 3.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
               </svg>
-              <span>Vos données (nom, email, téléphone, département) sont collectées par Diskoov pour traiter votre
+              <span>Vos données (nom, email, téléphone et localisation du projet) sont collectées par Diskoov pour traiter votre
                 demande de devis, sur la base de votre consentement. Elles sont conservées 3 ans. Vos coordonnées sont
                 temporairement stockées dans votre navigateur pour faciliter une éventuelle seconde demande. Vous
                 disposez d'un
@@ -3572,9 +3668,9 @@
               style="width:28px;height:28px;border-radius:50%;background:var(--gold);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
               2</div>
             <div>
-              <div style="font-size:13px;font-weight:700;color:var(--ink)">Visite technique offerte</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Prise de mesures et étude de faisabilité à
-                votre domicile</div>
+              <div style="font-size:13px;font-weight:700;color:var(--ink)">Vérification technique</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px">Prise de mesures et étude de faisabilité
+                selon les besoins du projet</div>
             </div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
@@ -3621,7 +3717,7 @@
               stroke-linecap="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            15 ans d'expertise
+            Conseil personnalisé
           </span>
           <span
             style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:#f8f8f6;color:#555;display:inline-flex;align-items:center;gap:4px">
@@ -3629,7 +3725,7 @@
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            Techniciens fabricant
+            Pose étudiée avec vous
           </span>
           <span
             style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:#f8f8f6;color:#555;display:inline-flex;align-items:center;gap:4px">
@@ -3638,7 +3734,7 @@
               <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            Visite offerte
+            Compatibilité vérifiée
           </span>
         </div>
 
@@ -3721,8 +3817,8 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260707-visuals"></script>
-  <script src="advisor-engine.js?v=20260711-v3-final8"></script>
+  <script src="product-rules.js?v=20260711-v3-leads8"></script>
+  <script src="advisor-engine.js?v=20260711-v3-leads8"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -3796,6 +3892,10 @@
       { h: '#0A0A0A', r: 'RAL 9005', l: 'Noir pur' }
     ];
     var DEPTS = ['01 — Ain', '02 — Aisne', '03 — Allier', '04 — Alpes-de-Haute-Provence', '05 — Hautes-Alpes', '06 — Alpes-Maritimes', '07 — Ardèche', '08 — Ardennes', '09 — Ariège', '10 — Aube', '11 — Aude', '12 — Aveyron', '13 — Bouches-du-Rhône', '14 — Calvados', '15 — Cantal', '16 — Charente', '17 — Charente-Maritime', '18 — Cher', '19 — Corrèze', '2A — Corse-du-Sud', '2B — Haute-Corse', '21 — Côte-d\'Or', '22 — Côtes-d\'Armor', '23 — Creuse', '24 — Dordogne', '25 — Doubs', '26 — Drôme', '27 — Eure', '28 — Eure-et-Loir', '29 — Finistère', '30 — Gard', '31 — Haute-Garonne', '32 — Gers', '33 — Gironde', '34 — Hérault', '35 — Ille-et-Vilaine', '36 — Indre', '37 — Indre-et-Loire', '38 — Isère', '39 — Jura', '40 — Landes', '41 — Loir-et-Cher', '42 — Loire', '43 — Haute-Loire', '44 — Loire-Atlantique', '45 — Loiret', '46 — Lot', '47 — Lot-et-Garonne', '48 — Lozère', '49 — Maine-et-Loire', '50 — Manche', '51 — Marne', '52 — Haute-Marne', '53 — Mayenne', '54 — Meurthe-et-Moselle', '55 — Meuse', '56 — Morbihan', '57 — Moselle', '58 — Nièvre', '59 — Nord', '60 — Oise', '61 — Orne', '62 — Pas-de-Calais', '63 — Puy-de-Dôme', '64 — Pyrénées-Atlantiques', '65 — Hautes-Pyrénées', '66 — Pyrénées-Orientales', '67 — Bas-Rhin', '68 — Haut-Rhin', '69 — Rhône', '70 — Haute-Saône', '71 — Saône-et-Loire', '72 — Sarthe', '73 — Savoie', '74 — Haute-Savoie', '75 — Paris', '76 — Seine-Maritime', '77 — Seine-et-Marne', '78 — Yvelines', '79 — Deux-Sèvres', '80 — Somme', '81 — Tarn', '82 — Tarn-et-Garonne', '83 — Var', '84 — Vaucluse', '85 — Vendée', '86 — Vienne', '87 — Haute-Vienne', '88 — Vosges', '89 — Yonne', '90 — Territoire de Belfort', '91 — Essonne', '92 — Hauts-de-Seine', '93 — Seine-Saint-Denis', '94 — Val-de-Marne', '95 — Val-d\'Oise', '971 — Guadeloupe', '972 — Martinique', '973 — Guyane', '974 — La Réunion', '976 — Mayotte'];
+    var PROJECT_STATUS_LABELS = { existing: 'Piscine existante', construction: 'Piscine en construction', planned: 'Projet de piscine à venir', renovation: 'Rénovation du bassin' };
+    var SITE_ACCESS_LABELS = { direct: 'Accès direct et dégagé', narrow: 'Passage étroit', steps: 'Marches ou dénivelé', unknown: 'À vérifier ensemble' };
+    var BUDGET_LABELS = { unknown: 'Pas encore défini', under5: 'Moins de 5 000 €', '5_10': '5 000 à 10 000 €', '10_15': '10 000 à 15 000 €', '15_25': '15 000 à 25 000 €', over25: 'Plus de 25 000 €' };
+    var CONTACT_PREFERENCE_LABELS = { telephone: 'Téléphone', email: 'Email' };
 
     /* ── PRICES (éditables dans config.js) ───────────── */
     var BP = window.DISKOOV_PRICES || { auto: 13890, semi: 11490 };
@@ -3813,16 +3913,30 @@
       hRal: 'RAL 7037', hLbl: 'Gris poussière',
       sol: true, rtt: false, shlMotor: false, gr: false, strucCol: 'RAL 9016', strucLbl: 'Blanc',
       installation: '', support: '', margellesLevel: '', clearance: '', electricity: '',
-      productColor: '', guideSide: '', immergedIntegration: '',
+      productColor: '', guideSide: '', immergedIntegration: '', projectStatus: '', siteAccess: '', projectBudget: '',
       babAntiAbrasion: false, babBlockCut: false, babRollingUp: false, babCutCorners: false,
       oreSolar: false, oreBlockCut: false, oreAntiWind: false, oreWinterStrap: false, oreExtraRetreat: false, oreSpecialColor: false,
       voletPoly: false, voletSolar: false, lastRuleResult: null,
       tl: '', advisorProjectStage: '',
-      fn: '', ln: '', em: '', ph: '', dept: '', src: '', note: '', ok: false, ok2: false
+      advisorMode: '', advisorPriorities: '', advisorRecommendations: '', advisorChoiceReason: '', advisorDimensionsKnown: null, advisorVersion: '',
+      fn: '', ln: '', em: '', ph: '', postalCode: '', city: '', dept: '', contactPreference: '', src: '', note: '', ok: false, ok2: false
     };
+    var CONFIG_DRAFT_KEY = 'dk_config_draft_v1';
+    var CONFIG_DRAFT_TTL = 2 * 60 * 60 * 1000;
+    var configDraftReady = false;
 
     window.setAdvisorProjectStage = function (stage) {
       S.advisorProjectStage = String(stage || '');
+    };
+
+    window.setAdvisorContext = function (context) {
+      context = context || {};
+      S.advisorMode = context.mode === 'guided' ? 'Conseil guidé' : (context.mode === 'direct' ? 'Exploration directe' : '');
+      S.advisorPriorities = Array.isArray(context.priorities) ? context.priorities.slice(0, 2).join(' · ') : '';
+      S.advisorRecommendations = Array.isArray(context.recommendations) ? context.recommendations.slice(0, 3).join(' · ') : '';
+      S.advisorChoiceReason = String(context.choiceReason || '').slice(0, 500);
+      S.advisorDimensionsKnown = typeof context.dimensionsKnown === 'boolean' ? context.dimensionsKnown : null;
+      S.advisorVersion = String(context.version || 'v3').slice(0, 20);
     };
 
     window.clearAdvisorPoolDimensions = function (shape) {
@@ -4126,16 +4240,26 @@
     }
 
     function hasTechnicalQualification(product) {
-      return !!(product && product !== 'auto' && product !== 'semi' && product !== 'eden');
+      return !!product;
+    }
+
+    function getProjectGaps() {
+      var gaps = [];
+      if (S.shape === 'libre' && !String(S.planDesc || '').trim() && !S.planB64) {
+        gaps.push('description de la forme ou photo/plan');
+      }
+      return gaps;
     }
 
     function getProductGaps() {
       var product = activeProduct();
       if (!hasTechnicalQualification(product)) return [];
       var gaps = [];
+      if (!S.projectStatus) gaps.push('état d’avancement du projet');
       if (!S.installation) gaps.push('prestation souhaitée');
       if (!S.support) gaps.push('support autour du bassin');
       if (!S.margellesLevel) gaps.push('margelles / niveau des plages');
+      if (S.installation === 'fourniture_pose' && !S.siteAccess) gaps.push('accès au bassin');
       if (product === 'ore_compact' || product === 'ore_essential') {
         if (!S.clearance) gaps.push('plage côté mécanisme');
       }
@@ -4148,10 +4272,15 @@
       return gaps;
     }
 
+    function getAllQualificationGaps() {
+      return getProjectGaps().concat(getProductGaps());
+    }
+
     function productRequiredCount() {
       var product = activeProduct();
       if (!hasTechnicalQualification(product)) return 0;
-      var count = 3;
+      var count = 4;
+      if (S.installation === 'fourniture_pose') count += 1;
       if (product === 'ore_compact' || product === 'ore_essential') count += 1;
       if (product === 'volet_hs' || product === 'volet_immerge') count += 1;
       if (product === 'volet_immerge') count += 1;
@@ -4184,12 +4313,14 @@
       }
       /* Délai */
       steps += 1; if (S.tl) done += 1;
-      /* Formulaire = 5 champs obligatoires */
-      steps += 5;
+      /* Coordonnées et localisation = 7 champs obligatoires */
+      steps += 7;
       if (S.fn) done += 1;
       if (S.ln) done += 1;
       if (S.em && EMAIL_RE.test(S.em)) done += 1;
       if (S.ph) done += 1;
+      if (/^\d{5}$/.test(S.postalCode || '')) done += 1;
+      if (S.city) done += 1;
       if (S.dept) done += 1;
       /* Consentement */
       steps += 1; if (S.ok) done += 1;
@@ -4223,6 +4354,14 @@
       var valid = true;
       if (field === 'email') valid = !S.em || EMAIL_RE.test(S.em);
       if (field === 'phone') valid = !S.ph || PHONE_RE.test(S.ph.replace(/\s/g, ''));
+      if (field === 'postal_code') valid = !S.postalCode || /^\d{5}$/.test(S.postalCode);
+      if (field === 'postal_code') {
+        var postalInput = el('postal-code');
+        var postalError = el('postal-code-err');
+        if (postalInput) postalInput.classList.toggle('err', !valid);
+        if (postalInput) postalInput.classList.toggle('ok', valid && !!S.postalCode);
+        if (postalError) postalError.classList.toggle('on', !valid);
+      }
       if (!valid) track('form_validation_error', { field: field });
     }
 
@@ -4426,6 +4565,9 @@
       setupVisualLightbox();
       /* Restore config from URL if shared */
       restoreFromURL();
+      restoreConfigDraft();
+      configDraftReady = true;
+      saveConfigDraft();
     }
 
     /* ── STEP DIM BUTTONS (+/-) ───────────────────────── */
@@ -4905,7 +5047,7 @@
     }
 
     /* ── SHARE CONFIGURATION ─────────────────────────── */
-    function shareConfig() {
+    function buildConfigParams() {
       var params = new URLSearchParams();
       params.set('sh', S.shape);
       params.set('l', S.len); params.set('w', S.wid);
@@ -4925,6 +5067,9 @@
       if (S.gr) params.set('gr', '1');
       if (S.strucCol) params.set('sc', S.strucCol);
       if (S.installation) params.set('ins', S.installation);
+      if (S.projectStatus) params.set('pst', S.projectStatus);
+      if (S.siteAccess) params.set('acc', S.siteAccess);
+      if (S.projectBudget) params.set('bud', S.projectBudget);
       if (S.support) params.set('sup', S.support);
       if (S.margellesLevel) params.set('mar', S.margellesLevel);
       if (S.clearance) params.set('clr', S.clearance);
@@ -4945,6 +5090,11 @@
       if (S.oreExtraRetreat) params.set('oer', '1');
       if (S.oreSpecialColor) params.set('osc', '1');
       if (S.tl) params.set('tl', S.tl);
+      return params;
+    }
+
+    function shareConfig() {
+      var params = buildConfigParams();
       var url = window.location.origin + window.location.pathname + '?' + params.toString();
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(function () {
@@ -4960,8 +5110,54 @@
       showToast('Lien copié — partagez votre configuration !', false);
     }
 
-    function restoreFromURL() {
-      var p = new URLSearchParams(window.location.search);
+    function configDraftScope() {
+      var current = new URLSearchParams(window.location.search);
+      var scope = new URLSearchParams();
+      ['advisor', 'sh', 'l', 'w', 'eq', 'cm', 'sm', 'op'].forEach(function (key) {
+        if (current.has(key)) scope.set(key, current.get(key));
+      });
+      return window.location.pathname + '?' + scope.toString();
+    }
+
+    function saveConfigDraft() {
+      if (!configDraftReady || !activeProduct()) return;
+      try {
+        sessionStorage.setItem(CONFIG_DRAFT_KEY, JSON.stringify({
+          version: 1,
+          savedAt: Date.now(),
+          scope: configDraftScope(),
+          product: activeProduct(),
+          params: buildConfigParams().toString()
+        }));
+      } catch (e) { }
+    }
+
+    function restoreConfigDraft() {
+      var current = new URLSearchParams(window.location.search);
+      var explicitFields = ['st', 'stt', 'sts', 'stc', 'stw', 'filt', 'loc', 'mr', 'hr', 'sol', 'rtt', 'sm_o', 'gr', 'sc', 'pst', 'ins', 'acc', 'bud', 'sup', 'mar', 'clr', 'elec', 'pcol', 'rail', 'vint', 'baa', 'bbc', 'bru', 'bcc', 'vpoly', 'vsol', 'osol', 'obc', 'oaw', 'ows', 'oer', 'osc', 'tl'];
+      if (explicitFields.some(function (key) { return current.has(key); })) return false;
+      var currentProduct = current.get('cm') || current.get('sm') || current.get('op') || '';
+      if (!currentProduct) return false;
+      try {
+        var raw = sessionStorage.getItem(CONFIG_DRAFT_KEY);
+        if (!raw) return false;
+        var draft = JSON.parse(raw);
+        if (!draft || draft.version !== 1 || draft.scope !== configDraftScope() || draft.product !== currentProduct) return false;
+        if (!draft.savedAt || Date.now() - draft.savedAt > CONFIG_DRAFT_TTL) {
+          sessionStorage.removeItem(CONFIG_DRAFT_KEY);
+          return false;
+        }
+        restoreFromURL(new URLSearchParams(draft.params || ''));
+        track('config_draft_restored', { product: draft.product });
+        return true;
+      } catch (e) {
+        sessionStorage.removeItem(CONFIG_DRAFT_KEY);
+        return false;
+      }
+    }
+
+    function restoreFromURL(sourceParams) {
+      var p = sourceParams || new URLSearchParams(window.location.search);
       if (!p.has('sh') && !p.has('eq')) return;
       try {
         /* Valider les paramètres avant d'appliquer */
@@ -4972,7 +5168,7 @@
         var validOp = ['bab', 'volet_hs', 'volet_immerge', 'masterdeck'];
         if (p.has('sh') && validShapes.indexOf(p.get('sh')) !== -1) selShape(p.get('sh'));
         if (p.has('l')) { var pl = parseFloat(p.get('l')); if (pl >= 3 && pl <= 20) { el('d-l').value = pl; S.len = pl; } }
-        if (p.has('w')) { var pw = parseFloat(p.get('w')); if (pw >= 3 && pw <= 12) { el('d-w').value = pw; S.wid = pw; } }
+        if (p.has('w')) { var pw = parseFloat(p.get('w')); if (pw >= 2 && pw <= 12) { el('d-w').value = pw; S.wid = pw; } }
         if (p.get('st') === '1') {
           togStair(true);
           if (p.has('stt')) selStairType(p.get('stt'));
@@ -4995,6 +5191,9 @@
         if (p.get('gr') === '1') { S.gr = true; el('t-gr').classList.add('on'); el('t-gr').setAttribute('aria-pressed', 'true'); }
         var productFields = { ins: 'installation', sup: 'support', mar: 'margellesLevel', clr: 'clearance', elec: 'electricity', pcol: 'productColor', rail: 'guideSide', vint: 'immergedIntegration' };
         Object.keys(productFields).forEach(function (param) { if (p.has(param)) S[productFields[param]] = p.get(param).slice(0, 40); });
+        if (p.has('pst') && Object.prototype.hasOwnProperty.call(PROJECT_STATUS_LABELS, p.get('pst'))) S.projectStatus = p.get('pst');
+        if (p.has('acc') && Object.prototype.hasOwnProperty.call(SITE_ACCESS_LABELS, p.get('acc'))) S.siteAccess = p.get('acc');
+        if (p.has('bud') && Object.prototype.hasOwnProperty.call(BUDGET_LABELS, p.get('bud'))) S.projectBudget = p.get('bud');
         S.babAntiAbrasion = p.get('baa') === '1';
         S.babBlockCut = p.get('bbc') === '1';
         S.babRollingUp = p.get('bru') === '1';
@@ -5046,7 +5245,7 @@
           });
         }
         var restoredProduct = S.cm || S.sm || S.otherProduct;
-        if (restoredProduct && (S.otherProduct || restoredProduct.indexOf('ore_') === 0 || S.sm)) renderProductDetails(restoredProduct);
+        if (restoredProduct) renderProductDetails(restoredProduct);
         updateDimensionAvailability({ toast: false });
         updSurface(); updSummary(); updP(); updProgress();
         /* Show share btn since config exists */
@@ -5065,7 +5264,7 @@
       notifyAdvisorSelection('');
       /* Reset toutes les options pour éviter les reports entre catégories */
       S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
-      S.installation = ''; S.support = ''; S.margellesLevel = ''; S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
+      S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
       S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
       el('t-sol').classList.add('on'); el('t-sol').setAttribute('aria-pressed', 'true');
@@ -5113,6 +5312,10 @@
 
     function selCM(v) {
       if (!canSelectDimensionChoice(v)) return;
+      if (S.cm && S.cm !== v) {
+        S.clearance = ''; S.productColor = ''; S.guideSide = '';
+        S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
+      }
       S.cm = v;
       ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
       ['b-ore-compact', 'b-ore-essential', 'b-eden'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-checked', 'false'); });
@@ -5127,10 +5330,10 @@
       }
       var isCS = (v === 'auto' || v === 'semi');
       var isOre = (v === 'ore_compact' || v === 'ore_essential');
-      if (isCS) { reveal('s-mem'); reveal('s-hab'); reveal('s-co'); conceal('s-product-detail'); showDemo(); }
+      if (isCS) { reveal('s-mem'); reveal('s-hab'); reveal('s-co'); renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
       else { conceal('s-mem'); conceal('s-hab'); conceal('s-co'); }
       if (isOre) { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
-      else if (!isCS) { conceal('s-product-detail'); showImg('vi-pool'); }
+      else if (v === 'eden') { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
       var pm = { auto: '13 890 €', semi: '11 490 €', ore_compact: 'Indicatif', ore_essential: 'Indicatif', eden: 'Sur devis' };
       el('cm-p').textContent = pm[v] || '–';
       track('config_model', { model: v, category: 'cover' });
@@ -5184,6 +5387,11 @@
       S[key] = value;
       if (key === 'productColor' && /^poly_/.test(value)) S.voletPoly = true;
       if (key === 'productColor' && /^(blanc|sable|gris_7004)$/.test(value)) S.voletPoly = false;
+      track('config_qualification_field', {
+        field: key,
+        completed: !!value,
+        product: activeProduct()
+      });
       updP();
       chk();
       requestAnimationFrame(updProgress);
@@ -5221,6 +5429,14 @@
           title: 'Pose incluse',
           copy: 'Votre installation est prise en charge par 2 techniciens Diskoov, sous réserve de validation du site.'
         },
+        ore_essential: {
+          title: 'Pose disponible',
+          copy: 'La prestation peut être réalisée par 2 techniciens Diskoov et intégrée à votre estimation.'
+        },
+        bab: {
+          title: 'Sécurité documentée',
+          copy: 'La Secu Classic répond à la norme NF P90-308 et bénéficie d’une garantie de 3 ans.'
+        },
         volet_hs: {
           title: 'Pose intégrée à l’estimation',
           copy: 'Pour un volet hors-sol, l’estimation affichée comprend la livraison et l’installation, sous réserve de validation du site.'
@@ -5248,19 +5464,36 @@
         esc(proof.title) + '</strong><span class="product-proof-copy">' + esc(proof.copy) + '</span></span></div>';
     }
 
+    function positionProductDetails(product) {
+      var detail = el('s-product-detail');
+      var anchor = product === 'auto' || product === 'semi' || product === 'ore_compact' || product === 'ore_essential' || product === 'eden'
+        ? el('s-cm')
+        : (product === 'ul' || product === 'm18' || product === 'm30' || product === 'm50' || product === 'mid' ? el('s-sm') : el('s-oth'));
+      if (detail && anchor && anchor.parentNode && anchor.nextElementSibling !== detail) {
+        anchor.parentNode.insertBefore(detail, anchor.nextSibling);
+      }
+    }
+
     function renderProductDetails(product) {
       var labels = PNMS[product] || 'Configuration produit';
       var installLabels = installationOptionLabels(product);
+      positionProductDetails(product);
       el('product-detail-title').textContent = labels;
-      var html = '<div class="product-intro">Les champs marqués * permettent de vérifier la compatibilité et de préparer une estimation fiable.</div>' +
+      var html = '<div class="product-intro"><strong>Préparons un premier échange utile.</strong><span>Quelques informations suffisent pour vérifier les points importants et éviter de vous proposer une solution inadaptée.</span></div>' +
         productCommercialProof(product) +
         '<div class="product-fields">' +
+        '<div class="fl"><label for="prod-project-status">Votre projet *</label><select id="prod-project-status" onchange="setProductField(\'projectStatus\',this.value)">' +
+        '<option value="">À préciser</option><option value="existing">Piscine existante</option><option value="construction">Piscine en construction</option><option value="planned">Projet de piscine à venir</option><option value="renovation">Rénovation du bassin</option></select></div>' +
         '<div class="fl"><label for="prod-install">Prestation souhaitée *</label><select id="prod-install" onchange="setProductField(\'installation\',this.value)">' +
         '<option value="">À choisir</option><option value="fourniture_pose">' + esc(installLabels.pose) + '</option><option value="fourniture">' + esc(installLabels.supply) + '</option></select></div>' +
+        '<div class="fl"><label for="prod-access">Accès au bassin <span class="field-optional">Requis si pose</span></label><select id="prod-access" onchange="setProductField(\'siteAccess\',this.value)">' +
+        '<option value="">À préciser</option><option value="direct">Accès direct et dégagé</option><option value="narrow">Passage étroit</option><option value="steps">Marches ou dénivelé</option><option value="unknown">À vérifier ensemble</option></select></div>' +
         '<div class="fl"><label for="prod-support">Support autour du bassin *</label><select id="prod-support" onchange="setProductField(\'support\',this.value)">' +
         '<option value="">À choisir</option><option value="beton">Dalle béton</option><option value="bois">Terrasse bois</option><option value="carrelage">Carrelage / pierre</option><option value="autre">Autre</option></select></div>' +
         '<div class="fl"><label for="prod-margelles">Margelles / niveau *</label><select id="prod-margelles" onchange="setProductField(\'margellesLevel\',this.value)">' +
-        '<option value="">À définir</option><option value="niveau">Au même niveau</option><option value="debord">Avec débord</option><option value="sans">Sans margelles</option></select></div>';
+        '<option value="">À définir</option><option value="niveau">Au même niveau</option><option value="debord">Avec débord</option><option value="sans">Sans margelles</option></select></div>' +
+        '<div class="fl"><label for="prod-budget">Budget envisagé <span class="field-optional">Facultatif</span></label><select id="prod-budget" onchange="setProductField(\'projectBudget\',this.value)">' +
+        '<option value="">Je préfère ne pas répondre</option><option value="unknown">Pas encore défini</option><option value="under5">Moins de 5 000 €</option><option value="5_10">5 000 à 10 000 €</option><option value="10_15">10 000 à 15 000 €</option><option value="15_25">15 000 à 25 000 €</option><option value="over25">Plus de 25 000 €</option></select></div>';
       if (product === 'ore_compact' || product === 'ore_essential') {
         html += '<div class="fl"><label for="prod-clearance">Plage côté mécanisme *</label><select id="prod-clearance" onchange="setProductField(\'clearance\',this.value)">' +
           '<option value="">À mesurer</option><option value="80_plus">80 cm ou plus</option><option value="60_79">60 à 79 cm</option><option value="moins_60">Moins de 60 cm</option></select></div>' +
@@ -5305,7 +5538,7 @@
           '<label class="cbr"><input id="prod-vsol" type="checkbox" onchange="setProductOption(\'voletSolar\',this.checked)"><span>Alimentation solaire / pré-équipement à chiffrer</span></label></div>';
       }
       el('product-questions').innerHTML = html;
-      var values = { 'prod-install': S.installation, 'prod-support': S.support, 'prod-margelles': S.margellesLevel, 'prod-clearance': S.clearance, 'prod-electricity': S.electricity, 'prod-color': S.productColor, 'prod-guide': S.guideSide, 'prod-immerged': S.immergedIntegration };
+      var values = { 'prod-project-status': S.projectStatus, 'prod-install': S.installation, 'prod-access': S.siteAccess, 'prod-support': S.support, 'prod-margelles': S.margellesLevel, 'prod-budget': S.projectBudget, 'prod-clearance': S.clearance, 'prod-electricity': S.electricity, 'prod-color': S.productColor, 'prod-guide': S.guideSide, 'prod-immerged': S.immergedIntegration };
       Object.keys(values).forEach(function (id) { if (el(id)) el(id).value = values[id] || ''; });
       var checks = {
         'prod-baa': S.babAntiAbrasion, 'prod-bbc': S.babBlockCut, 'prod-bru': S.babRollingUp, 'prod-bcc': S.babCutCorners, 'prod-vpoly': S.voletPoly, 'prod-vsol': S.voletSolar,
@@ -5361,15 +5594,19 @@
       el('pf-title').textContent = 'Prix estimatif TTC';
       el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
       if (S.shape === 'libre') {
+        S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Forme libre : plan et validation technique nécessaires.'], reference: 'Étude sur mesure', technical: {} };
         setP('Sur devis', true); updBreakdown(0, null);
-        updateRuleStatus({ status: 'quote', eligible: null, warnings: ['Forme libre : plan et validation technique nécessaires.'], reference: 'Étude sur mesure' });
+        updateRuleStatus(S.lastRuleResult);
         el('share-btn').style.display = S.eq ? 'inline-flex' : 'none';
         return;
       }
       if (eq === 'cov') {
         if (!cm) { setP('–', true); updBreakdown(0, null); return; }
         if (cm === 'ore_compact' || cm === 'ore_essential') return applyRulePrice(cm);
-        if (cm === 'eden') { setP('Sur devis', true); updBreakdown(0, null); return; }
+        if (cm === 'eden') {
+          S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Eden est étudiée sur mesure selon le bassin, les abords et les finitions souhaitées.'], reference: 'Étude personnalisée Eden', technical: {} };
+          setP('Sur devis', true); updBreakdown(0, null); updateRuleStatus(S.lastRuleResult); return;
+        }
         var bpCm = BP[cm] || 0;
         lines.push([PNMS[cm] || 'Base', bpCm.toLocaleString('fr-FR') + ' €']);
         base = bpCm;
@@ -5388,6 +5625,13 @@
         return;
       }
       if (!base) { setP('–', true); updBreakdown(0, null); return; }
+      S.lastRuleResult = {
+        status: 'indicative', eligible: null, total: base,
+        breakdown: lines.map(function (line) { return { label: line[0], amount: parseInt(String(line[1]).replace(/\D/g, ''), 10) || 0 }; }),
+        warnings: ['Cette première estimation sera confirmée après vérification du support, des accès et des conditions de pose.'],
+        reference: 'Tarif Coverseal configurateur', technical: {}
+      };
+      updateRuleStatus(S.lastRuleResult);
       setP('dès ' + base.toLocaleString('fr-FR') + ' €', false);
       updBreakdown(base, lines.length > 1 ? lines : null);
       el('share-btn').style.display = 'inline-flex';
@@ -5506,7 +5750,6 @@
       var chip = gaps.length ? gaps.length + ' info' + (gaps.length > 1 ? 's' : '') + ' à préciser' : (rr.status === 'quote' ? 'Sur mesure' : 'Disponible');
       var warningHtml = warnings.map(function (w) { return '<div class="rule-status-line"><span>' + esc(w) + '</span></div>'; }).join('');
       var missingHtml = gaps.length ? '<div class="missing-list">' + gaps.map(function (g) { return '<span>' + esc(g) + '</span>'; }).join('') + '</div>' : '';
-      box.dataset.reference = rr.reference || '';
       box.innerHTML =
         '<div class="rule-status-head"><div><div class="rule-status-kicker">Votre estimation</div><strong>' + esc(statusLabel + eligibility) + '</strong></div><span class="rule-status-chip">' + esc(chip) + '</span></div>' +
         '<p class="rule-status-copy">' + esc(summary) + '</p>' +
@@ -5578,9 +5821,10 @@
       else if (S.eq === 'shl' && !S.sm) lbl = 'Choisissez une hauteur';
       else if (S.eq === 'oth' && !S.otherProduct) lbl = 'Choisissez un produit';
       else if (S.shape !== 'libre' && !(S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12)) lbl = 'Indiquez les dimensions du bassin';
-      else if (getProductGaps().length) lbl = 'Précisez : ' + getProductGaps()[0];
+      else if (getAllQualificationGaps().length) lbl = 'Précisez : ' + getAllQualificationGaps()[0];
       else if (!S.tl) lbl = 'Indiquez votre délai';
-      else if (!S.fn || !S.ln || !S.em || !S.ph || !S.dept) lbl = 'Complétez vos coordonnées';
+      else if (!S.fn || !S.ln || !S.em || !S.ph || !S.postalCode || !S.city || !S.dept) lbl = 'Complétez vos coordonnées';
+      else if (!/^\d{5}$/.test(S.postalCode)) lbl = 'Vérifiez le code postal';
       else if (S.ph && !phoneOk) lbl = 'Numéro de téléphone invalide';
       else if (!S.ok) lbl = 'Cochez le consentement';
       else lbl = 'Recevoir mon devis personnalisé';
@@ -5592,16 +5836,60 @@
       var emailOk = !S.em || EMAIL_RE.test(S.em);
       var phoneDigits = (S.ph || '').replace(/\s/g, '');
       var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
+      var postalOk = /^\d{5}$/.test(S.postalCode || '');
       /* Vérifier qu'un équipement ET son sous-modèle sont sélectionnés */
       var eqOk = !!S.eq;
       if (S.eq === 'cov' && !S.cm) eqOk = false;
       if (S.eq === 'shl' && !S.sm) eqOk = false;
       if (S.eq === 'oth' && !S.otherProduct) eqOk = false;
       var dimensionsOk = S.shape === 'libre' || (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12);
-      var ok = !!(eqOk && dimensionsOk && !getProductGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && S.dept && S.ok && S.tl);
+      var ok = !!(eqOk && dimensionsOk && !getAllQualificationGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && postalOk && S.city && S.dept && S.ok && S.tl);
       el('cta').disabled = !ok;
       updCTA();
       updProgress();
+      saveConfigDraft();
+    }
+
+    function departmentCodeFromPostal(postalCode) {
+      var value = String(postalCode || '');
+      if (!/^\d{5}$/.test(value)) return '';
+      if (value.indexOf('20') === 0) return parseInt(value, 10) < 20200 ? '2A' : '2B';
+      var overseas = value.slice(0, 3);
+      if (['971', '972', '973', '974', '976'].indexOf(overseas) !== -1) return overseas;
+      return value.slice(0, 2);
+    }
+
+    function syncDepartmentFromPostal(input) {
+      var value = String(input.value || '').replace(/\D/g, '').slice(0, 5);
+      input.value = value;
+      S.postalCode = value;
+      var valid = /^\d{5}$/.test(value);
+      input.classList.toggle('ok', valid);
+      input.classList.remove('err');
+      var error = el('postal-code-err');
+      if (error) error.classList.remove('on');
+
+      var code = departmentCodeFromPostal(value);
+      var department = code ? DEPTS.filter(function (item) { return item.indexOf(code + ' ') === 0; })[0] : '';
+      var select = el('dept');
+      var hint = el('dept-hint');
+      if (department && select) {
+        select.value = department;
+        S.dept = department;
+        if (hint) {
+          hint.textContent = 'Département détecté : ' + department + '.';
+          hint.classList.add('is-confirmed');
+        }
+        updP();
+      } else {
+        if (select) select.value = '';
+        S.dept = '';
+        if (hint) {
+          hint.textContent = valid ? 'Sélectionnez le département correspondant.' : 'Déduit automatiquement du code postal lorsque c’est possible.';
+          hint.classList.remove('is-confirmed');
+        }
+        updP();
+      }
     }
 
     function validateEmail(inp) {
@@ -5846,8 +6134,11 @@
         couleur_produit: S.productColor || '',
         cote_guidage: S.guideSide || '',
         integration_volet: S.immergedIntegration || '',
-        informations_manquantes: getProductGaps().join(', '),
-        qualification_complete: getProductGaps().length === 0 ? 'oui' : 'non',
+        statut_projet: PROJECT_STATUS_LABELS[S.projectStatus] || '',
+        acces_chantier: SITE_ACCESS_LABELS[S.siteAccess] || '',
+        budget_projet: BUDGET_LABELS[S.projectBudget] || '',
+        informations_manquantes: getAllQualificationGaps().join(', '),
+        qualification_complete: getAllQualificationGaps().length === 0 ? 'oui' : 'non',
         options_produit: productOptions.join(', '),
         prix_estime: rr && rr.total !== null ? Math.round(rr.total) : 0,
         statut_prix: rr ? rr.status : ((selectedProduct === 'auto' || selectedProduct === 'semi') ? 'catalogue' : 'quote'),
@@ -5856,7 +6147,16 @@
         avertissements_tarifaires: rr ? (rr.warnings || []).join(' | ') : '',
         donnees_techniques: rr ? JSON.stringify(rr.technical || {}) : '',
         departement: S.dept,
-        contexte_projet: S.advisorProjectStage || '',
+        code_postal: S.postalCode,
+        ville: S.city,
+        preference_contact: CONTACT_PREFERENCE_LABELS[S.contactPreference] || '',
+        contexte_projet: PROJECT_STATUS_LABELS[S.projectStatus] || S.advisorProjectStage || '',
+        advisor_mode: S.advisorMode || '',
+        advisor_priorites: S.advisorPriorities || '',
+        advisor_recommandations: S.advisorRecommendations || '',
+        advisor_raison_choix: S.advisorChoiceReason || '',
+        advisor_dimensions_connues: S.advisorDimensionsKnown,
+        advisor_version: S.advisorVersion || '',
         delai: TLS[S.tl] || S.tl,
         commentaire: S.note || '',
         description_forme: S.planDesc || '',
@@ -5876,7 +6176,10 @@
         equipment: S.eq,
         model: selectedProduct,
         timeline: S.tl,
-        has_photo: !!S.planB64
+        has_photo: !!S.planB64,
+        has_budget: !!S.projectBudget,
+        advisor_mode: S.advisorMode === 'Conseil guidé' ? 'guided' : 'direct',
+        qualification_complete: getAllQualificationGaps().length === 0
       });
 
       var withTimeout = function (p, ms) {
@@ -5916,12 +6219,8 @@
 
         if (!anyOk) {
           track('lead_submit_failed', { equipment: S.eq, model: selectedProduct, retry_scheduled: true });
-          /* Aucun canal n'a fonctionné — sauvegarder en localStorage comme filet de sécurité */
-          try {
-            var pendingLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-            pendingLeads.push(payload);
-            localStorage.setItem('dk_pending_leads', JSON.stringify(pendingLeads));
-          } catch (e) { }
+          /* Aucun canal n'a fonctionné — sauvegarder en localStorage comme filet de sécurité. */
+          queuePendingLead(payload);
           /* Retenter une fois après 3 secondes */
           setTimeout(function () {
             fetch('/api/send-email', {
@@ -5964,11 +6263,47 @@
       });
     }
 
+    function queuePendingLead(payload) {
+      try {
+        var pendingLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
+        if (!Array.isArray(pendingLeads)) pendingLeads = [];
+        pendingLeads.push(payload);
+        localStorage.setItem('dk_pending_leads', JSON.stringify(pendingLeads));
+        return true;
+      } catch (error) {
+        try {
+          var lightweightLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
+          if (!Array.isArray(lightweightLeads)) lightweightLeads = [];
+          lightweightLeads = lightweightLeads.map(pendingLeadWithoutAttachment);
+          lightweightLeads.push(pendingLeadWithoutAttachment(payload));
+          localStorage.setItem('dk_pending_leads', JSON.stringify(lightweightLeads));
+          return true;
+        } catch (fallbackError) {
+          return false;
+        }
+      }
+    }
+
+    function pendingLeadWithoutAttachment(payload) {
+      return Object.assign({}, payload, {
+        plan_base64: '',
+        plan_filename: '',
+        photo_filename: '',
+        piece_jointe_type: ''
+      });
+    }
+
     function showSuccess(pname) {
+      try { sessionStorage.removeItem(CONFIG_DRAFT_KEY); } catch (e) { }
       buildSucRecap();
       el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
       var contactLabel = CONTACT_NAME === 'l’équipe Diskoov' ? 'l’équipe Diskoov' : CONTACT_NAME;
-      el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise à ' + esc(contactLabel) + '.<br>Vous serez rappelé sous <strong>48h</strong> au <strong>' + esc(S.ph) + '</strong>.';
+      var contactMessage = S.contactPreference === 'email'
+        ? 'Vous recevrez une réponse sous <strong>48 h</strong> à l’adresse <strong>' + esc(S.em) + '</strong>.'
+        : (S.contactPreference === 'telephone'
+          ? 'Vous serez rappelé sous <strong>48 h</strong> au <strong>' + esc(S.ph) + '</strong>.'
+          : esc(contactLabel) + ' vous contactera sous <strong>48 h</strong> par téléphone ou par email.');
+      el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise à ' + esc(contactLabel) + '.<br>' + contactMessage;
       /* Numéro de référence unique (timestamp lisible) */
       var refEl = el('suc-ref');
       if (refEl) {
@@ -6036,7 +6371,9 @@
         if (S.strucCol) rows.push(['Couleur structure', S.strucLbl + ' — ' + S.strucCol]);
       }
       if (hasTechnicalQualification(prod)) {
+        if (S.projectStatus) rows.push(['Projet', PROJECT_STATUS_LABELS[S.projectStatus] || S.projectStatus]);
         if (S.installation) rows.push(['Prestation', S.installation === 'fourniture_pose' ? 'Fourniture et pose' : 'Fourniture seule']);
+        if (S.siteAccess) rows.push(['Accès', SITE_ACCESS_LABELS[S.siteAccess] || S.siteAccess]);
         if (S.support) rows.push(['Support', S.support]);
         if (S.margellesLevel) rows.push(['Margelles', S.margellesLevel]);
         if (S.clearance) rows.push(['Plage mécanisme', S.clearance]);
@@ -6047,9 +6384,11 @@
         if (S.babRollingUp) rows.push(['Option', 'Rolling-Up']);
         if (S.voletPoly) rows.push(['Lames', 'Polycarbonate']);
         if (S.voletSolar) rows.push(['Alimentation volet', 'Solaire / à chiffrer']);
+        if (S.projectBudget) rows.push(['Budget envisagé', BUDGET_LABELS[S.projectBudget] || S.projectBudget]);
       }
       if (S.loc === 'int') rows.push(['Emplacement', 'Intérieur']);
-      if (S.advisorProjectStage) rows.push(['Projet', S.advisorProjectStage]);
+      if (S.advisorPriorities) rows.push(['Ce qui compte pour vous', S.advisorPriorities]);
+      if (S.postalCode || S.city) rows.push(['Localisation', [S.postalCode, S.city].filter(Boolean).join(' ')]);
       if (S.dept) rows.push(['Département', S.dept]);
       if (S.tl) rows.push(['Délai', TLS[S.tl] || S.tl]);
       /* Prix estimatif */
@@ -6069,6 +6408,7 @@
     /* ── RESET ────────────────────────────────────────── */
     function resetForm() {
       formStartTracked = false;
+      try { sessionStorage.removeItem(CONFIG_DRAFT_KEY); } catch (e) { }
       /* WCAG 2.2 §3.3.7 Redundant Entry — récupérer les données de contact du dernier lead soumis */
       var prevContact = null;
       try {
@@ -6087,10 +6427,12 @@
       S.hRal = 'RAL 7037'; S.hLbl = 'Gris poussière';
       S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
       S.installation = ''; S.support = ''; S.margellesLevel = ''; S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
+      S.projectStatus = ''; S.siteAccess = ''; S.projectBudget = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
       S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
-      S.tl = '';
-      S.fn = ''; S.ln = ''; S.em = ''; S.ph = ''; S.dept = ''; S.src = ''; S.note = ''; S.ok = false; S.ok2 = false;
+      S.tl = ''; S.advisorProjectStage = '';
+      S.advisorMode = ''; S.advisorPriorities = ''; S.advisorRecommendations = ''; S.advisorChoiceReason = ''; S.advisorDimensionsKnown = null; S.advisorVersion = '';
+      S.fn = ''; S.ln = ''; S.em = ''; S.ph = ''; S.postalCode = ''; S.city = ''; S.dept = ''; S.contactPreference = ''; S.src = ''; S.note = ''; S.ok = false; S.ok2 = false;
 
       /* Reset shape */
       ['rect', 'oval', 'libre'].forEach(function (k) { el('sh-' + k).classList.toggle('on', k === 'rect'); el('sh-' + k).setAttribute('aria-checked', String(k === 'rect')); });
@@ -6144,10 +6486,14 @@
         el('ln').value = prevContact.nom || '';
         el('em').value = prevContact.email || '';
         el('ph').value = prevContact.tel || '';
+        el('postal-code').value = prevContact.code_postal || '';
+        el('city').value = prevContact.ville || '';
         S.fn = el('fn').value;
         S.ln = el('ln').value;
         S.em = el('em').value;
         S.ph = el('ph').value;
+        S.postalCode = el('postal-code').value;
+        S.city = el('city').value;
         if (prevContact.email && EMAIL_RE.test(prevContact.email)) {
           el('em').classList.add('ok');
         }
@@ -6161,20 +6507,36 @@
             }
           }
         }
+        if (S.postalCode && S.dept) {
+          var restoredDeptHint = el('dept-hint');
+          if (restoredDeptHint) {
+            restoredDeptHint.textContent = 'Département détecté : ' + S.dept + '.';
+            restoredDeptHint.classList.add('is-confirmed');
+          }
+        }
         if (prevContact.source) {
           el('src').value = prevContact.source;
           S.src = prevContact.source;
         }
+        if (prevContact.preference_contact) {
+          var preference = prevContact.preference_contact === 'Téléphone' ? 'telephone' : (prevContact.preference_contact === 'Email' ? 'email' : '');
+          el('contact-preference').value = preference;
+          S.contactPreference = preference;
+        }
       } else {
-        ['fn', 'ln', 'em', 'ph'].forEach(function (id) { el(id).value = ''; });
+        ['fn', 'ln', 'em', 'ph', 'postal-code', 'city'].forEach(function (id) { el(id).value = ''; });
         var emInp = el('em'); if (emInp) { emInp.classList.remove('err', 'ok'); }
         el('dept').value = '';
+        el('contact-preference').value = '';
         el('src').value = '';
       }
 
       var emErr = el('em-err'); if (emErr) { emErr.classList.remove('on'); }
       var phInp = el('ph'); if (phInp) { phInp.classList.remove('err', 'ok'); }
       var phErr = el('ph-err'); if (phErr) { phErr.classList.remove('on'); }
+      var postalInp = el('postal-code'); if (postalInp) { postalInp.classList.remove('err', 'ok'); }
+      var postalErr = el('postal-code-err'); if (postalErr) { postalErr.classList.remove('on'); }
+      var deptHint = el('dept-hint'); if (deptHint) { deptHint.textContent = 'Déduit automatiquement du code postal lorsque c’est possible.'; deptHint.classList.remove('is-confirmed'); }
       el('note').value = '';
       selSW('g-struc', 'sc', 'RAL-9016');
       var srl = el('struc-ral'); if (srl) srl.textContent = 'RAL 9016';
@@ -6403,7 +6765,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260711-v3-final8"></script>
+  <script src="advisor-v2.js?v=20260711-v3-leads8"></script>
 </body>
 
 </html>

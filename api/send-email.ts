@@ -7,10 +7,10 @@ if (!process.env.RESEND_API_KEY) {
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ─── Contact (éditables via variables d'environnement Vercel) ────────────────
-const CONTACT_NAME = process.env.CONTACT_NAME || 'Xavier Dispot';
 const PUBLIC_CONTACT_NAME = process.env.PUBLIC_CONTACT_NAME || "l'équipe Diskoov";
+const PUBLIC_CONTACT_EMAIL = process.env.PUBLIC_CONTACT_EMAIL || 'contact@diskoov.fr';
 const CONTACT_PHONE = process.env.CONTACT_PHONE || '06 20 54 25 04';
-const CONTACT_LOC = process.env.CONTACT_LOC || 'Showroom Saint-Laurent-des-Arbres';
+const CONTACT_LOC = process.env.CONTACT_LOC || 'Conseil et étude personnalisée';
 const CONTACT_ADDR = process.env.CONTACT_ADDR || '494, rue Léon Blum 34 000 Montpellier';
 const SITE_URL = process.env.SITE_URL || 'https://diskoov.fr';
 const LOGO_URL = process.env.LOGO_URL || `${process.env.SITE_URL || 'https://configurateur.diskoov.fr'}/logo-diskoov.png`;
@@ -36,6 +36,18 @@ interface LeadPayload {
   nom: string;
   email: string;
   tel: string;
+  code_postal: string;
+  ville: string;
+  statut_projet?: string;
+  acces_chantier?: string;
+  budget_projet?: string;
+  preference_contact?: string;
+  advisor_mode?: string;
+  advisor_priorites?: string;
+  advisor_recommandations?: string;
+  advisor_raison_choix?: string;
+  advisor_dimensions_connues?: boolean;
+  advisor_version?: string;
   source?: string;
   forme: 'rect' | 'oval' | 'libre';
   forme_label?: string;
@@ -96,6 +108,8 @@ interface LeadPayload {
 // ─── Validation serveur complète ──────────────────────────────────────────────
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^0[1-9]\d{8}$/;
+const POSTAL_CODE_RE = /^\d{5}$/;
+const CITY_RE = /^[\p{L}\p{M}\d][\p{L}\p{M}\d .,'’()\/-]*$/u;
 const VALID_CATS = ['cov', 'shl', 'oth'] as const;
 const VALID_PRIO = ['URGENT', 'NORMAL'] as const;
 
@@ -104,7 +118,7 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
   const b = p as Record<string, unknown>;
 
   // Champs texte obligatoires
-  for (const f of ['prenom', 'nom', 'email', 'tel', 'departement', 'delai', 'produit', 'produit_label', 'emplacement', 'priorite', 'categorie', 'timestamp'] as const) {
+  for (const f of ['prenom', 'nom', 'email', 'tel', 'code_postal', 'ville', 'departement', 'delai', 'produit', 'produit_label', 'emplacement', 'priorite', 'categorie', 'timestamp'] as const) {
     if (typeof b[f] !== 'string' || !(b[f] as string).trim()) {
       return { ok: false, error: `Champ manquant ou invalide : ${f}` };
     }
@@ -112,9 +126,21 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
 
   if (!EMAIL_RE.test(b.email as string)) return { ok: false, error: 'Email invalide' };
 
+  const codePostal = (b.code_postal as string).trim();
+  if (!POSTAL_CODE_RE.test(codePostal)) return { ok: false, error: 'Code postal invalide' };
+
+  const ville = (b.ville as string).trim().replace(/\s+/g, ' ');
+  if (ville.length > 100 || !CITY_RE.test(ville)) return { ok: false, error: 'Ville invalide' };
+
+  const timestamp = (b.timestamp as string).trim().slice(0, 40);
+  const timestampMs = Date.parse(timestamp);
+  if (!Number.isFinite(timestampMs)) {
+    return { ok: false, error: 'Horodatage invalide' };
+  }
+
   // Validation téléphone français (10 chiffres commençant par 0)
   const cleanedTel = (b.tel as string).replace(/\s/g, '');
-  if (cleanedTel.length === 10 && !PHONE_RE.test(cleanedTel)) {
+  if (!PHONE_RE.test(cleanedTel)) {
     return { ok: false, error: 'Numéro de téléphone invalide' };
   }
 
@@ -130,6 +156,11 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
   const sanitizeStr = (v: unknown) => typeof v === 'string' ? v.slice(0, 500) : undefined;
   const sanitizeLongStr = (v: unknown) => typeof v === 'string' ? v.slice(0, 2000) : undefined;
   const sanitizeBool = (v: unknown) => typeof v === 'boolean' ? v : undefined;
+  const sanitizeOptionalStr = (v: unknown, maxLength = 500) => {
+    if (typeof v !== 'string') return undefined;
+    const value = v.trim().slice(0, maxLength);
+    return value || undefined;
+  };
 
   // Forme
   const validForms = ['rect', 'oval', 'libre'];
@@ -147,6 +178,18 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
       nom: (b.nom as string).trim().slice(0, 100),
       email: (b.email as string).trim().toLowerCase().slice(0, 254),
       tel: (b.tel as string).trim().slice(0, 20),
+      code_postal: codePostal,
+      ville,
+      statut_projet: sanitizeOptionalStr(b.statut_projet),
+      acces_chantier: sanitizeOptionalStr(b.acces_chantier),
+      budget_projet: sanitizeOptionalStr(b.budget_projet),
+      preference_contact: sanitizeOptionalStr(b.preference_contact),
+      advisor_mode: sanitizeOptionalStr(b.advisor_mode),
+      advisor_priorites: sanitizeOptionalStr(b.advisor_priorites, 2000),
+      advisor_recommandations: sanitizeOptionalStr(b.advisor_recommandations, 2000),
+      advisor_raison_choix: sanitizeOptionalStr(b.advisor_raison_choix, 2000),
+      advisor_dimensions_connues: sanitizeBool(b.advisor_dimensions_connues),
+      advisor_version: sanitizeOptionalStr(b.advisor_version),
       forme,
       forme_label: sanitizeStr(b.forme_label),
       categorie: b.categorie as 'cov' | 'shl' | 'oth',
@@ -167,7 +210,7 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
       departement: (b.departement as string).trim().slice(0, 60),
       delai: (b.delai as string).trim().slice(0, 80),
       priorite: b.priorite as 'URGENT' | 'NORMAL',
-      timestamp: (b.timestamp as string).trim(),
+      timestamp,
       source: sanitizeStr(b.source),
       commentaire: sanitizeStr(b.commentaire),
       description_forme: sanitizeStr(b.description_forme),
@@ -225,6 +268,7 @@ async function initKV() {
 }
 
 const inMemoryRateMap = new Map<string, number>();
+const inMemoryLeadSuccessMap = new Map<string, number>();
 
 async function isRateLimited(email: string): Promise<boolean> {
   const key = `dk_rl:${email}`;
@@ -251,6 +295,41 @@ async function isRateLimited(email: string): Promise<boolean> {
     }
   }
   return false;
+}
+
+async function clearEmailRateLimit(email: string): Promise<void> {
+  const key = `dk_rl:${email}`;
+  inMemoryRateMap.delete(email);
+  if (kv) {
+    try { await kv.set(key, 0, { ex: 1 }); } catch { /* Le fallback mémoire suffit pour la nouvelle tentative locale. */ }
+  }
+}
+
+function leadSuccessKey(p: LeadPayload): string {
+  return `dk_lead_ok:${p.email}:${p.timestamp}`;
+}
+
+async function wasLeadProcessed(key: string): Promise<boolean> {
+  if (kv) {
+    try {
+      if (await kv.get(key)) return true;
+    } catch { /* Fallback mémoire. */ }
+  }
+  const processedAt = inMemoryLeadSuccessMap.get(key);
+  return Boolean(processedAt && Date.now() - processedAt < 48 * 60 * 60_000);
+}
+
+async function markLeadProcessed(key: string): Promise<void> {
+  const now = Date.now();
+  inMemoryLeadSuccessMap.set(key, now);
+  if (inMemoryLeadSuccessMap.size > 1000) {
+    for (const [storedKey, processedAt] of inMemoryLeadSuccessMap.entries()) {
+      if (now - processedAt > 48 * 60 * 60_000) inMemoryLeadSuccessMap.delete(storedKey);
+    }
+  }
+  if (kv) {
+    try { await kv.set(key, now, { ex: 48 * 60 * 60 }); } catch { /* Fallback mémoire. */ }
+  }
 }
 
 // ─── Rate limiting par IP (10 req/min) ────────────────────────────────────────
@@ -354,6 +433,9 @@ function prospectHtml(p: LeadPayload, ref: string): string {
   const isCS = isCov && (p.produit === 'auto' || p.produit === 'semi');
   const isShl = p.categorie === 'shl';
   const prodLabel = p.produit_label || CAT_LABEL[p.categorie] || 'Projet';
+  const contactAction = p.preference_contact === 'Email'
+    ? 'vous répondra par email'
+    : (p.preference_contact === 'Téléphone' ? 'vous appellera' : 'prendra contact avec vous');
 
   const FL: Record<string, string> = { rect: 'Rectangulaire', oval: 'Arrondie / Ovale', libre: 'Forme libre' };
   const STL: Record<string, string> = { droit: 'Droit', roman: 'Roman', angle: 'Angle', autre: 'Autre' };
@@ -397,8 +479,11 @@ function prospectHtml(p: LeadPayload, ref: string): string {
     p.prix_estime ? pRow('Estimation configurateur', `≈ ${p.prix_estime.toLocaleString('fr-FR')} € TTC <span style="color:#999;font-weight:400">indicative</span>`) : '',
   ].filter(Boolean).join('');
 
-  const logRows = [
-    pRow('Département', esc(p.departement)),
+  const projectRows = [
+    pRow('Localisation', `${esc(p.code_postal)} ${esc(p.ville)}`),
+    p.statut_projet ? pRow('Avancement du projet', esc(p.statut_projet)) : '',
+    p.advisor_priorites ? pRow('Vos priorités', esc(p.advisor_priorites)) : '',
+    p.preference_contact ? pRow('Préférence de contact', esc(p.preference_contact)) : '',
     pRow('Délai souhaité', `<strong style="color:#111">${esc(p.delai)}</strong>`, true),
   ].filter(Boolean).join('');
 
@@ -425,8 +510,8 @@ function prospectHtml(p: LeadPayload, ref: string): string {
     <p style="margin:0 0 6px;font-size:12px;color:#c9a96e;font-weight:600;text-transform:uppercase;letter-spacing:.1em">Confirmation de demande</p>
     <h1 style="margin:0 0 14px;font-size:24px;font-weight:700;color:#111;letter-spacing:-.03em;line-height:1.3">Merci ${esc(p.prenom)}, votre projet est entre de bonnes mains.</h1>
     <p style="margin:0;font-size:14.5px;color:#555;line-height:1.8">
-      ${esc(PUBLIC_CONTACT_NAME)} prendra contact avec vous sous <strong style="color:#111">48 heures</strong>
-      au <strong style="color:#111">${esc(p.tel)}</strong> pour échanger sur votre projet et préparer une étude personnalisée.
+      ${esc(PUBLIC_CONTACT_NAME)} ${contactAction} sous <strong style="color:#111">48 heures</strong>
+      pour échanger sur votre projet et préparer une étude personnalisée.
     </p>
   </td></tr>
 
@@ -448,7 +533,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
       ${pSection('Équipement sélectionné')}
       ${equipRows}
       ${pSection('Projet')}
-      ${logRows}
+      ${projectRows}
     </table>
   </td></tr>
 
@@ -469,7 +554,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
       <tr><td style="padding:24px 28px">
         <table width="100%" cellpadding="0" cellspacing="0"><tr>
           <td style="vertical-align:middle">
-            <p style="margin:0 0 3px;font-size:10px;color:#c9a96e;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Votre interlocuteur dédié</p>
+            <p style="margin:0 0 3px;font-size:10px;color:#c9a96e;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Votre équipe conseil</p>
             <p style="margin:0;font-size:20px;font-weight:700;color:#fff;letter-spacing:-.02em">${esc(PUBLIC_CONTACT_NAME)}</p>
             <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.45)">${esc(CONTACT_LOC)}</p>
           </td>
@@ -490,7 +575,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
           <div style="width:24px;height:24px;border-radius:50%;background:#c9a96e;color:#111;font-size:12px;font-weight:800;text-align:center;line-height:24px">1</div>
         </td>
         <td style="padding:2px 0 12px 12px;font-size:13.5px;color:#444;line-height:1.6">
-          <strong style="color:#111">${esc(PUBLIC_CONTACT_NAME)} vous rappelle</strong> sous 48h pour comprendre votre projet en détail.
+          <strong style="color:#111">${esc(PUBLIC_CONTACT_NAME)} vous contacte</strong> sous 48h pour comprendre votre projet en détail.
         </td>
       </tr>
       <tr>
@@ -506,7 +591,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
           <div style="width:24px;height:24px;border-radius:50%;background:#c9a96e;color:#111;font-size:12px;font-weight:800;text-align:center;line-height:24px">3</div>
         </td>
         <td style="padding:2px 0 0 12px;font-size:13.5px;color:#444;line-height:1.6">
-          <strong style="color:#111">Installation</strong> par nos équipes qualifiées, partout en France.
+          <strong style="color:#111">Préparation de la pose</strong> si elle est retenue, après confirmation du support et des accès.
         </td>
       </tr>
     </table>
@@ -531,7 +616,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
         <p style="margin:0 0 3px;font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.6">
           <a href="tel:${CONTACT_PHONE.replace(/\s/g, '')}" style="color:rgba(255,255,255,.4);text-decoration:none">${esc(CONTACT_PHONE)}</a>
           &nbsp;&middot;&nbsp;
-          <a href="mailto:xavier@diskoov.fr" style="color:rgba(255,255,255,.4);text-decoration:none">xavier@diskoov.fr</a>
+          <a href="mailto:${PUBLIC_CONTACT_EMAIL}" style="color:rgba(255,255,255,.4);text-decoration:none">${esc(PUBLIC_CONTACT_EMAIL)}</a>
           &nbsp;&middot;&nbsp;
           <a href="${SITE_URL}" style="color:rgba(255,255,255,.4);text-decoration:none">${SITE_URL.replace(/^https?:\/\//, '')}</a>
         </p>
@@ -578,6 +663,17 @@ function internalHtml(p: LeadPayload, ref: string): string {
       + (p.escalier_description ? ` · ${p.escalier_description}` : '');
   }
 
+  const hasAdvisorContext = Boolean(
+    p.statut_projet
+    || p.budget_projet
+    || p.advisor_mode
+    || p.advisor_priorites
+    || p.advisor_recommandations
+    || p.advisor_raison_choix
+    || p.advisor_version
+    || typeof p.advisor_dimensions_connues === 'boolean'
+  );
+
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><title>[${esc(p.priorite)}] ${esc(p.prenom)} ${esc(p.nom)}</title></head>
@@ -603,7 +699,7 @@ function internalHtml(p: LeadPayload, ref: string): string {
   <!-- Lead summary -->
   <tr><td style="padding:22px 28px 0">
     <p style="margin:0;font-size:22px;font-weight:700;color:#111;letter-spacing:-.02em">${esc(p.prenom)} ${esc(p.nom)}</p>
-    <p style="margin:4px 0 0;font-size:13px;color:#888">${esc(CAT_LABEL[p.categorie] || p.categorie)}${p.produit_label ? ` · <strong style="color:#555">${esc(p.produit_label)}</strong>` : ''} · ${esc(p.departement)}</p>
+    <p style="margin:4px 0 0;font-size:13px;color:#888">${esc(CAT_LABEL[p.categorie] || p.categorie)}${p.produit_label ? ` · <strong style="color:#555">${esc(p.produit_label)}</strong>` : ''} · ${esc(p.code_postal)} ${esc(p.ville)}</p>
   </td></tr>
 
   <!-- CTA buttons -->
@@ -630,6 +726,7 @@ function internalHtml(p: LeadPayload, ref: string): string {
       ${iRow('Nom', `<strong>${esc(p.prenom)} ${esc(p.nom)}</strong>`)}
       ${iRow('Téléphone', `<a href="tel:${esc(p.tel)}" style="color:#111;text-decoration:none;font-weight:700">${esc(p.tel)}</a>`)}
       ${iRow('Email', `<a href="mailto:${esc(p.email)}" style="color:#111;text-decoration:none">${esc(p.email)}</a>`)}
+      ${p.preference_contact ? iRow('Préférence de contact', esc(p.preference_contact)) : ''}
       ${p.source ? iRow('Source', esc(p.source)) : ''}
     </table>
 
@@ -643,6 +740,19 @@ function internalHtml(p: LeadPayload, ref: string): string {
       ${p.description_forme ? iRow('Forme libre', esc(p.description_forme)) : ''}
       ${p.plan_filename ? iRow(p.piece_jointe_type === 'photo' ? 'Photo piscine' : 'Plan / fichier', `📎 ${esc(p.plan_filename)}`) : ''}
     </table>
+
+    ${hasAdvisorContext ? `
+    <p style="margin:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#c9a96e;border-bottom:1px solid #f0efe8;padding-bottom:8px">Contexte du conseil</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px">
+      ${p.statut_projet ? iRow('Statut projet', esc(p.statut_projet)) : ''}
+      ${p.budget_projet ? iRow('Budget projet', esc(p.budget_projet)) : ''}
+      ${p.advisor_mode ? iRow('Mode du conseil', esc(p.advisor_mode)) : ''}
+      ${p.advisor_priorites ? iRow('Priorités', esc(p.advisor_priorites)) : ''}
+      ${p.advisor_recommandations ? iRow('Recommandations', esc(p.advisor_recommandations)) : ''}
+      ${p.advisor_raison_choix ? iRow('Raison du choix', esc(p.advisor_raison_choix)) : ''}
+      ${typeof p.advisor_dimensions_connues === 'boolean' ? iRow('Dimensions connues', p.advisor_dimensions_connues ? 'Oui' : 'Non') : ''}
+      ${p.advisor_version ? iRow('Version du conseil', esc(p.advisor_version)) : ''}
+    </table>` : ''}
 
     <p style="margin:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#c9a96e;border-bottom:1px solid #f0efe8;padding-bottom:8px">Équipement</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px">
@@ -672,7 +782,9 @@ function internalHtml(p: LeadPayload, ref: string): string {
 
     <p style="margin:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#c9a96e;border-bottom:1px solid #f0efe8;padding-bottom:8px">Logistique</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:${p.commentaire ? '18px' : '0'}">
+      ${iRow('Localisation', `<strong>${esc(p.code_postal)} ${esc(p.ville)}</strong>`)}
       ${iRow('Département', `<strong>${esc(p.departement)}</strong>`)}
+      ${p.acces_chantier ? iRow('Accès chantier', esc(p.acces_chantier)) : ''}
       ${iRow('Délai', `<strong>${esc(p.delai)}</strong>`)}
       ${p.consentement_relances ? iRow('Relances', '<span style="color:#16a34a;font-weight:600">Acceptées ✓</span>') : ''}
     </table>
@@ -735,6 +847,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'error' in validation ? validation.error : 'Payload invalide' });
   }
   const p = validation.data;
+  const dedupeKey = leadSuccessKey(p);
+
+  if (await wasLeadProcessed(dedupeKey)) {
+    return res.status(200).json({ ok: true, prospect: 'deduplicated', internal: 'fulfilled' });
+  }
 
   // Rate limiting par IP (10 req/min)
   const forwarded = req.headers['x-forwarded-for'];
@@ -743,12 +860,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(429).json({ error: 'Trop de demandes — veuillez patienter une minute.' });
   }
 
-  // Rate limiting par email (1 req/min, persistant via KV si disponible)
+  // Rate limiting par email (15 s, persistant via KV si disponible)
   if (await isRateLimited(p.email)) {
     return res.status(429).json({ error: 'Trop de demandes — veuillez patienter une minute.' });
   }
 
-  const from = process.env.FROM_EMAIL || 'xavier@diskoov.fr';
+  const from = process.env.FROM_EMAIL || PUBLIC_CONTACT_EMAIL;
   const internal = process.env.INTERNAL_EMAIL || 'xavier.dispot@diskoov.fr';
   const prodName = p.produit_label || CAT_LABEL[p.categorie] || 'Projet';
   const attachmentTag = p.plan_filename ? (p.piece_jointe_type === 'photo' ? ' + PHOTO' : ' + PJ') : '';
@@ -769,29 +886,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const ref = genRef();
 
-  const [toProspect, toInternal] = await Promise.allSettled([
-    resend.emails.send({
-      from: `Diskoov <${from}>`,
-      to: [p.email],
-      subject: `Votre projet ${prodName} — Confirmation Diskoov`,
-      html: prospectHtml(p, ref),
-    }),
-    resend.emails.send({
+  let internalResponse;
+  try {
+    internalResponse = await resend.emails.send({
       from: `Configurateur Diskoov <${from}>`,
       to: [internal],
       subject: `[${p.priorite}${attachmentTag}] ${p.prenom} ${p.nom} — ${prodName} — ${p.departement}`,
       html: internalHtml(p, ref),
       ...(attachments.length ? { attachments } : {}),
-    }),
-  ]);
+    });
+  } catch (error) {
+    await clearEmailRateLimit(p.email);
+    console.error('[Diskoov] Email interne KO:', error);
+    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible' });
+  }
+  if (internalResponse.error || !internalResponse.data) {
+    await clearEmailRateLimit(p.email);
+    console.error('[Diskoov] Email interne KO:', internalResponse.error);
+    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible' });
+  }
 
-  if (toProspect.status === 'rejected') console.error('[Diskoov] Email prospect KO:', toProspect.reason);
-  if (toInternal.status === 'rejected') console.error('[Diskoov] Email interne KO:', toInternal.reason);
+  await markLeadProcessed(dedupeKey);
 
-  // On répond 200 même si un email fail : le lead est loggé, Xavier sera averti via l'email interne
+  let prospectStatus = 'fulfilled';
+  try {
+    const prospectResponse = await resend.emails.send({
+      from: `Diskoov <${from}>`,
+      to: [p.email],
+      subject: `Votre projet ${prodName} — Confirmation Diskoov`,
+      html: prospectHtml(p, ref),
+    });
+    if (prospectResponse.error || !prospectResponse.data) {
+      prospectStatus = 'rejected';
+      console.error('[Diskoov] Email prospect KO:', prospectResponse.error);
+    }
+  } catch (error) {
+    prospectStatus = 'rejected';
+    console.error('[Diskoov] Email prospect KO:', error);
+  }
+
   return res.status(200).json({
     ok: true,
-    prospect: toProspect.status,
-    internal: toInternal.status,
+    prospect: prospectStatus,
+    internal: 'fulfilled',
   });
 }

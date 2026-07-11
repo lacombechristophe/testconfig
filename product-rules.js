@@ -264,7 +264,6 @@
     if (input.installation === 'fourniture_pose') {
       var pose = product === 'ore_compact' ? ORE_LINE_ITEMS_HT.poseCompact : ORE_LINE_ITEMS_HT.poseEssential;
       if (pose > 0) lines.push({ label: 'Pose Diskoov', amount: pose });
-      else selectedOptions.push('Pose Diskoov incluse.');
     }
     if (oreOptions.oreSolar) {
       lines.push({ label: 'Panneau solaire d’appoint', amount: ORE_LINE_ITEMS_HT.solar });
@@ -558,7 +557,7 @@
     var transport = 438;
     var installation = 708.33;
     var lines = [
-      { label: 'Base abri Excel ' + modules + ' modules / corde ' + selected[0] + ' cm', amount: net },
+      { label: 'Abri télescopique — ' + modules + ' modules', amount: net },
       { label: 'Transport', amount: transport },
       { label: 'Pose de référence', amount: installation }
     ];

@@ -1786,6 +1786,7 @@
   background: rgba(8, 29, 23, .78);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity .2s ease, visibility 0s linear .2s;
 }
 
@@ -1793,6 +1794,7 @@
 .advisor-detail-modal.is-open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transition-delay: 0s;
 }
 
@@ -1993,6 +1995,14 @@
   font-weight: 700;
   cursor: pointer;
   transition: transform .16s cubic-bezier(.22, 1, .36, 1), background-color .18s ease;
+}
+
+@media (max-width: 520px) {
+  .advisor-entry-button {
+    min-height: 44px;
+    margin-left: 0;
+    padding-inline: 10px;
+  }
 }
 
 .guided-summary {
@@ -3082,12 +3092,6 @@
   outline-offset: 2px;
 }
 
-@media (min-width: 901px) {
-  .advisor-shell[data-screen='results'] .advisor-footer-actions [data-action='choose'] {
-    display: none;
-  }
-}
-
 @media (max-width: 1500px) {
   .advisor-results-head {
     display: block;
@@ -3113,6 +3117,11 @@
 }
 
 @media (max-width: 900px) {
+  .advisor-help,
+  .advisor-resume button {
+    min-height: 44px;
+  }
+
   .advisor-shell[data-screen='results'] .advisor-title {
     font-size: 31px;
   }

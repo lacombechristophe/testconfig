@@ -59,7 +59,7 @@
       'assets/produits/conseiller/coverseal.webp', ['clean', 'safety', 'aesthetics'], '10_15'),
     candidate('eden', 'Eden', 'Couverture sur mesure', 'custom-cover', 'cov', 'cm',
       'Une réponse premium pour les bassins et projets atypiques.',
-      'assets/produits/conseiller/eden.webp', ['clean', 'safety', 'automatic', 'aesthetics', 'space'], 'over25'),
+      'assets/produits/conseiller/eden.webp', ['clean', 'safety', 'aesthetics', 'space'], 'over25'),
     candidate('ul', 'Abri Neo / Ultra Bas', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Une protection très basse qui préserve les lignes du jardin.',
       'assets/produits/conseiller/abri-ultra-bas.webp', ['clean', 'safety', 'season', 'aesthetics'], '15_25'),

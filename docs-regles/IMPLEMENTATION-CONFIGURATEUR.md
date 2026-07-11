@@ -61,6 +61,10 @@ Le catalogue AquaMaster est traité comme une source technique et, si Xavier le 
 
 Le lead contient maintenant, en plus des données historiques : produit exact, prestation souhaitée, support, type de margelles, plage mécanisme Oré, côté de guidage Oré, coloris produit, alimentation électrique volet, intégration volet immergé, options produit, qualification complète/incomplète, informations manquantes, prix estimé, statut du prix, éligibilité, référence de calcul, avertissements et données techniques du moteur.
 
+Le dossier commercial conserve également le contexte du conseiller : mode guidé/direct, priorités exprimées, solutions recommandées, raison du choix et présence ou non de dimensions connues. Le formulaire final ajoute l'avancement du projet, l'accès chantier lorsque la pose est demandée, le code postal, la ville, une préférence de contact et un budget facultatif. Ce budget sert uniquement au traitement commercial et n'entre jamais dans les règles tarifaires.
+
+La configuration technique non personnelle est restaurée pendant deux heures dans l'onglet courant en cas de rafraîchissement. Les coordonnées, textes libres, consentements et pièces jointes en sont exclus. Côté envoi, l'API ne confirme le succès qu'après réception de l'email interne ; les nouvelles tentatives d'un même dossier sont dédupliquées par leur horodatage. Si une pièce jointe dépasse le quota de sauvegarde du navigateur lors d'une panne réseau, le dossier texte reste conservé pour ne pas perdre le lead.
+
 Ces champs sont validés et bornés côté serveur, puis affichés dans les e-mails prospect et interne. Les prix Oré sont maintenant affichés en TTC indicatif, sur base HT validée par Xavier.
 
 ## Images reliées

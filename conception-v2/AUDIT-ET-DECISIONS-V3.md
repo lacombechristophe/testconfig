@@ -155,7 +155,10 @@ Les donnees doivent permettre de comparer les taux `arrivee -> resultat`, `resul
 8. Quel est le perimetre geographique de pose/visite et quels cas doivent etre bloques avant envoi ?
 9. Telephone et email doivent-ils rester tous deux obligatoires, ou un seul moyen de contact suffit-il ?
 10. Quel retour commercial sera enregistre pour chaque lead : joignable, rendez-vous, devis, gagne/perdu et motif ?
-11. Quelle borne de largeur faut-il afficher partout ? Le conseiller accepte 2 m, la grille Ore commence a 2,5 m, les volets documentent 2,45 m et la V1 impose encore 3 m a la saisie manuelle.
+11. La borne globale de largeur a 2 m doit-elle rester ouverte pour recueillir les projets atypiques, sachant que les regles produit appliquent ensuite leurs minimums documentes (Ore 2,5 m, volets 2,45 m) ?
+12. Quelle identite publique doit apparaitre dans l'email prospect : adresse email, numero, adresse postale et eventuel showroom ?
+13. Le rappel sous 48 h est-il un engagement operationnel valable toute l'annee et pour toutes les familles ?
+14. Quels documents techniques et commerciaux valides peut-on ajouter pour Coverseal et Eden afin de remplacer les hypotheses historiques restantes ?
 
 ## 11. Challenge des decisions
 
@@ -187,3 +190,30 @@ Les donnees doivent permettre de comparer les taux `arrivee -> resultat`, `resul
 - Tous les controles sont utilisables au clavier avec un focus visible et non masque.
 - `lead_submitted` n'est emis qu'apres un succes reseau reel.
 - Les tests metier, le typecheck, la syntaxe et les scenarios navigateur sont verts avant commit.
+
+## 13. Qualification commerciale ajoutee
+
+- Les priorites choisies, les trois recommandations, le mode guide/direct et la raison du choix suivent desormais le prospect jusqu'a l'email Diskoov.
+- Tous les produits, y compris Coverseal et Eden, demandent un socle commun : avancement, prestation, support et niveau des plages.
+- L'acces au bassin devient obligatoire uniquement lorsque la pose est demandee.
+- Le code postal et la ville completent le departement utilise pour les regles de transport.
+- Le budget reste facultatif, intervient apres le choix du produit et n'agit jamais sur le prix calcule.
+- Une forme libre exige une courte description ou une photo/un plan, sans rendre la photo obligatoire.
+- Les affirmations non etayees par les sources Xavier ont ete remplacees par des formulations factuelles a confirmer pendant l'etude.
+
+Challenge conserve : ajouter des champs augmente la qualite du dossier mais peut reduire le volume. Les abandons doivent etre mesures champ par champ ; si la conversion baisse, l'acces chantier est le premier champ a rendre facultatif, pas la localisation ni le contexte du besoin.
+
+## 14. Challenge final apres implementation
+
+- **Le CTA fixe des resultats est volontairement duplique.** Il evite de cacher l'action principale sous la ligne de flottaison. S'il detourne les visiteurs de la comparaison, conserver le CTA fixe mais raccourcir l'en-tete avant de le supprimer.
+- **Le code postal et la ville peuvent faire baisser le volume brut.** Ils sont places tard et servent la pose, le transport et l'affectation commerciale. Mesurer l'abandon avant de les rendre facultatifs ; un lead moins localise peut etre moins exploitable qu'un lead en moins.
+- **Le socle chantier peut ressembler a un formulaire long.** Quatre champs restent obligatoires pour tous les produits, l'acces seulement en cas de pose. Si les donnees montrent une rupture, tester d'abord une presentation en deux groupes, pas la suppression immediate des informations.
+- **Le budget peut ancrer ou inquieter.** Il reste facultatif, apres le choix du produit, avec une option explicite pour ne pas repondre et sans effet sur les prix ou les recommandations. Le retirer si le taux de completion baisse sans amelioration commerciale mesurable.
+- **La reprise de session peut restaurer une reponse devenue obsolete.** Elle est limitee a deux heures, au meme produit et au meme lien de depart. Aucune coordonnee, note libre ou piece jointe n'est conservee dans ce brouillon.
+- **La borne globale de 2 m accepte davantage de projets hors standard.** Les limites documentees restent appliquees produit par produit. Si ces demandes ne sont jamais vendables, Xavier doit fournir une borne globale explicite avant de les bloquer.
+- **L'email interne est prioritaire sur la confirmation prospect.** Ce choix protege la capture commerciale. Une panne de confirmation n'annule pas le lead ; une panne de transmission interne provoque une erreur et une nouvelle tentative idempotente.
+- **La recommandation n'est pas optimisee par marge.** Sans priorite commerciale documentee, le moteur privilegie le besoin, la compatibilite et la diversite des familles. Ajouter un biais de marge sans validation serait opaque et pourrait degrader la confiance.
+- **Les preuves faibles ont ete retirees.** Cela rend certains produits moins spectaculaires, notamment Coverseal et Eden, mais evite de vendre sur des promesses non sourcees. Leur enrichissement depend de documents valides, pas d'un copywriting plus agressif.
+- **Le design n'a pas ete refait pour produire plus d'effets.** Les icones distinguent les usages et familles ; les photos montrent les produits. Ajouter davantage de decoration augmenterait surtout la densite et la charge cognitive.
+- **Le SLA de 48 h, l'identite publique et le perimetre de pose restent a confirmer.** Tant que Xavier ne les valide pas, ce sont les trois principaux risques de promesse operationnelle.
+- **La perfection ne peut pas etre conclue sans trafic reel.** Les evenements permettent maintenant de mesurer le passage conseil -> resultat -> configurateur -> lead et l'abandon par champ. Les arbitrages suivants doivent reposer sur ces donnees et sur le retour CRM gagne/perdu.
