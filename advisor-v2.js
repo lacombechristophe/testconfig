@@ -16,6 +16,12 @@
     checkedAt: '2026-07-12',
     url: 'https://www.google.com/maps/search/?api=1&query=Diskoov%20-%20Couvertures%20de%20Piscines%20Motorisees%2C%20494%20Rue%20Leon%20Blum%2C%2034000%20Montpellier'
   };
+  var DISKOOV_PROOF = {
+    checkedAt: '2026-07-12',
+    quote: 'Merci pour vos précieux conseils et votre excellent accompagnement.',
+    quoteAuthor: 'Dagmar S.',
+    guideUrl: 'https://diskoov.fr/2025/09/02/les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/'
+  };
   var state = {
     screen: 'welcome',
     history: [],
@@ -67,12 +73,16 @@
   function shellTemplate() {
     return ''
       + '<aside class="advisor-visual" aria-hidden="true">'
-      + '  <figure class="advisor-visual-media"><img data-visual-image src="assets/produits/conseiller/ore-fermee.webp" alt="" width="1200" height="800" fetchpriority="high"><span class="advisor-visual-proof">' + icon('check') + '<span>Vos réponses restent modifiables pendant le parcours.</span></span></figure>'
+      + '  <figure class="advisor-visual-media"><img data-visual-image src="assets/produits/conseiller/ore-fermee.webp" alt="" width="1200" height="800" fetchpriority="high"><span class="advisor-visual-proof">' + icon('shield') + '<span>Protection, confort, entretien : comparez ce qui compte.</span></span></figure>'
       + '  <div class="advisor-visual-copy">'
       + '    <div class="advisor-kicker" data-visual-kicker>Conseil personnalisé</div>'
       + '    <div class="advisor-visual-title" data-visual-title>Une solution pensée pour votre bassin.</div>'
       + '    <p class="advisor-visual-text" data-visual-text>Quelques réponses suffisent pour comparer les protections qui correspondent le mieux à votre projet.</p>'
       + '    <p class="advisor-visual-meta" data-visual-meta>Besoin, bassin, puis sélection expliquée.</p>'
+      + '    <div class="advisor-visual-trust" data-proof-checked="' + DISKOOV_PROOF.checkedAt + '">'
+      + '      <div class="advisor-visual-expert"><span class="advisor-visual-expert-icon">' + icon('user') + '</span><span><strong>Un spécialiste à vos côtés.</strong><small>Conseils techniques et suivi du projet.</small></span></div>'
+      + '      <div class="advisor-visual-facts"><span><strong>13 ans</strong><small>d’expérience terrain</small></span><span><strong>3 fabricants</strong><small>partenaires premium</small></span><span><strong>Suivi humain</strong><small>tout au long du projet</small></span></div>'
+      + '    </div>'
       + '  </div>'
       + '</aside>'
       + '<div class="advisor-panel">'
@@ -109,6 +119,7 @@
       if (action === 'start') startGuided();
       else if (action === 'resume') resumeGuided();
       else if (action === 'google-reviews') trackAdvisor('advisor_google_reviews_open', { screen: state.screen });
+      else if (action === 'guide') trackAdvisor('advisor_guide_open', { screen: state.screen });
       else if (action === 'direct') { state.directFamily = ''; navigate('direct'); }
       else if (action === 'direct-family') {
         state.directFamily = target.getAttribute('data-value') || '';
@@ -421,19 +432,23 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Conseiller Diskoov</div>'
       + '<h1 class="advisor-title">Quelle protection simplifiera vraiment <span class="advisor-title-accent">votre quotidien</span> ?</h1>'
-      + '<p class="advisor-subtitle">Partez de vos usages, pas des noms de produits. Diskoov compare les solutions selon votre bassin et explique clairement ce qui les distingue.</p>'
+      + '<p class="advisor-subtitle">Partez de vos usages, pas des noms de produits. Diskoov compare sa sélection de protections selon votre bassin et vous explique clairement ce qui les distingue.</p>'
       + '<div class="advisor-welcome-actions">'
-      + '  <button type="button" class="advisor-button" data-action="start">Trouver ma protection <span aria-hidden="true">→</span></button>'
+      + '  <button type="button" class="advisor-button" data-action="start">Obtenir mes recommandations <span aria-hidden="true">→</span></button>'
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button>'
       + '</div>'
-      + googleReviewsTemplate()
+      + '<div class="advisor-welcome-signals"><p class="advisor-welcome-start-note">' + icon('check') + '<span>Commencez sans dimensions précises ni coordonnées.</span></p>' + googleReviewsTemplate() + '</div>'
       + resume
       + '<div class="advisor-welcome-path" aria-label="Ce que vous obtenez">'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Ce qui compte pour vous</b><small>Confort, sécurité, saison ou budget</small></span></div>'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Ce que permet votre bassin</b><small>Forme et dimensions, même approximatives</small></span></div>'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
       + '</div>'
-      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('check') + '</span><span><strong>Une sélection expliquée, puis vérifiée avec vous.</strong><small>Vos dimensions nous aident à écarter les modèles qui ne conviennent pas. La pose, les accès et les options sont ensuite confirmés avec vous avant devis.</small></span></aside>'
+      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('idea') + '</span><span><strong>Notre engagement : des conseils clairs, adaptés à votre projet.</strong><small>Nous comparons selon vos priorités et votre bassin. La faisabilité, la pose, les accès et les options sont confirmés avec vous avant devis.</small></span></aside>'
+      + '<section class="advisor-welcome-evidence" aria-label="Avis client et conseil Diskoov" data-proof-checked="' + DISKOOV_PROOF.checkedAt + '">'
+      + '  <figure class="advisor-welcome-quote"><span class="advisor-welcome-evidence-icon" aria-hidden="true">' + icon('star') + '</span><div><blockquote>« ' + escapeHtml(DISKOOV_PROOF.quote) + ' »</blockquote><figcaption>' + escapeHtml(DISKOOV_PROOF.quoteAuthor) + ' · Avis Google</figcaption></div></figure>'
+      + '  <a class="advisor-welcome-guide" href="' + escapeHtml(DISKOOV_PROOF.guideUrl) + '" target="_blank" rel="noopener noreferrer" data-action="guide" aria-label="Lire le guide Diskoov 2025 : les erreurs à éviter pour choisir sa couverture (nouvel onglet)"><span class="advisor-welcome-evidence-icon" aria-hidden="true">' + icon('guide') + '</span><span class="advisor-welcome-guide-copy"><small>Guide Diskoov · 2025</small><strong>Les erreurs à éviter pour choisir sa couverture</strong><span>Lire le guide <span aria-hidden="true">&#8599;</span></span></span></a>'
+      + '</section>'
       + '</div>';
   }
 
@@ -1210,7 +1225,7 @@
   function updateVisualCopy() {
     var primary = state.results && state.results.recommendations && state.results.recommendations[0];
     var copies = {
-      welcome: { kicker: 'Conseil personnalisé', title: 'Choisissez par l’usage, pas par le jargon.', text: 'Diskoov compare les solutions qui changent réellement votre quotidien autour du bassin.', meta: 'Deux questions, puis des familles clairement expliquées.', image: 'assets/produits/conseiller/ore-fermee.webp' },
+      welcome: { kicker: 'Conseil personnalisé', title: 'Choisissez par l’usage, pas par le jargon.', text: 'Diskoov compare sa sélection de protections selon ce qui change réellement votre quotidien.', meta: 'Deux questions, puis des familles clairement expliquées.', image: 'assets/produits/conseiller/ore-fermee.webp' },
       priorities: { kicker: 'Vos usages', title: 'Votre quotidien donne la direction.', text: 'Confort, sécurité, saison, esthétique ou budget : deux priorités suffisent pour comparer.', meta: 'Vous pourrez encore explorer toutes les familles.', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
       pool: { kicker: 'Votre bassin', title: 'Les dimensions évitent les fausses pistes.', text: 'Elles servent uniquement à écarter les modèles hors plage, jamais à promettre une pose compatible.', meta: 'Des mesures approximatives suffisent pour commencer.', image: 'assets/produits/conseiller/ore-ouverte.webp' },
       results: { kicker: 'Vos solutions', title: primary ? prospectFamilyLabel(primary) : 'Des approches différentes à comparer.', text: primary ? productBestFor(primary) : 'Comparez les familles, puis faites vérifier le projet qui vous convient le mieux.', meta: 'Pose, accès et options sont confirmés avant devis.', image: primary && primary.image ? primary.image : 'assets/produits/conseiller/ore-fermee.webp' },
@@ -1666,6 +1681,8 @@
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
       target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
       compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
+      idea: '<path d="M9 18h6M10 22h4"/><path d="M8.7 15.3C7 14.2 6 12.3 6 10a6 6 0 1 1 12 0c0 2.3-1 4.2-2.7 5.3-.8.5-1.3 1.2-1.3 2.2h-4c0-1-.5-1.7-1.3-2.2Z"/>',
+      guide: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h4M8 12h8M8 16h6"/>',
       star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
       'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
       'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',

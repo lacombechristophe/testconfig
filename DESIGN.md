@@ -44,6 +44,9 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
 - **Réassurance** : engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
 - **Avis Google** : `4,9/5` et plus de 30 avis affichés après contrôle le 12 juillet 2026 ; lien vers la fiche publique et nouvelle vérification obligatoire avant chaque publication.
+- **Preuves d’expertise** : `13 ans` d’expérience terrain, partenariat Premium avec trois fabricants et accompagnement du projet repris du [site officiel Diskoov](https://diskoov.fr/), contrôlé le 12 juillet 2026.
+- **Témoignage** : extrait court de l’avis Google de Dagmar S. publié sur le [site officiel Diskoov](https://diskoov.fr/) ; attribution visible et date de contrôle conservée dans le code.
+- **Guide** : lien vers l’article public [« Les erreurs à éviter lors du choix de votre couverture de piscine »](https://diskoov.fr/2025/09/02/les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/), jamais vers un document interne ni sous la forme d’un faux téléchargement.
 - **Recommandation** : image réelle, catégorie, bénéfices, deux points de décision et CTA devis.
 - **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
 - **Détail produit** : dialogue focalisé, fermeture 44 x 44 px, retour du focus au déclencheur.
@@ -51,11 +54,12 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 ## Mise en page
 
 - Desktop : visuel contextualisant à gauche, tâche active à droite.
-- Sous 900 px : disparition du panneau visuel hors accueil pour maximiser l'espace utile.
+- Sous 960 px : disparition du panneau visuel hors accueil pour maximiser l'espace utile.
 - Sous 680 px : une colonne, footer d'action collant, comparatif en cartes.
 - Sous 360 px : cartes familles et modèles en pleine largeur avec image au-dessus du contenu.
 - Aucune typographie ne rétrécit en fonction de la largeur du viewport.
 - Les zones interactives font au moins 40 x 40 px, 44 px pour les actions mobiles principales.
+- L’accueil du conseiller conserve une navigation focalisée : le logo et l’accès direct suffisent. La navigation complète du site n’est pas dupliquée afin de ne pas multiplier les sorties avant le démarrage.
 
 ## Garde-fous
 

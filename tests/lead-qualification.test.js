@@ -256,14 +256,35 @@ test('l accueil garde un seul acces direct visible', function () {
 
 test('la reassurance d accueil reste visuelle et factuelle', function () {
   assert.match(advisor, /class="advisor-title-accent">votre quotidien<\/span>/);
+  assert.match(advisor, /Diskoov compare sa sélection de protections/);
+  assert.match(advisor, /Obtenir mes recommandations/);
+  assert.match(advisor, /Commencez sans dimensions précises ni coordonnées/);
   assert.match(advisor, /class="advisor-visual-proof"/);
-  assert.match(advisor, /Vos réponses restent modifiables pendant le parcours/);
+  assert.match(advisor, /Protection, confort, entretien : comparez ce qui compte/);
   assert.match(advisor, /class="advisor-welcome-assurance"/);
-  assert.match(advisor, /Une sélection expliquée, puis vérifiée avec vous/);
-  assert.match(advisor, /La pose, les accès et les options sont ensuite confirmés avec vous avant devis/);
+  assert.match(advisor, /Notre engagement : des conseils clairs, adaptés à votre projet/);
+  assert.match(advisor, /La faisabilité, la pose, les accès et les options sont confirmés avec vous avant devis/);
   assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border-radius:\s*var\(--advisor-radius-lg\)/);
-  assert.match(advisorCss, /@media \(max-width: 900px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
+  assert.match(advisorCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
   assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
+});
+
+test('l accueil expose des preuves verifiables sans promesse universelle', function () {
+  assert.match(advisor, /class="advisor-visual-trust"/);
+  assert.match(advisor, /13 ans[\s\S]*d’expérience terrain/);
+  assert.match(advisor, /3 fabricants[\s\S]*partenaires premium/);
+  assert.match(advisor, /Suivi humain[\s\S]*tout au long du projet/);
+  assert.match(advisor, /Un spécialiste à vos côtés/);
+  assert.match(advisor, /Merci pour vos précieux conseils et votre excellent accompagnement/);
+  assert.match(advisor, /quoteAuthor: 'Dagmar S\.'/);
+  assert.match(advisor, /· Avis Google/);
+  assert.match(advisor, /les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/);
+  assert.match(advisor, /Guide Diskoov · 2025/);
+  assert.match(advisor, /data-action="guide"/);
+  assert.match(advisor, /advisor_guide_open/);
+  assert.match(advisorCss, /\.advisor-welcome-evidence\s*\{[\s\S]*?grid-template-columns:/);
+  assert.match(advisorCss, /\.advisor-welcome-guide:focus-visible/);
+  assert.doesNotMatch(advisor, /pose incluse pour tous|comparatif indépendant|solutions testées et sélectionnées/i);
 });
 
 test('la note Google est sourcee, datee et facile a actualiser', function () {
