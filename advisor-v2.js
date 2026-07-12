@@ -405,9 +405,9 @@
       + '</div>'
       + resume
       + '<div class="advisor-welcome-path" aria-label="Ce que vous obtenez">'
-      + '<div><strong>01</strong><span><b>Ce qui compte pour vous</b><small>Confort, sécurité, saison ou budget</small></span></div>'
-      + '<div><strong>02</strong><span><b>Ce que permet votre bassin</b><small>Forme et dimensions, même approximatives</small></span></div>'
-      + '<div><strong>03</strong><span><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Ce qui compte pour vous</b><small>Confort, sécurité, saison ou budget</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Ce que permet votre bassin</b><small>Forme et dimensions, même approximatives</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
       + '</div>'
       + '<p class="advisor-welcome-note">Votre choix n’est pas définitif. Les conditions de pose sont vérifiées avec vous avant toute proposition détaillée.</p>'
       + '</div>';
@@ -437,7 +437,7 @@
       + '<div class="advisor-choice-list" role="group" aria-label="Vos priorités">'
       + values.map(function (value) {
         var selected = state.priorities.indexOf(value) !== -1;
-        return '<button type="button" class="advisor-choice' + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '">'
+        return '<button type="button" class="advisor-choice advisor-choice--' + value + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '">'
           + '<span class="advisor-choice-icon">' + icon(value) + '</span>'
           + '<span class="advisor-choice-copy"><span class="advisor-choice-title">' + labels[value] + '</span><span class="advisor-choice-desc">' + descriptions[value] + '</span></span>'
           + '<span class="advisor-choice-check" aria-hidden="true"></span>'
@@ -491,7 +491,7 @@
   function dimensionModeButton(value, label) {
     var selected = state.dimensionsKnown === value;
     var firstTabStop = typeof state.dimensionsKnown !== 'boolean' && value === true;
-    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="dimensions-known" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected || firstTabStop ? '0' : '-1') + '">' + label + '</button>';
+    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="dimensions-known" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected || firstTabStop ? '0' : '-1') + '"><span aria-hidden="true">' + icon(value ? 'measure' : 'unsure') + '</span>' + label + '</button>';
   }
 
   function poolUnknownTemplate() {
@@ -522,7 +522,8 @@
 
   function shapeButton(value, label) {
     var selected = state.shape === value;
-    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="shape" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected ? '0' : '-1') + '">' + label + '</button>';
+    var iconName = value === 'rect' ? 'shape-rect' : value === 'oval' ? 'shape-oval' : 'shape-free';
+    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="shape" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected ? '0' : '-1') + '"><span aria-hidden="true">' + icon(iconName) + '</span>' + label + '</button>';
   }
 
   function inputDimension(field, label, value, min, max) {
@@ -950,13 +951,13 @@
     ];
     var mobileCards = '<div class="advisor-compare-mobile">'
       + products.map(function (p) {
-        return '<article class="advisor-compare-card"><h3>' + escapeHtml(p.title) + '</h3>'
+        return '<article class="advisor-compare-card advisor-prospect--' + safeClass(p.prospectFamily) + '"><h3><span class="advisor-compare-family-icon" aria-hidden="true">' + icon(familyIconName(p)) + '</span><span>' + escapeHtml(p.title) + '</span></h3>'
           + mobileCriteria.map(function (row) { return '<p><strong>' + icon(row[0]) + '<span>' + escapeHtml(row[1]) + '</span></strong><span>' + escapeHtml(row[2](p)) + '</span></p>'; }).join('')
           + '</article>';
       }).join('')
       + '</div>';
     return '<section class="advisor-compare" id="advisor-results-comparison" aria-label="Comparatif des solutions"><h2 class="advisor-compare-title">Comparer ce qui change vraiment</h2><table aria-label="Comparaison des solutions recommandées"><thead><tr><th>Critère</th>'
-      + products.map(function (p) { return '<th>' + escapeHtml(p.title) + '</th>'; }).join('') + '</tr></thead><tbody>'
+      + products.map(function (p) { return '<th class="advisor-prospect--' + safeClass(p.prospectFamily) + '"><span class="advisor-compare-product"><span class="advisor-compare-family-icon" aria-hidden="true">' + icon(familyIconName(p)) + '</span><span>' + escapeHtml(p.title) + '</span></span></th>'; }).join('') + '</tr></thead><tbody>'
       + criteria.map(function (row) { return '<tr><td><span class="advisor-compare-criterion">' + icon(row[0]) + '<span>' + escapeHtml(row[1]) + '</span></span></td>' + products.map(function (p) { return '<td>' + escapeHtml(row[2](p)) + '</td>'; }).join('') + '</tr>'; }).join('')
       + '</tbody></table>' + mobileCards + '</section>';
   }
@@ -1149,12 +1150,12 @@
       var familyChosen = Boolean(state.directFamily);
       var directPercent = familyChosen ? 67 : 33;
       progress.innerHTML = '<div class="advisor-progress-meta"><span>Explorer les protections</span><span>' + (familyChosen ? 'Comparer les modèles' : 'Choisir une famille') + '</span></div>'
-        + '<div class="advisor-progress-stages advisor-progress-stages--direct"><span class="advisor-progress-stage' + (familyChosen ? ' is-done' : ' is-current') + '">Type de protection</span><span class="advisor-progress-stage' + (familyChosen ? ' is-current' : '') + '">Modèle</span><span class="advisor-progress-stage">Étude</span></div>'
+        + '<ol class="advisor-progress-stages advisor-progress-stages--direct" aria-label="Étapes de l’accès direct"><li class="advisor-progress-stage' + (familyChosen ? ' is-done' : ' is-current') + '"' + (!familyChosen ? ' aria-current="step"' : '') + '>Type de protection<span class="advisor-sr-only">' + (familyChosen ? ' terminé' : ' en cours') + '</span></li><li class="advisor-progress-stage' + (familyChosen ? ' is-current' : '') + '"' + (familyChosen ? ' aria-current="step"' : '') + '>Modèle<span class="advisor-sr-only">' + (familyChosen ? ' en cours' : ' à venir') + '</span></li><li class="advisor-progress-stage">Étude<span class="advisor-sr-only"> à venir</span></li></ol>'
         + '<div class="advisor-progress-track" role="progressbar" aria-label="Progression" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + directPercent + '"><div class="advisor-progress-fill" style="width:' + directPercent + '%"></div></div>';
       return;
     }
     progress.innerHTML = '<div class="advisor-progress-meta"><span>' + (state.screen === 'welcome' ? 'Votre projet piscine' : STAGES[current]) + '</span><span>' + (state.screen === 'welcome' ? 'Conseil personnalisé' : (current + 1) + ' sur ' + STAGES.length) + '</span></div>'
-      + '<div class="advisor-progress-stages">' + STAGES.map(function (label, index) { return '<span class="advisor-progress-stage' + (index === current ? ' is-current' : index < current ? ' is-done' : '') + '">' + label + '</span>'; }).join('') + '</div>'
+      + '<ol class="advisor-progress-stages" aria-label="Étapes du conseiller">' + STAGES.map(function (label, index) { var status = index === current ? ' en cours' : index < current ? ' terminé' : ' à venir'; return '<li class="advisor-progress-stage' + (index === current ? ' is-current' : index < current ? ' is-done' : '') + '"' + (index === current ? ' aria-current="step"' : '') + '>' + label + '<span class="advisor-sr-only">' + status + '</span></li>'; }).join('') + '</ol>'
       + '<div class="advisor-progress-track" role="progressbar" aria-label="Progression" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(percent) + '"><div class="advisor-progress-fill" style="width:' + percent + '%"></div></div>';
   }
 
@@ -1629,6 +1630,11 @@
       shutter: '<circle cx="7" cy="12" r="3.5"/><path d="M10.5 8.5H20v7h-9.5M5.5 12h3M13 10.75h4.5M13 13.75h4.5"/>',
       shelter: '<path d="M3 18h18M5 18v-5a7 7 0 0 1 14 0v5"/><path d="M9 18v-5a3 3 0 0 1 6 0v5"/>',
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
+      target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
+      compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
+      'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
+      'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',
+      'shape-free': '<path d="M5 7c3-4 10-3 13 0 3 4 1 10-3 12-5 2-11 0-12-4-1-3 0-6 2-8Z"/>',
       zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4M10.5 7.5v6M7.5 10.5h6"/>',
       unsure: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/>'
     };

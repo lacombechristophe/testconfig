@@ -188,6 +188,31 @@ test('la comparaison garde ses icones centrees et son badge dans la copie', func
   assert.match(advisorCss, /\.advisor-family-overview-icon svg\s*\{[^}]*display:\s*block/);
 });
 
+test('la progression expose ses etapes et leur statut aux technologies d assistance', function () {
+  assert.match(advisor, /<ol class="advisor-progress-stages/);
+  assert.match(advisor, /<li class="advisor-progress-stage[\s\S]*?aria-current="step"/);
+  assert.match(advisor, /class="advisor-sr-only">[\s\S]*?(?:en cours|terminé|à venir)/);
+  assert.match(advisorCss, /\.advisor-sr-only\s*\{[\s\S]*?clip:\s*rect\(0, 0, 0, 0\)/);
+});
+
+test('la direction visuelle conserve une empreinte coherente par famille', function () {
+  assert.match(advisor, /class="advisor-choice advisor-choice--/);
+  assert.match(advisor, /advisor-compare-card advisor-prospect--/);
+  assert.match(advisor, /advisor-compare-product/);
+  assert.match(advisorCss, /\.advisor-prospect--covers[\s\S]*?--advisor-family-accent/);
+  assert.match(advisorCss, /\.advisor-prospect--bar-cover[\s\S]*?--advisor-family-accent/);
+  assert.match(advisorCss, /\.advisor-prospect--shutters[\s\S]*?--advisor-family-accent/);
+  assert.match(advisorCss, /\.advisor-prospect--shelters[\s\S]*?--advisor-family-accent/);
+  assert.match(advisorCss, /\.advisor-prospect--deck[\s\S]*?--advisor-family-accent/);
+});
+
+test('la palette moderne garde un repli et les cartes restent lisibles a 320 px', function () {
+  assert.match(advisorCss, /--advisor-forest:\s*#153b29/);
+  assert.match(advisorCss, /@supports \(color: oklch\(50% \.1 180\)\)/);
+  assert.match(advisorCss, /background:\s*#fff;\s*background:\s*color-mix/);
+  assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*?\.advisor-family-item,[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
+});
+
 test('l entete d accueil conserve un espace sous le bouton d acces direct', function () {
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-header\s*\{\s*padding-bottom:\s*12px;/);
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-shell\[data-screen='welcome'\] \.advisor-visual\s*\{[\s\S]*?min-height:\s*150px/);
