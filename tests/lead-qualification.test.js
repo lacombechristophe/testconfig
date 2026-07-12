@@ -266,6 +266,17 @@ test('la reassurance d accueil reste visuelle et factuelle', function () {
   assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
 });
 
+test('la note Google est sourcee, datee et facile a actualiser', function () {
+  assert.match(advisor, /rating: '4,9\/5'/);
+  assert.match(advisor, /volume: 'Plus de 30 avis clients'/);
+  assert.match(advisor, /checkedAt: '2026-07-12'/);
+  assert.match(advisor, /https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=Diskoov/);
+  assert.match(advisor, /data-action="google-reviews"/);
+  assert.match(advisor, /advisor_google_reviews_open/);
+  assert.match(advisorCss, /\.advisor-google-stars svg\s*\{[\s\S]*?fill:\s*currentColor/);
+  assert.match(advisorCss, /\.advisor-google-rating:focus-visible/);
+});
+
 test('le logo Diskoov officiel remplace tous les monogrammes temporaires', function () {
   var logoPath = 'assets/marque/logo-diskoov-bleu-orange.png';
   assert.equal(fs.existsSync(path.join(root, logoPath)), true);

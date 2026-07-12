@@ -10,6 +10,12 @@
 
   var STORAGE_KEY = 'diskoov_advisor_v2';
   var STAGES = ['Votre besoin', 'Votre piscine', 'Vos solutions'];
+  var GOOGLE_REVIEWS = {
+    rating: '4,9/5',
+    volume: 'Plus de 30 avis clients',
+    checkedAt: '2026-07-12',
+    url: 'https://www.google.com/maps/search/?api=1&query=Diskoov%20-%20Couvertures%20de%20Piscines%20Motorisees%2C%20494%20Rue%20Leon%20Blum%2C%2034000%20Montpellier'
+  };
   var state = {
     screen: 'welcome',
     history: [],
@@ -102,6 +108,7 @@
       var action = target.getAttribute('data-action');
       if (action === 'start') startGuided();
       else if (action === 'resume') resumeGuided();
+      else if (action === 'google-reviews') trackAdvisor('advisor_google_reviews_open', { screen: state.screen });
       else if (action === 'direct') { state.directFamily = ''; navigate('direct'); }
       else if (action === 'direct-family') {
         state.directFamily = target.getAttribute('data-value') || '';
@@ -400,6 +407,13 @@
     return welcomeTemplate();
   }
 
+  function googleReviewsTemplate() {
+    return '<a class="advisor-google-rating" href="' + escapeHtml(GOOGLE_REVIEWS.url) + '" target="_blank" rel="noopener noreferrer" data-action="google-reviews" data-rating-checked="' + GOOGLE_REVIEWS.checkedAt + '" aria-label="Voir les avis Diskoov sur Google : note de 4,9 sur 5, plus de 30 avis clients (nouvel onglet)">'
+      + '<span class="advisor-google-stars" aria-hidden="true">' + icon('star') + icon('star') + icon('star') + icon('star') + icon('star') + '</span>'
+      + '<span class="advisor-google-rating-copy"><strong>' + GOOGLE_REVIEWS.rating + ' sur Google</strong><small>' + GOOGLE_REVIEWS.volume + ' <span aria-hidden="true">&#8599;</span></small></span>'
+      + '</a>';
+  }
+
   function welcomeTemplate() {
     var resume = savedState && savedState.screen && savedState.screen !== 'welcome'
       ? '<div class="advisor-resume"><span>Vous aviez commencé une recherche. Vos réponses sont toujours disponibles.</span><button type="button" data-action="resume">Reprendre</button></div>'
@@ -412,6 +426,7 @@
       + '  <button type="button" class="advisor-button" data-action="start">Trouver ma protection <span aria-hidden="true">→</span></button>'
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button>'
       + '</div>'
+      + googleReviewsTemplate()
       + resume
       + '<div class="advisor-welcome-path" aria-label="Ce que vous obtenez">'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Ce qui compte pour vous</b><small>Confort, sécurité, saison ou budget</small></span></div>'
@@ -1651,6 +1666,7 @@
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
       target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
       compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
+      star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
       'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
       'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',
       'shape-free': '<path d="M5 7c3-4 10-3 13 0 3 4 1 10-3 12-5 2-11 0-12-4-1-3 0-6 2-8Z"/>',

@@ -43,6 +43,7 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
 - **Réassurance** : engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
+- **Avis Google** : `4,9/5` et plus de 30 avis affichés après contrôle le 12 juillet 2026 ; lien vers la fiche publique et nouvelle vérification obligatoire avant chaque publication.
 - **Recommandation** : image réelle, catégorie, bénéfices, deux points de décision et CTA devis.
 - **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
 - **Détail produit** : dialogue focalisé, fermeture 44 x 44 px, retour du focus au déclencheur.
