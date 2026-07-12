@@ -43,10 +43,9 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
 - **Réassurance** : engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
-- **Avis Google** : `4,9/5` et plus de 30 avis affichés après contrôle le 12 juillet 2026 ; lien vers la fiche publique et nouvelle vérification obligatoire avant chaque publication.
+- **Avis Google** : module unique réunissant `4,9/5`, plus de 30 avis, un témoignage court et le lien vers la fiche publique ; données contrôlées le 12 juillet 2026 et nouvelle vérification obligatoire avant chaque publication.
 - **Preuves d’expertise** : `13 ans` d’expérience terrain, partenariat Premium avec trois fabricants et accompagnement du projet repris du [site officiel Diskoov](https://diskoov.fr/), contrôlé le 12 juillet 2026.
 - **Témoignage** : extrait court de l’avis Google de Dagmar S. publié sur le [site officiel Diskoov](https://diskoov.fr/) ; attribution visible et date de contrôle conservée dans le code.
-- **Guide** : lien vers l’article public [« Les erreurs à éviter lors du choix de votre couverture de piscine »](https://diskoov.fr/2025/09/02/les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/), jamais vers un document interne ni sous la forme d’un faux téléchargement.
 - **Recommandation** : image réelle, catégorie, bénéfices, deux points de décision et CTA devis.
 - **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
 - **Détail produit** : dialogue focalisé, fermeture 44 x 44 px, retour du focus au déclencheur.
@@ -68,6 +67,7 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - Ne pas multiplier les cartes imbriquées.
 - Ne pas remplacer une photo produit utile par une illustration générique.
 - Ne pas utiliser de promesse commerciale comme état visuel si elle n'est pas documentée.
+- Ne jamais présenter un article ou un document interne comme un « guide Diskoov » sans ressource prospect validée.
 - Ne pas masquer une contrainte pour alléger une fiche produit.
 - Ne jamais présélectionner silencieusement une réponse qui influence la compatibilité ou le devis.
 - Respecter `prefers-reduced-motion` et limiter les transitions aux propriétés compositées ou aux états courts.

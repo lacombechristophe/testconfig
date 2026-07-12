@@ -19,8 +19,7 @@
   var DISKOOV_PROOF = {
     checkedAt: '2026-07-12',
     quote: 'Merci pour vos précieux conseils et votre excellent accompagnement.',
-    quoteAuthor: 'Dagmar S.',
-    guideUrl: 'https://diskoov.fr/2025/09/02/les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/'
+    quoteAuthor: 'Dagmar S.'
   };
   var state = {
     screen: 'welcome',
@@ -119,7 +118,6 @@
       if (action === 'start') startGuided();
       else if (action === 'resume') resumeGuided();
       else if (action === 'google-reviews') trackAdvisor('advisor_google_reviews_open', { screen: state.screen });
-      else if (action === 'guide') trackAdvisor('advisor_guide_open', { screen: state.screen });
       else if (action === 'direct') { state.directFamily = ''; navigate('direct'); }
       else if (action === 'direct-family') {
         state.directFamily = target.getAttribute('data-value') || '';
@@ -419,10 +417,11 @@
   }
 
   function googleReviewsTemplate() {
-    return '<a class="advisor-google-rating" href="' + escapeHtml(GOOGLE_REVIEWS.url) + '" target="_blank" rel="noopener noreferrer" data-action="google-reviews" data-rating-checked="' + GOOGLE_REVIEWS.checkedAt + '" aria-label="Voir les avis Diskoov sur Google : note de 4,9 sur 5, plus de 30 avis clients (nouvel onglet)">'
-      + '<span class="advisor-google-stars" aria-hidden="true">' + icon('star') + icon('star') + icon('star') + icon('star') + icon('star') + '</span>'
-      + '<span class="advisor-google-rating-copy"><strong>' + GOOGLE_REVIEWS.rating + ' sur Google</strong><small>' + GOOGLE_REVIEWS.volume + ' <span aria-hidden="true">&#8599;</span></small></span>'
-      + '</a>';
+    return '<section class="advisor-google-proof" aria-label="Avis clients Google" data-rating-checked="' + GOOGLE_REVIEWS.checkedAt + '" data-proof-checked="' + DISKOOV_PROOF.checkedAt + '">'
+      + '<div class="advisor-google-score"><span class="advisor-google-stars" aria-hidden="true">' + icon('star') + icon('star') + icon('star') + icon('star') + icon('star') + '</span><span class="advisor-google-score-value"><strong>' + GOOGLE_REVIEWS.rating + '</strong><small>sur Google</small></span></div>'
+      + '<figure class="advisor-google-quote"><blockquote>« ' + escapeHtml(DISKOOV_PROOF.quote) + ' »</blockquote><figcaption>' + escapeHtml(DISKOOV_PROOF.quoteAuthor) + ' · Avis Google</figcaption></figure>'
+      + '<a class="advisor-google-link" href="' + escapeHtml(GOOGLE_REVIEWS.url) + '" target="_blank" rel="noopener noreferrer" data-action="google-reviews" aria-label="Voir plus de 30 avis clients Diskoov sur Google (nouvel onglet)"><strong>' + GOOGLE_REVIEWS.volume + '</strong><span>Voir les avis <span aria-hidden="true">&#8599;</span></span></a>'
+      + '</section>';
   }
 
   function welcomeTemplate() {
@@ -437,7 +436,7 @@
       + '  <button type="button" class="advisor-button" data-action="start">Obtenir mes recommandations <span aria-hidden="true">→</span></button>'
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button>'
       + '</div>'
-      + '<div class="advisor-welcome-signals"><p class="advisor-welcome-start-note">' + icon('check') + '<span>Commencez sans dimensions précises ni coordonnées.</span></p>' + googleReviewsTemplate() + '</div>'
+      + '<p class="advisor-welcome-start-note">' + icon('check') + '<span>Commencez sans dimensions précises ni coordonnées.</span></p>'
       + resume
       + '<div class="advisor-welcome-path" aria-label="Ce que vous obtenez">'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Ce qui compte pour vous</b><small>Confort, sécurité, saison ou budget</small></span></div>'
@@ -445,10 +444,7 @@
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
       + '</div>'
       + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('idea') + '</span><span><strong>Notre engagement : des conseils clairs, adaptés à votre projet.</strong><small>Nous comparons selon vos priorités et votre bassin. La faisabilité, la pose, les accès et les options sont confirmés avec vous avant devis.</small></span></aside>'
-      + '<section class="advisor-welcome-evidence" aria-label="Avis client et conseil Diskoov" data-proof-checked="' + DISKOOV_PROOF.checkedAt + '">'
-      + '  <figure class="advisor-welcome-quote"><span class="advisor-welcome-evidence-icon" aria-hidden="true">' + icon('star') + '</span><div><blockquote>« ' + escapeHtml(DISKOOV_PROOF.quote) + ' »</blockquote><figcaption>' + escapeHtml(DISKOOV_PROOF.quoteAuthor) + ' · Avis Google</figcaption></div></figure>'
-      + '  <a class="advisor-welcome-guide" href="' + escapeHtml(DISKOOV_PROOF.guideUrl) + '" target="_blank" rel="noopener noreferrer" data-action="guide" aria-label="Lire le guide Diskoov 2025 : les erreurs à éviter pour choisir sa couverture (nouvel onglet)"><span class="advisor-welcome-evidence-icon" aria-hidden="true">' + icon('guide') + '</span><span class="advisor-welcome-guide-copy"><small>Guide Diskoov · 2025</small><strong>Les erreurs à éviter pour choisir sa couverture</strong><span>Lire le guide <span aria-hidden="true">&#8599;</span></span></span></a>'
-      + '</section>'
+      + googleReviewsTemplate()
       + '</div>';
   }
 
@@ -1682,7 +1678,6 @@
       target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
       compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
       idea: '<path d="M9 18h6M10 22h4"/><path d="M8.7 15.3C7 14.2 6 12.3 6 10a6 6 0 1 1 12 0c0 2.3-1 4.2-2.7 5.3-.8.5-1.3 1.2-1.3 2.2h-4c0-1-.5-1.7-1.3-2.2Z"/>',
-      guide: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h4M8 12h8M8 16h6"/>',
       star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
       'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
       'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',

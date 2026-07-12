@@ -278,12 +278,11 @@ test('l accueil expose des preuves verifiables sans promesse universelle', funct
   assert.match(advisor, /Merci pour vos précieux conseils et votre excellent accompagnement/);
   assert.match(advisor, /quoteAuthor: 'Dagmar S\.'/);
   assert.match(advisor, /· Avis Google/);
-  assert.match(advisor, /les-erreurs-a-eviter-lors-du-choix-de-votre-couverture-de-piscine-notre-guide-complet/);
-  assert.match(advisor, /Guide Diskoov · 2025/);
-  assert.match(advisor, /data-action="guide"/);
-  assert.match(advisor, /advisor_guide_open/);
-  assert.match(advisorCss, /\.advisor-welcome-evidence\s*\{[\s\S]*?grid-template-columns:/);
-  assert.match(advisorCss, /\.advisor-welcome-guide:focus-visible/);
+  assert.match(advisor, /class="advisor-google-proof"/);
+  assert.match(advisor, /class="advisor-google-score"/);
+  assert.match(advisor, /class="advisor-google-quote"/);
+  assert.match(advisor, /class="advisor-google-link"/);
+  assert.doesNotMatch(advisor + advisorCss + html, /Guide Diskoov|advisor-welcome-guide|advisor_guide_open|guideUrl|les-erreurs-a-eviter/i);
   assert.doesNotMatch(advisor, /pose incluse pour tous|comparatif indépendant|solutions testées et sélectionnées/i);
 });
 
@@ -295,7 +294,7 @@ test('la note Google est sourcee, datee et facile a actualiser', function () {
   assert.match(advisor, /data-action="google-reviews"/);
   assert.match(advisor, /advisor_google_reviews_open/);
   assert.match(advisorCss, /\.advisor-google-stars svg\s*\{[\s\S]*?fill:\s*currentColor/);
-  assert.match(advisorCss, /\.advisor-google-rating:focus-visible/);
+  assert.match(advisorCss, /\.advisor-google-link:focus-visible/);
 });
 
 test('le logo Diskoov officiel remplace tous les monogrammes temporaires', function () {
