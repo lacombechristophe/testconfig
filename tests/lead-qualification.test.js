@@ -254,6 +254,18 @@ test('l accueil garde un seul acces direct visible', function () {
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-shell\[data-screen='welcome'\] \.advisor-visual\s*\{[\s\S]*?min-height:\s*150px/);
 });
 
+test('la reassurance d accueil reste visuelle et factuelle', function () {
+  assert.match(advisor, /class="advisor-title-accent">votre quotidien<\/span>/);
+  assert.match(advisor, /class="advisor-visual-proof"/);
+  assert.match(advisor, /Vos réponses restent modifiables pendant le parcours/);
+  assert.match(advisor, /class="advisor-welcome-assurance"/);
+  assert.match(advisor, /Une sélection expliquée, puis vérifiée avec vous/);
+  assert.match(advisor, /La pose, les accès et les options sont ensuite confirmés avec vous avant devis/);
+  assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border-radius:\s*var\(--advisor-radius-lg\)/);
+  assert.match(advisorCss, /@media \(max-width: 900px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
+  assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
+});
+
 test('le logo Diskoov officiel remplace tous les monogrammes temporaires', function () {
   var logoPath = 'assets/marque/logo-diskoov-bleu-orange.png';
   assert.equal(fs.existsSync(path.join(root, logoPath)), true);
@@ -272,7 +284,7 @@ test('le visuel principal du configurateur reste optimisé pour le mobile', func
 });
 
 test('les listes produit aident a choisir avant de demander une etude', function () {
-  assert.match(advisor, /Quelle protection simplifiera vraiment votre quotidien/);
+  assert.match(advisor, /Quelle protection simplifiera vraiment <span class="advisor-title-accent">votre quotidien<\/span> \?/);
   assert.doesNotMatch(advisor, /vous simplifiera vraiment la piscine/);
   assert.match(advisor, /Qu’aimeriez-vous gagner autour de votre piscine/);
   assert.match(advisor, /advisor-family-signals/);

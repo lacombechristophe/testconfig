@@ -42,6 +42,7 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **Sélecteurs segmentés** : icône + libellé, état actif bleu marque, navigation clavier par flèches.
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
+- **Réassurance** : engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
 - **Recommandation** : image réelle, catégorie, bénéfices, deux points de décision et CTA devis.
 - **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
 - **Détail produit** : dialogue focalisé, fermeture 44 x 44 px, retour du focus au déclencheur.

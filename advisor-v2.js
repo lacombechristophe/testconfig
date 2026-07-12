@@ -61,7 +61,7 @@
   function shellTemplate() {
     return ''
       + '<aside class="advisor-visual" aria-hidden="true">'
-      + '  <figure class="advisor-visual-media"><img data-visual-image src="assets/produits/conseiller/ore-fermee.webp" alt="" width="1200" height="800" fetchpriority="high"></figure>'
+      + '  <figure class="advisor-visual-media"><img data-visual-image src="assets/produits/conseiller/ore-fermee.webp" alt="" width="1200" height="800" fetchpriority="high"><span class="advisor-visual-proof">' + icon('check') + '<span>Vos réponses restent modifiables pendant le parcours.</span></span></figure>'
       + '  <div class="advisor-visual-copy">'
       + '    <div class="advisor-kicker" data-visual-kicker>Conseil personnalisé</div>'
       + '    <div class="advisor-visual-title" data-visual-title>Une solution pensée pour votre bassin.</div>'
@@ -406,7 +406,7 @@
       : '';
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Conseiller Diskoov</div>'
-      + '<h1 class="advisor-title">Quelle protection simplifiera vraiment votre quotidien ?</h1>'
+      + '<h1 class="advisor-title">Quelle protection simplifiera vraiment <span class="advisor-title-accent">votre quotidien</span> ?</h1>'
       + '<p class="advisor-subtitle">Partez de vos usages, pas des noms de produits. Diskoov compare les solutions selon votre bassin et explique clairement ce qui les distingue.</p>'
       + '<div class="advisor-welcome-actions">'
       + '  <button type="button" class="advisor-button" data-action="start">Trouver ma protection <span aria-hidden="true">→</span></button>'
@@ -418,7 +418,7 @@
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Ce que permet votre bassin</b><small>Forme et dimensions, même approximatives</small></span></div>'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
       + '</div>'
-      + '<p class="advisor-welcome-note">Votre choix n’est pas définitif. Les conditions de pose sont vérifiées avec vous avant toute proposition détaillée.</p>'
+      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('check') + '</span><span><strong>Une sélection expliquée, puis vérifiée avec vous.</strong><small>Vos dimensions nous aident à écarter les modèles qui ne conviennent pas. La pose, les accès et les options sont ensuite confirmés avec vous avant devis.</small></span></aside>'
       + '</div>';
   }
 
