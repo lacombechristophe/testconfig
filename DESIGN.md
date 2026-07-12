@@ -69,6 +69,7 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - Ne pas remplacer une photo produit utile par une illustration générique.
 - Ne pas utiliser de promesse commerciale comme état visuel si elle n'est pas documentée.
 - Ne jamais présenter un article ou un document interne comme un « guide Diskoov » sans ressource prospect validée.
+- Employer des formulations directes côté prospect : nommer la question, l’information ou l’action concrète ; éviter les oppositions artificielles (« usage / jargon »), les intensifs vagues (« vraiment ») et les termes de processus (« vérification humaine »).
 - Ne pas masquer une contrainte pour alléger une fiche produit.
 - Ne jamais présélectionner silencieusement une réponse qui influence la compatibilité ou le devis.
 - Respecter `prefers-reduced-motion` et limiter les transitions aux propriétés compositées ou aux états courts.

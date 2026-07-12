@@ -216,7 +216,7 @@ test('le filet local conserve un lead même si la pièce jointe dépasse le quot
 });
 
 test('la comparaison garde ses icones centrees et son badge dans la copie', function () {
-  assert.match(advisor, /class="advisor-family-overview-copy"[\s\S]*?\+ \(index === 0 \? '<small>Piste prioritaire<\/small>' : ''\) \+ '<\/div><\/article>'/);
+  assert.match(advisor, /class="advisor-family-overview-copy"[\s\S]*?\+ \(index === 0 \? '<small>À étudier en priorité<\/small>' : ''\) \+ '<\/div><\/article>'/);
   assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item small\s*\{[^}]*grid-column/);
   assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item span\s*[,\{]/);
   assert.match(advisorCss, /\.advisor-family-overview-icon svg\s*\{[^}]*display:\s*block/);
@@ -255,15 +255,15 @@ test('l accueil garde un seul acces direct visible', function () {
 });
 
 test('la reassurance d accueil reste visuelle et factuelle', function () {
-  assert.match(advisor, /class="advisor-title-accent">votre quotidien<\/span>/);
+  assert.match(advisor, /class="advisor-title-accent">votre piscine<\/span>/);
   assert.match(advisor, /Diskoov compare sa sélection de protections/);
   assert.match(advisor, /Obtenir mes recommandations/);
-  assert.match(advisor, /Commencez sans dimensions précises ni coordonnées/);
+  assert.match(advisor, /Des dimensions approximatives suffisent\. Aucune coordonnée n’est demandée à cette étape/);
   assert.match(advisor, /class="advisor-visual-proof"/);
-  assert.match(advisor, /Protection, confort, entretien : comparez ce qui compte/);
+  assert.match(advisor, /Comparez les protections selon vos priorités/);
   assert.match(advisor, /class="advisor-welcome-assurance"/);
-  assert.match(advisor, /Première sélection en ligne, vérification humaine avant devis/);
-  assert.match(advisor, /Un conseiller Diskoov confirme avec vous le modèle, la faisabilité, la pose, les accès et les options/);
+  assert.match(advisor, /Un conseiller Diskoov confirme votre projet avant le devis/);
+  assert.match(advisor, /Vous vérifiez ensemble le modèle, la faisabilité, la pose, les accès et les options/);
   assert.match(advisor, /class="advisor-button-icon"[\s\S]*?icon\('arrow-right'\)/);
   assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border-radius:\s*var\(--advisor-radius-lg\)/);
   assert.match(advisorCss, /\.advisor-welcome-path > div:nth-child\(1\)\s*\{[\s\S]*?box-shadow:\s*inset 0 3px 0/);
@@ -277,8 +277,8 @@ test('l accueil expose des preuves verifiables sans promesse universelle', funct
   assert.match(advisor, /class="advisor-visual-trust"/);
   assert.match(advisor, /13 ans[\s\S]*d’expérience terrain/);
   assert.match(advisor, /3 fabricants[\s\S]*partenaires premium/);
-  assert.match(advisor, /Suivi humain[\s\S]*tout au long du projet/);
-  assert.match(advisor, /Un spécialiste à vos côtés/);
+  assert.match(advisor, /Suivi du projet[\s\S]*avec un conseiller/);
+  assert.match(advisor, /Un conseiller pour votre projet/);
   assert.match(advisor, /Merci pour vos précieux conseils et votre excellent accompagnement/);
   assert.match(advisor, /quoteAuthor: 'Dagmar S\.'/);
   assert.match(advisor, /· Avis Google/);
@@ -319,9 +319,8 @@ test('le visuel principal du configurateur reste optimisé pour le mobile', func
 });
 
 test('les listes produit aident a choisir avant de demander une etude', function () {
-  assert.match(advisor, /Quelle protection simplifiera vraiment <span class="advisor-title-accent">votre quotidien<\/span> \?/);
-  assert.doesNotMatch(advisor, /vous simplifiera vraiment la piscine/);
-  assert.match(advisor, /Qu’aimeriez-vous gagner autour de votre piscine/);
+  assert.match(advisor, /Quelle protection choisir pour <span class="advisor-title-accent">votre piscine<\/span> \?/);
+  assert.match(advisor, /Quel type de protection recherchez-vous/);
   assert.match(advisor, /advisor-family-signals/);
   assert.match(advisor, /advisor-family-signal-icon/);
   assert.match(advisor, /advisor-family-story-fact-icon/);
@@ -337,10 +336,10 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /Un seul rail de guidage, positionné du côté choisi avec vous/);
   assert.match(advisor, /Enroulement par manivelle et déroulement par sangle de rappel/);
   assert.match(advisor, /Choisir ce modèle/);
-  assert.match(advisor, /Hors plage actuelle/);
+  assert.match(advisor, /Dimensions à étudier/);
   assert.match(advisor, /Cette forme demande une étude sur mesure/);
   assert.match(advisor, /function directUnavailableCopy\(item\)/);
-  assert.doesNotMatch(advisor, /Hors plage connue/);
+  assert.doesNotMatch(advisor, /Hors plage (?:actuelle|connue)/);
   assert.match(advisor, /advisor-media-zoom/);
   assert.doesNotMatch(advisor, /advisor-result-rank/);
   assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
@@ -351,6 +350,15 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.doesNotMatch(advisorCss, /\.advisor-model-facts > div:nth-child\(3\)\s*\{[^}]*display:\s*none/);
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-primary-result \.advisor-result-category/);
   assert.doesNotMatch(advisor, /Vérifier ce modèle|Vérifier mon projet|Dimensions non adaptées/);
+});
+
+test('les textes du conseiller restent directs et adaptes au prospect', function () {
+  assert.match(advisor, /var STAGES = \['Vos priorités', 'Votre piscine', 'Vos recommandations'\]/);
+  assert.match(advisor, /Qu’attendez-vous de votre protection de piscine/);
+  assert.match(advisor, /Quelle est la forme et la taille de votre piscine/);
+  assert.match(advisor, /Trois types de protection à comparer pour votre piscine/);
+  assert.match(advisor, /Comparer les solutions point par point/);
+  assert.doesNotMatch(advisor, /Choisissez par l’usage, pas par le jargon|Partez de vos usages, pas des noms de produits|Première sélection en ligne|vérification humaine|simplifiera vraiment|ce qui change vraiment|approches cohérentes|piste prioritaire|sélection équilibrée|fausses pistes/i);
 });
 
 test('le passage au configurateur garde un langage prospect', function () {
