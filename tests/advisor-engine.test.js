@@ -32,9 +32,11 @@ test('le conseiller ne confond pas plage dimensionnelle et compatibilité de pos
   assert.ok(checked.every(function (item) { return item.reasons.indexOf('Dimensions dans la plage connue') !== -1; }));
 });
 
-test('une forme libre privilégie les solutions étudiées sur mesure', function () {
+test('une forme libre ne recommande que les familles documentées pour une étude', function () {
   var result = advisor.recommend({ priorities: ['aesthetics', 'space'], shape: 'libre', length: 8, width: 4 }, rules);
-  assert.ok(['eden', 'masterdeck'].indexOf(result.recommendations[0].id) !== -1);
+  assert.ok(['volet_hs', 'volet_immerge'].indexOf(result.recommendations[0].id) !== -1);
+  assert.equal(result.recommendations.some(function (item) { return ['auto', 'semi', 'eden', 'masterdeck'].indexOf(item.id) !== -1; }), false);
+  assert.equal(result.compatible.some(function (item) { return item.id === 'eden'; }), true);
   assert.equal(result.compatible.some(function (item) { return item.id === 'auto' || item.id === 'ore_essential'; }), false);
 });
 
@@ -45,12 +47,35 @@ test('sans dimensions connues, le conseil compare les familles sans simuler une 
   assert.ok(result.compatible.some(function (item) { return item.reasons.indexOf('Dimensions du bassin à préciser') !== -1; }));
 });
 
+test('des dimensions nulles ne deviennent jamais des mesures connues', function () {
+  var input = advisor.normalise({ dimensionsKnown: null, length: null, width: null });
+  assert.equal(input.dimensionsKnown, false);
+});
+
 test('des dimensions inconnues ne neutralisent jamais la contrainte de forme', function () {
   var result = advisor.recommend({ priorities: ['automatic'], dimensionsKnown: false, shape: 'libre' }, rules);
   assert.ok(result.compatible.length > 0);
   assert.ok(result.compatible.every(function (item) {
-    return ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item.id) !== -1;
+    return ['eden', 'volet_hs', 'volet_immerge'].indexOf(item.id) !== -1;
   }));
+});
+
+test('la priorité sécurité ne valorise que les produits documentés sur ce point', function () {
+  ['auto', 'semi', 'eden', 'ul', 'm18', 'm30', 'm50', 'mid', 'masterdeck'].forEach(function (id) {
+    assert.equal(advisor.findCandidate(id).strengths.indexOf('safety'), -1, id);
+  });
+  ['ore_compact', 'ore_essential', 'bab', 'volet_hs'].forEach(function (id) {
+    assert.notEqual(advisor.findCandidate(id).strengths.indexOf('safety'), -1, id);
+  });
+  assert.equal(advisor.findCandidate('volet_immerge').strengths.indexOf('safety'), -1);
+});
+
+test('Coverseal et Eden restent explorables sans entrer dans le classement guidé', function () {
+  var result = advisor.recommend({ priorities: ['clean', 'aesthetics'], shape: 'rect', length: 8, width: 4 }, rules);
+  ['auto', 'semi', 'eden'].forEach(function (id) {
+    assert.equal(result.recommendations.some(function (item) { return item.id === id; }), false, id);
+    assert.equal(result.compatible.some(function (item) { return item.id === id; }), true, id);
+  });
 });
 
 test('les priorités structurantes orientent la première famille sans casser la diversité', function () {

@@ -15,9 +15,9 @@
     history: [],
     priorities: [],
     shape: 'rect',
-    length: 8,
-    width: 4,
-    dimensionsKnown: true,
+    length: null,
+    width: null,
+    dimensionsKnown: null,
     poolCompleted: false,
     results: null,
     compare: false,
@@ -64,7 +64,7 @@
       + '  <div class="advisor-visual-copy">'
       + '    <div class="advisor-kicker" data-visual-kicker>Conseil personnalisé</div>'
       + '    <div class="advisor-visual-title" data-visual-title>Une solution pensée pour votre bassin.</div>'
-      + '    <p class="advisor-visual-text" data-visual-text>Quelques réponses suffisent pour comparer les protections réellement adaptées à votre projet.</p>'
+      + '    <p class="advisor-visual-text" data-visual-text>Quelques réponses suffisent pour comparer les protections qui correspondent le mieux à votre projet.</p>'
       + '    <p class="advisor-visual-meta" data-visual-meta>Besoin, bassin, puis sélection expliquée.</p>'
       + '  </div>'
       + '</aside>'
@@ -81,7 +81,7 @@
       + '</div>'
       + '<div class="advisor-modal" data-advisor-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Photo du produit agrandie">'
       + '  <button type="button" class="advisor-modal-close" data-action="close-preview" aria-label="Fermer">×</button>'
-      + '  <img data-advisor-modal-image alt="" width="1200" height="800">'
+      + '  <img data-advisor-modal-image src="assets/produits/conseiller/ore-fermee.webp" alt="" width="1200" height="800">'
       + '</div>'
       + '<div class="advisor-detail-modal" data-advisor-detail-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du produit">'
       + '  <div class="advisor-detail-card" data-advisor-detail-content></div>'
@@ -113,7 +113,15 @@
       else if (action === 'dimensions-known') setDimensionsKnown(target.getAttribute('data-value') === 'true');
       else if (action === 'back') goBack();
       else if (action === 'next') goNext();
-      else if (action === 'compare') { state.compare = !state.compare; trackAdvisor('advisor_compare_open', { open: state.compare }); render({ preserveScroll: true, focusTitle: false }); }
+      else if (action === 'compare') {
+        state.compare = !state.compare;
+        trackAdvisor('advisor_compare_open', { open: state.compare });
+        render({ preserveScroll: true, focusTitle: false });
+        requestAnimationFrame(function () {
+          var compareButton = body.querySelector('[data-action="compare"]');
+          if (compareButton) compareButton.focus({ preventScroll: true });
+        });
+      }
       else if (action === 'choose') openConfigurator(target.getAttribute('data-product'), target.getAttribute('data-source') || 'guided');
       else if (action === 'direct-product') openConfigurator(target.getAttribute('data-product'), 'direct');
       else if (action === 'details') openProductDetails(target.getAttribute('data-product'), target, state.screen === 'direct' ? 'direct' : 'guided');
@@ -128,6 +136,7 @@
         state[event.target.getAttribute('data-field')] = parseDimensionValue(event.target.value);
         updateSurfaceLabel();
         updateDimensionFeedback();
+        updateFooterOnly();
         if (dimensionsValid()) saveState();
       }
     });
@@ -224,8 +233,8 @@
     sessionStorage.removeItem(STORAGE_KEY);
     savedState = null;
     state = {
-      screen: 'welcome', history: [], priorities: [], shape: 'rect', length: 8, width: 4,
-      dimensionsKnown: true, poolCompleted: false,
+      screen: 'welcome', history: [], priorities: [], shape: 'rect', length: null, width: null,
+      dimensionsKnown: null, poolCompleted: false,
       results: null, compare: false, directFamily: '', activeProduct: ''
     };
     document.body.classList.remove('diskoov-guided-config');
@@ -407,7 +416,7 @@
   function prioritiesTemplate() {
     var labels = {
       clean: 'Réduire l’entretien', safety: 'Sécuriser le bassin', season: 'Se baigner plus longtemps',
-      aesthetics: 'Préserver le jardin', automatic: 'Ouvrir sans effort', space: 'Récupérer de l’espace',
+      aesthetics: 'Préserver le jardin', automatic: 'Ouvrir sans effort', space: 'Plancher mobile',
       economy: 'Maîtriser le budget', unsure: 'Je ne sais pas encore'
     };
     var descriptions = {
@@ -416,7 +425,7 @@
       season: 'Profiter plus longtemps de la piscine.',
       aesthetics: 'Garder des abords élégants et discrets.',
       automatic: 'Ouvrir et fermer avec le moins de manipulation possible.',
-      space: 'Récupérer une vraie surface utilisable.',
+      space: 'Étudier une fermeture du bassin par plancher mobile.',
       economy: 'Comparer en donnant plus de poids au budget.',
       unsure: 'Découvrir une sélection équilibrée sans connaître les produits.'
     };
@@ -446,14 +455,16 @@
   }
 
   function poolTemplate() {
-    var dimensionsControls = state.dimensionsKnown
+    var dimensionsControls = state.dimensionsKnown === true
       ? '<fieldset class="advisor-fieldset"><legend class="advisor-legend">Dimensions intérieures</legend>'
         + '<div class="advisor-dimensions">'
         + inputDimension('length', 'Longueur', state.length, 3, 20)
         + '<span class="advisor-dim-x" aria-hidden="true">×</span>'
         + inputDimension('width', 'Largeur', state.width, 2, 12)
         + '</div><div class="advisor-surface" data-advisor-surface>' + surfaceText() + '</div></fieldset>'
-      : '<div class="advisor-dimensions-later" role="note">' + icon('measure') + '<span><strong>Vous pourrez les ajouter ensuite.</strong><small>Les familles seront comparées sans annoncer de compatibilité dimensionnelle.</small></span></div>';
+      : state.dimensionsKnown === false
+        ? '<div class="advisor-dimensions-later" role="note">' + icon('measure') + '<span><strong>Vous pourrez les ajouter ensuite.</strong><small>Les familles seront comparées sans annoncer de compatibilité dimensionnelle.</small></span></div>'
+        : '<div class="advisor-dimensions-later advisor-dimensions-later--prompt" role="note">' + icon('measure') + '<span><strong>Choisissez l’option qui vous correspond.</strong><small>Des mesures approximatives suffisent. Vous pouvez aussi continuer sans les connaître.</small></span></div>';
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre piscine</div>'
       + '<h1 class="advisor-title">Quelles sont les grandes lignes de votre bassin ?</h1>'
@@ -469,9 +480,9 @@
       + dimensionModeButton(true, 'Oui, même approximatives') + dimensionModeButton(false, 'Pas encore')
       + '  </div></fieldset>'
       + dimensionsControls
-      + (state.dimensionsKnown ? '  <p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>' : '')
+      + (state.dimensionsKnown === true ? '  <p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>' : '')
       + '  </div>'
-      + (state.dimensionsKnown ? poolPreviewTemplate() : poolUnknownTemplate())
+      + (state.dimensionsKnown === true ? poolPreviewTemplate() : poolUnknownTemplate())
       + '</div>'
       + (state.shape === 'libre' ? '<div class="advisor-resume"><span>Une forme libre demande une étude sur mesure. Une photo ou un plan aidera ensuite Diskoov à comprendre les contours du bassin.</span></div>' : '')
       + '</div>';
@@ -479,7 +490,8 @@
 
   function dimensionModeButton(value, label) {
     var selected = state.dimensionsKnown === value;
-    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="dimensions-known" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected ? '0' : '-1') + '">' + label + '</button>';
+    var firstTabStop = typeof state.dimensionsKnown !== 'boolean' && value === true;
+    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="dimensions-known" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected || firstTabStop ? '0' : '-1') + '">' + label + '</button>';
   }
 
   function poolUnknownTemplate() {
@@ -539,38 +551,46 @@
       : '';
     var resultContext = state.dimensionsKnown
       ? 'Pour votre bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m, les modèles hors de leur plage connue ont été écartés. La pose et les abords restent à confirmer avant devis.'
-      : 'Comme vous n’avez pas encore indiqué les dimensions, nous comparons les familles selon vos usages. Les modèles et leur compatibilité seront confirmés après vos mesures.';
+      : 'Comme vous n’avez pas encore indiqué les dimensions, nous comparons les familles selon vos usages. Les modèles à étudier seront confirmés après vos mesures.';
     return '<div class="advisor-screen">'
       + '<div class="advisor-results-head"><div>'
       + '  <div class="advisor-step-label">Les solutions les plus cohérentes</div>'
       + '  <h1 class="advisor-title">' + escapeHtml(resultTitle) + '</h1>'
       + '  <p class="advisor-subtitle">' + escapeHtml(resultContext) + '</p>'
-      + '</div><div class="advisor-result-actions">' + (top.length > 1 ? '<button type="button" class="advisor-button advisor-button--secondary" data-action="compare">' + (state.compare ? 'Masquer le comparatif' : 'Comparer point par point') + '</button>' : '') + '<button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
+      + '</div><div class="advisor-result-actions">' + (top.length > 1 ? '<button type="button" class="advisor-button advisor-button--secondary" data-action="compare" aria-expanded="' + state.compare + '" aria-controls="advisor-results-comparison">' + (state.compare ? 'Masquer le comparatif' : 'Comparer point par point') + '</button>' : '') + '<button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
       + resultsSummaryTemplate()
-      + familyOverviewTemplate(top)
-      + (primary ? primaryResultTemplate(primary) : '')
-      + (alternatives.length ? '<section class="advisor-alternatives"><div class="advisor-alternatives-head"><div><span class="advisor-section-kicker">' + (alternatives.length === 1 ? 'Une autre approche' : 'Deux autres approches') + '</span><h2>À comparer avant de décider</h2></div><p>Chaque famille répond au projet avec un équilibre différent entre confort, discrétion, saison et budget.</p></div><div class="advisor-alternative-list">' + alternatives.map(alternativeResultTemplate).join('') + '</div></section>' : '')
       + (state.compare && top.length > 1 ? compareTemplate(top) : '')
+      + (primary ? primaryResultTemplate(primary) : '')
+      + (!state.compare ? familyOverviewTemplate(top) : '')
+      + (alternatives.length ? '<section class="advisor-alternatives"><div class="advisor-alternatives-head"><div><span class="advisor-section-kicker">' + (alternatives.length === 1 ? 'Une autre approche' : 'Deux autres approches') + '</span><h2>À comparer avant de décider</h2></div><p>Chaque famille répond au projet avec un équilibre différent entre confort, discrétion, saison et budget.</p></div><div class="advisor-alternative-list">' + alternatives.map(alternativeResultTemplate).join('') + '</div></section>' : '')
       + excludedCopy
       + '<section class="advisor-results-explore"><div><strong>Vous voulez voir tous les modèles ?</strong><span>Explorez les cinq familles Diskoov sans perdre vos réponses.</span></div><button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button></section>'
       + '</div>';
   }
 
   function resultsSummaryTemplate() {
-    var poolSummary = state.dimensionsKnown
-      ? '<strong>' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m</strong><span>Dimensions intérieures déclarées</span>'
-      : '<strong>Dimensions à préciser</strong><span>Comparaison basée sur vos usages</span>';
+    var poolTitle = state.dimensionsKnown ? numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m' : 'Dimensions à préciser';
+    var poolText = state.dimensionsKnown ? 'Dimensions intérieures déclarées' : 'Comparaison basée sur vos usages';
     return '<div class="advisor-results-summary" aria-label="Résumé de votre projet">'
-      + '<div><strong>' + escapeHtml(prioritySummaryLabel()) + '</strong><span>Ce qui compte dans votre projet</span></div>'
-      + '<div>' + poolSummary + '</div>'
-      + '<div><strong>Vérification humaine avant devis</strong><span>Pose, accès et options confirmés avec vous</span></div>'
+      + resultsSummaryItemTemplate(prioritySummaryIconName(), prioritySummaryLabel(), 'Ce qui compte dans votre projet')
+      + resultsSummaryItemTemplate('pool', poolTitle, poolText)
+      + resultsSummaryItemTemplate('user', 'Vérification humaine avant devis', 'Pose, accès et options confirmés avec vous')
       + '</div>';
+  }
+
+  function resultsSummaryItemTemplate(iconName, title, text) {
+    return '<div><span class="advisor-results-summary-icon" aria-hidden="true">' + icon(iconName) + '</span><span class="advisor-results-summary-copy"><strong>' + escapeHtml(title) + '</strong><span>' + escapeHtml(text) + '</span></span></div>';
+  }
+
+  function prioritySummaryIconName() {
+    var priority = state.priorities.filter(function (value) { return value !== 'unsure'; })[0];
+    return priority || 'unsure';
   }
 
   function prioritySummaryLabel() {
     var labels = {
       clean: 'moins d’entretien', safety: 'sécurité du bassin', season: 'saison prolongée',
-      aesthetics: 'jardin préservé', automatic: 'ouverture sans effort', space: 'espace récupéré',
+      aesthetics: 'jardin préservé', automatic: 'ouverture sans effort', space: 'plancher mobile',
       economy: 'budget maîtrisé'
     };
     var selected = state.priorities.filter(function (priority) { return labels[priority]; }).map(function (priority) { return labels[priority]; });
@@ -592,9 +612,16 @@
       + '<span class="advisor-fallback-label">' + escapeHtml(prospectFamilyLabel(item)) + '</span>'
       + '</div>';
     if (item.image) {
-      return '<button type="button" class="' + className + ' advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="" width="1200" height="800" loading="lazy" decoding="async"><span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>';
+      return '<button type="button" class="' + className + ' advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + item.image + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + item.image + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + productImageNote(item) + '<span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>';
     }
     return '<div class="' + className + ' advisor-result-media--fallback" aria-hidden="true">' + fallback + '</div>';
+  }
+
+  function productImageNote(item) {
+    if (!item) return '';
+    if (['auto', 'semi', 'eden', 'masterdeck'].indexOf(item.id) !== -1) return '<span class="advisor-media-note">Visuel de gamme · à confirmer</span>';
+    if (item.id === 'm30' || item.id === 'm50') return '<span class="advisor-media-note">Visuel de gamme</span>';
+    return '';
   }
 
   function primaryResultTemplate(item) {
@@ -610,9 +637,9 @@
       + '<h2>' + escapeHtml(item.title) + '</h2><p class="advisor-primary-lead">' + escapeHtml(productBestFor(item)) + '</p>'
       + benefitsTemplate(item, benefits, '')
       + (proof ? '<p class="advisor-primary-proof">' + icon('check') + '<span>' + escapeHtml(proof) + '</span></p>' : '')
-      + '<dl class="advisor-primary-facts"><div><dt>Pourquoi elle vous convient</dt><dd>' + escapeHtml(match) + '</dd></div><div><dt>À valider avant devis</dt><dd>' + escapeHtml(tradeoff) + '</dd></div></dl>'
-      + '<div class="advisor-primary-actions"><div><strong>' + escapeHtml(item.estimate) + '</strong><span>Étude de pose avant devis</span></div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Étudier cette solution <span aria-hidden="true">→</span></button></div></div>'
-      + '<p class="advisor-primary-next"><strong>Pourquoi joindre une photo ?</strong> Une vue large aide Diskoov à repérer le support, les obstacles et l’accès au chantier. Elle reste facultative.</p></div>'
+      + '<dl class="advisor-primary-facts"><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon(prioritySummaryIconName()) + '</span><dt>Pourquoi elle vous convient</dt><dd>' + escapeHtml(match) + '</dd></div><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon('install') + '</span><dt>À valider avant devis</dt><dd>' + escapeHtml(tradeoff) + '</dd></div></dl>'
+      + '<div class="advisor-primary-actions"><div><strong>' + escapeHtml(item.estimate) + '</strong><span>Étude de pose avant devis</span></div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '" aria-label="Préparer mon devis pour ' + escapeHtml(item.title) + '">Préparer mon devis <span aria-hidden="true">→</span></button></div></div>'
+      + '<p class="advisor-primary-next"><strong>Pourquoi joindre une photo ?</strong> ' + escapeHtml(photoHelpText(item)) + ' Elle reste facultative.</p></div>'
       + '</article>';
   }
 
@@ -621,7 +648,7 @@
     return '<article class="advisor-alternative advisor-family--' + safeClass(item.family) + '">'
       + productMedia(item, 'advisor-alternative-media')
       + '<div class="advisor-alternative-copy"><div class="advisor-result-category">' + productCategoryTemplate(item, true) + '<span class="advisor-result-match advisor-result-match--' + safeClass(status.key) + '">' + escapeHtml(status.label) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p class="advisor-alternative-fit">' + escapeHtml(productBestFor(item)) + '</p><p class="advisor-alternative-check"><strong>À savoir</strong>' + escapeHtml(productTradeoff(item)) + '</p></div>'
-      + '<div class="advisor-alternative-actions"><span>' + escapeHtml(item.estimate) + '</span><div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '">Étudier ce projet <span aria-hidden="true">→</span></button></div></div>'
+      + '<div class="advisor-alternative-actions"><span>' + escapeHtml(item.estimate) + '</span><div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '" aria-label="Choisir ' + escapeHtml(item.title) + '">Choisir cette solution <span aria-hidden="true">→</span></button></div></div>'
       + '</article>';
   }
 
@@ -635,7 +662,6 @@
   }
 
   function displayProductCategory(item) {
-    if (item && item.family === 'coverseal') return 'Couverture tendue';
     return item && item.category ? item.category : 'Protection de piscine';
   }
 
@@ -650,7 +676,7 @@
   function benefitIconNames(item) {
     var map = {
       ore_compact: ['automatic', 'pool', 'measure'], ore_essential: ['season', 'automatic', 'measure'],
-      auto: ['automatic', 'aesthetics', 'measure'], semi: ['shield', 'economy', 'measure'],
+      auto: ['automatic', 'aesthetics', 'measure'], semi: ['cover', 'economy', 'measure'],
       eden: ['measure', 'automatic', 'aesthetics'], bab: ['shield', 'economy', 'measure'],
       volet_hs: ['automatic', 'install', 'measure'], volet_immerge: ['aesthetics', 'mechanism', 'measure'],
       masterdeck: ['space', 'measure', 'install']
@@ -668,7 +694,7 @@
   }
 
   function resultStatusLabel(item, index) {
-    if (index === 0 && item.certainty !== 'custom') return { key: 'recommended', label: 'Recommandée pour vous' };
+    if (index === 0 && item.certainty !== 'custom') return { key: 'recommended', label: 'À étudier en priorité' };
     if (item.certainty === 'custom') return { key: 'custom', label: 'Étude sur mesure' };
     if (item.certainty === 'to_confirm') return { key: 'to-confirm', label: 'À confirmer avec vous' };
     if (item.certainty === 'dimension_fit') return { key: 'dimension-fit', label: 'Dimensions cohérentes' };
@@ -679,15 +705,15 @@
     var map = {
       ore_compact: ['Couverture motorisée', 'Pensée pour les bassins compacts'],
       ore_essential: ['Protection 4 saisons', 'Confort motorisé'],
-      auto: ['Ouverture automatique', 'Protection basse'],
-      semi: ['Couverture tendue', 'Budget plus maîtrisé'],
-      eden: ['Sur mesure', 'Finition adaptée'],
+      auto: ['Fonctionnement à confirmer', 'Étude du bassin'],
+      semi: ['Manipulation à confirmer', 'Étude du bassin'],
+      eden: ['Étude au cas par cas', 'Projet à définir'],
       bab: ['Sécurité essentielle', 'Garantie 3 ans'],
       volet_hs: ['Automatique', 'Sans intégration dans le bassin'],
       volet_immerge: ['Très discret', 'Mécanisme intégré'],
-      masterdeck: ['Terrasse + plage + protection', 'Projet sur mesure']
+      masterdeck: ['Fermeture par plancher', 'Projet dimensionné sur mesure']
     };
-    if (item.family === 'shelter') return ['Saison prolongée', 'Abri télescopique'];
+    if (item.family === 'shelter') return ['Abri télescopique', 'Hauteur selon le modèle'];
     return map[item.id] || [];
   }
 
@@ -697,10 +723,9 @@
       ore_essential: 'Conçue selon la norme NF P90-308',
       bab: 'NF P90-308 · garantie 3 ans',
       volet_hs: 'Norme de sécurité NF P90-308',
-      volet_immerge: 'Norme de sécurité NF P90-308',
-      ul: 'L’estimation prévoit la pose, à confirmer selon le chantier',
-      m18: 'L’estimation prévoit la pose, à confirmer selon le chantier',
-      m30: 'L’estimation prévoit la pose, à confirmer selon le chantier'
+      ul: 'La pose est étudiée et chiffrée selon le chantier',
+      m18: 'La pose est étudiée et chiffrée selon le chantier',
+      m30: 'La pose est étudiée et chiffrée selon le chantier'
     };
     return map[item && item.id] || '';
   }
@@ -711,11 +736,11 @@
     var hits = selected.filter(function (priority) { return item.strengths.indexOf(priority) !== -1; });
     var labels = {
       clean: 'gagner du temps au quotidien', safety: 'sécuriser le bassin', season: 'prolonger la saison de baignade',
-      aesthetics: 'préserver l’esthétique du jardin', automatic: 'tout automatiser', space: 'récupérer l’espace au-dessus du bassin', economy: 'maîtriser le budget'
+      aesthetics: 'préserver l’esthétique du jardin', automatic: 'tout automatiser', space: 'étudier une fermeture par plancher mobile', economy: 'maîtriser le budget'
     };
     var hitLabels = hits.map(function (priority) { return labels[priority]; });
-    if (hits.length === selected.length) return 'Elle répond directement à ce qui compte pour vous : ' + frenchList(hitLabels) + '.';
-    if (hits.length) return 'Elle répond surtout à votre attente : ' + frenchList(hitLabels) + '. L’autre priorité mérite comparaison.';
+    if (hits.length === selected.length) return 'Elle est à comparer en priorité pour vos objectifs : ' + frenchList(hitLabels) + '.';
+    if (hits.length) return 'Elle mérite d’être comparée pour votre attente : ' + frenchList(hitLabels) + '. L’autre priorité demande une vérification.';
     return 'Son compromis peut vous convenir, mais elle répond moins directement à vos attentes principales.';
   }
 
@@ -730,15 +755,15 @@
     var map = {
       ore_compact: 'L’espace autour du bassin et la stabilité du support sont à confirmer avant de vous la proposer.',
       ore_essential: 'L’emplacement du mécanisme et les abords du bassin doivent être validés avec vous.',
-      auto: 'Elle privilégie le confort et la finition ; son budget est supérieur à une protection plus simple.',
-      semi: 'Une partie de la manipulation reste à votre charge : vérifions si ce compromis vous convient.',
-      eden: 'C’est un projet sur mesure : une étude est nécessaire avant toute estimation fiable.',
-      bab: 'La manipulation est plus manuelle au quotidien, même si la protection reste simple et robuste.',
-      volet_hs: 'Le coffre reste visible côté bassin, mais l’installation est plus simple qu’un volet immergé.',
+      auto: 'Dimensions, alimentation, options, pose et tarif doivent être confirmés avant proposition.',
+      semi: 'Le niveau de manipulation, les dimensions, la pose et le tarif doivent être confirmés avant proposition.',
+      eden: 'Les usages, limites, options et conditions de pose sont définis pendant l’étude.',
+      bab: 'La manipulation est manuelle et les ancrages doivent être validés autour du bassin.',
+      volet_hs: 'L’axe et ses supports restent visibles sur la margelle ; leur implantation doit être validée.',
       volet_immerge: 'Il demande davantage d’intégration au bassin, à anticiper selon votre projet.',
-      masterdeck: 'C’est un projet plus spécifique : les dimensions, abords et finitions sont étudiés avant chiffrage.'
+      masterdeck: 'Les usages du plancher, les charges admissibles, les dimensions et les accès sont confirmés avant chiffrage.'
     };
-    if (item.family === 'shelter') return 'L’abri apporte davantage de confort et de saison de baignade, avec une présence visuelle supérieure à une couverture.';
+    if (item.family === 'shelter') return 'La hauteur, le refoulement, les accès et la pose doivent être confirmés selon le bassin.';
     return map[item.id] || 'Les points de pose et d’accès seront vérifiés avant proposition.';
   }
 
@@ -746,22 +771,32 @@
     var map = {
       ore_compact: 'Vous avez un bassin compact et vous cherchez une couverture motorisée simple à vivre.',
       ore_essential: 'Vous voulez une protection 4 saisons plus polyvalente, avec un bon équilibre confort / discrétion.',
-      auto: 'Vous recherchez un haut niveau de confort au quotidien et une couverture très intégrée.',
-      semi: 'Vous aimez l’approche Coverseal mais souhaitez maîtriser davantage le budget.',
-      eden: 'Votre projet demande une finition très soignée ou une réponse plus personnalisée.',
-      bab: 'Vous cherchez surtout une solution fiable, sécurisante et économique.',
+      auto: 'Vous souhaitez faire étudier la version automatique Coverseal pour votre bassin.',
+      semi: 'Vous souhaitez comparer la version semi-automatique Coverseal après étude du bassin.',
+      eden: 'Vous souhaitez faire définir Eden au cas par cas avant toute proposition.',
+      bab: 'Vous cherchez une couverture de sécurité manuelle, sans alimentation électrique.',
       volet_hs: 'Vous voulez automatiser sans lancer une intégration lourde dans le bassin.',
       volet_immerge: 'Vous voulez garder les abords du bassin très propres visuellement.',
       ul: 'Vous recherchez l’abri le plus discret possible, au plus près du bassin.',
       m18: 'Vous cherchez un abri bas qui équilibre discrétion et confort d’usage.',
       m30: 'Vous voulez davantage de volume sous un abri bas, sans passer au mi-haut.',
-      m50: 'Vous privilégiez plus de volume autour du bassin avec un abri plus présent.',
+      m50: 'Vous voulez la version la plus haute de la gamme basse, sans passer à un abri mi-haut.',
       mid: 'Vous voulez davantage de volume sous l’abri et assumez une présence visuelle plus marquée.',
-      masterdeck: 'Vous voulez récupérer l’espace au-dessus du bassin lorsqu’il n’est pas utilisé.'
+      masterdeck: 'Vous souhaitez étudier une fermeture du bassin par une structure et un plancher sur mesure.'
     };
     if (map[item.id]) return map[item.id];
-    if (item.family === 'shelter') return 'Vous voulez prolonger la saison et protéger le bassin avec une solution visible mais confortable.';
+    if (item.family === 'shelter') return 'Vous souhaitez comparer plusieurs hauteurs d’abri télescopique selon votre bassin.';
     return 'Votre bassin correspond aux limites connues et mérite une vérification plus précise.';
+  }
+
+  function photoHelpText(item) {
+    if (!item) return 'Une vue large aide Diskoov à repérer le support, les obstacles et l’accès au chantier.';
+    if (item.family === 'shelter') return 'Une vue large montre la zone de refoulement, la terrasse et l’accès au bassin.';
+    if (item.id === 'ore_compact' || item.id === 'ore_essential') return 'Une vue large montre le niveau des margelles et la place disponible côté mécanisme.';
+    if (item.id === 'bab') return 'Une vue large montre les ancrages possibles, l’escalier et le bloc de filtration.';
+    if (item.id === 'volet_hs' || item.id === 'volet_immerge') return 'Une vue large montre la zone de l’axe ou d’intégration, l’escalier et l’alimentation proche.';
+    if (item.id === 'masterdeck') return 'Une vue large montre les abords, les accès et l’espace disponible autour du bassin.';
+    return 'Une vue large aide Diskoov à repérer le support, les obstacles et l’accès au chantier.';
   }
 
   function openProductDetails(productId, trigger, source) {
@@ -805,12 +840,12 @@
     var proof = productSalesProof(item);
     var reasons = Array.isArray(item.reasons) ? item.reasons.map(function (reason) { return publicReasonText(reason, item); }) : [];
     var media = item.image
-      ? '<div class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" width="1200" height="800" decoding="async"></div>'
+      ? '<div class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" width="1200" height="800" decoding="async">' + productImageNote(item) + '</div>'
       : '<div class="advisor-detail-media advisor-detail-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</div>';
     var directBlocked = detailSource === 'direct' && !directSelectionAllowed(item);
     var blockedCopy = directBlocked ? directUnavailableCopy(item) : null;
     var action = detailSource === 'direct' ? 'direct-product' : 'choose';
-    var actionLabel = directBlocked ? blockedCopy.label : 'Étudier mon projet';
+    var actionLabel = directBlocked ? blockedCopy.label : 'Préparer mon devis';
     var actionAttributes = directBlocked ? ' disabled' : ' data-action="' + action + '" data-product="' + item.id + '" data-source="' + detailSource + '"';
     var directNotice = directBlocked
       ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>' + escapeHtml(blockedCopy.title) + '</strong><p>' + escapeHtml(blockedCopy.text) + '</p></div>'
@@ -828,37 +863,46 @@
       + '<div class="advisor-detail-section advisor-detail-section--notice"><strong>À vérifier ensemble</strong><p>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + directNotice
       + (reasons.length ? '<div class="advisor-detail-fit"><strong>Adapté à votre projet</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
-      + '<div class="advisor-detail-footer"><div class="advisor-detail-offer"><strong>' + escapeHtml(item.estimate || 'Étude personnalisée') + '</strong><small>Proposition affinée après vérification du bassin</small></div><div class="advisor-detail-cta"><button type="button" class="advisor-button"' + actionAttributes + '>' + actionLabel + (directBlocked ? '' : ' <span aria-hidden="true">→</span>') + '</button><small>Sans engagement · photo facultative</small></div></div>'
+      + '<div class="advisor-detail-footer"><div class="advisor-detail-offer"><strong>' + escapeHtml(item.estimate || 'Étude personnalisée') + '</strong><small>Proposition affinée après vérification du bassin</small></div><div class="advisor-detail-cta"><button type="button" class="advisor-button"' + actionAttributes + '>' + actionLabel + (directBlocked ? '' : ' <span aria-hidden="true">→</span>') + '</button><small>Photo facultative · proposition après vérification</small></div></div>'
       + '</div>';
   }
 
   function decisionFactsTemplate(item, className) {
+    var icons = decisionFactIconNames(item);
     var facts = [
       ['Manipulation', comparisonOperation(item)],
       ['Présence', comparisonPresence(item)],
       ['À prévoir', comparisonCheck(item)]
     ];
-    return '<dl class="advisor-decision-facts' + (className ? ' ' + className : '') + '">' + facts.map(function (fact) {
-      return '<div><dt>' + escapeHtml(fact[0]) + '</dt><dd>' + escapeHtml(fact[1]) + '</dd></div>';
+    return '<dl class="advisor-decision-facts' + (className ? ' ' + className : '') + '">' + facts.map(function (fact, index) {
+      return '<div><span class="advisor-decision-icon" aria-hidden="true">' + icon(icons[index]) + '</span><dt>' + escapeHtml(fact[0]) + '</dt><dd>' + escapeHtml(fact[1]) + '</dd></div>';
     }).join('') + '</dl>';
+  }
+
+  function decisionFactIconNames(item) {
+    var operation = {
+      semi: 'mechanism', eden: 'measure', bab: 'manual', masterdeck: 'measure'
+    }[item && item.id];
+    if (!operation) operation = item && item.family === 'shelter' ? 'move' : 'automatic';
+    return [operation, familyIconName(item), 'install'];
   }
 
   function productSalesIntro(item) {
     var map = {
       ore_compact: 'Une couverture motorisée Oré pensée pour les bassins compacts et pour simplifier l’ouverture au quotidien.',
       ore_essential: 'Une couverture Oré plus polyvalente, conçue pour protéger le bassin toute l’année avec un guidage motorisé discret et une pose intégrée à l’estimation lorsqu’elle est demandée.',
-      auto: 'La Coverseal automatique privilégie le confort : une couverture tendue, motorisée et discrète, dont la pose est vérifiée avec votre bassin.',
-      semi: 'La Coverseal semi-automatique garde l’esprit Coverseal avec une solution plus accessible et une commande simplifiée.',
-      eden: 'Eden est une couverture étudiée sur mesure lorsque le projet demande une finition et une intégration particulièrement soignées.',
-      bab: 'La bâche à barres Secu Classic est une solution robuste pour sécuriser le bassin avec un budget plus cadré.',
-      volet_hs: 'Le volet hors-sol apporte le confort d’une couverture automatique avec un coffre visible et une installation plus simple qu’un système immergé.',
+      auto: 'La version automatique Coverseal est dimensionnée après étude du bassin ; l’alimentation, les options, la pose et le tarif sont confirmés avant proposition.',
+      semi: 'La version semi-automatique Coverseal est étudiée avec le bassin ; son niveau de manipulation, ses options, sa pose et son tarif sont confirmés avant proposition.',
+      eden: 'Eden est étudiée au cas par cas. Ses usages, limites, son fonctionnement, ses options et sa pose sont confirmés avant toute proposition.',
+      bab: 'La bâche à barres Secu Classic est une couverture de sécurité manuelle, tarifée selon les dimensions et les options retenues.',
+      volet_hs: 'Le volet hors-sol apporte une ouverture automatique avec un axe et des supports visibles sur la margelle.',
       volet_immerge: 'Le volet immergé protège le bassin avec un mécanisme intégré, plus discret visuellement et plus exigeant à anticiper dans le projet.',
-      ul: 'L’abri Neo / Ultra Bas privilégie la discrétion tout en prolongeant l’usage saisonnier du bassin.',
+      ul: 'Le Master Ultra Bas 1.2 privilégie la discrétion tout en prolongeant l’usage saisonnier du bassin.',
       m18: 'Le Master 18 est un abri bas pensé comme un équilibre entre discrétion, protection et confort d’usage.',
       m30: 'Le Master 30 conserve une ligne basse avec davantage de volume sous l’abri.',
-      m50: 'Le Master 50 offre davantage de volume autour du bassin avec une présence visuelle plus affirmée.',
+      m50: 'Le Master Bas 5.0 est la version la plus haute de la gamme basse ; sa hauteur dépend du nombre de modules et de la largeur.',
       mid: 'L’abri mi-haut privilégie le volume sous la structure pour profiter plus longtemps du bassin.',
-      masterdeck: 'MasterDeck transforme la couverture en vraie surface utile : terrasse, plage et protection du bassin.'
+      masterdeck: 'MasterDeck ferme le bassin au moyen d’une structure, de guides et d’un plancher dimensionnés sur mesure. Les usages du plancher et les charges admissibles sont confirmés dans l’étude.'
     };
     if (map[item.id]) return map[item.id];
     if (item.family === 'shelter') return 'Un abri télescopique pour prolonger les baignades et protéger le bassin plus longtemps dans l’année.';
@@ -869,20 +913,20 @@
     var map = {
       ore_compact: ['Adaptée aux bassins jusqu’à 7 × 3,5 m.', 'Un seul rail de guidage, positionné du côté choisi avec vous.', 'Télécommande sans fil ; recharge filaire ou solaire en option.', 'La plage côté mécanisme doit être mesurée avant estimation.'],
       ore_essential: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Un seul rail de guidage, positionné du côté choisi avec vous.', 'Pose par deux techniciens lorsqu’elle est retenue.', 'Options possibles : solaire, découpe bloc, sangles et recul.'],
-      auto: ['Ouverture entièrement motorisée pour simplifier l’usage quotidien.', 'Protection basse qui préserve les lignes autour du bassin.', 'Support, alimentation et conditions de pose vérifiés avant proposition.'],
-      semi: ['Même approche de couverture tendue que la version automatique.', 'Une partie de la manipulation reste à votre charge.', 'Alternative à la version automatique pour mieux maîtriser le budget.'],
-      eden: ['Étude adaptée aux dimensions, aux abords et aux finitions souhaitées.', 'Intégration pensée pour les projets atypiques ou très soignés.', 'Fonctionnement et pose définis dans la proposition personnalisée.'],
+      auto: ['Dimensions et limites confirmées après étude du bassin.', 'Alimentation et options précisées avant proposition.', 'Conditions de pose et tarif vérifiés avec le projet.'],
+      semi: ['Niveau de manipulation confirmé pendant l’étude.', 'Dimensions et options précisées avant proposition.', 'Conditions de pose et tarif vérifiés avec le projet.'],
+      eden: ['Usages et limites définis au cas par cas.', 'Fonctionnement et options précisés pendant l’étude.', 'Conditions de pose confirmées avant proposition.'],
       bab: ['Adaptée aux bassins jusqu’à 12 × 5 m.', 'Enroulement par manivelle et déroulement par sangle de rappel.', 'Les ancrages, l’escalier et le bloc de filtration sont vérifiés avec vous.'],
-      volet_hs: ['Adapté aux bassins jusqu’à 12 × 6 m.', 'Le mécanisme reste visible sur la plage, hors du bassin.', 'Les conditions de livraison et de pose dépendent du département.'],
+      volet_hs: ['Adapté aux bassins jusqu’à 12 × 6 m.', 'L’axe et ses supports restent visibles sur la margelle.', 'Les conditions de livraison et de pose dépendent du département.'],
       volet_immerge: ['Adapté aux bassins jusqu’à 14 × 6 m.', 'Le mécanisme s’intègre au bassin pour préserver les abords.', 'Fond de bassin, caillebotis ou mur étudiés sur mesure.'],
-      masterdeck: ['Solution 3 en 1 : terrasse, plage et protection.', 'Disponible en 1 ou 2 plateaux selon dimensions.', 'Options possibles : motorisation solaire et finitions bois.']
+      masterdeck: ['Structure, guides et plancher définis selon les dimensions.', 'Usages du plancher et charges admissibles confirmés pendant l’étude.', 'Nombre de plateaux, motorisation et finition précisés avant proposition.']
     };
-    if (item.family === 'shelter') return ['Prolonge la saison de baignade.', 'Protège le bassin des feuilles et salissures.', 'Plusieurs hauteurs selon le niveau de confort voulu.'];
+    if (item.family === 'shelter') return ['Structure télescopique déclinée en plusieurs hauteurs.', 'Refoulement et accès étudiés selon le bassin.', 'Pose et nombre de modules confirmés avant proposition.'];
     return map[item.id] || ['Dimensions et forme prises en compte.', 'Estimation affinée avec les détails de pose.', 'Accompagnement humain avant proposition finale.'];
   }
 
   function publicReasonText(reason, item) {
-    if (item && item.id === 'eden' && reason === item.description) return 'Projet sur mesure pour un bassin ou une implantation atypique.';
+    if (item && item.id === 'eden' && reason === item.description) return 'Projet défini au cas par cas avant toute proposition.';
     return reason;
   }
 
@@ -891,10 +935,14 @@
       ['user', 'Usage principal', comparisonUse],
       ['automatic', 'Manipulation', comparisonOperation],
       ['aesthetics', 'Présence visuelle', comparisonPresence],
-      ['season', 'Saison de baignade', comparisonSeason],
+      ['season', 'Effet thermique / période', comparisonSeason],
       ['install', 'À confirmer', comparisonCheck],
       ['check', 'Étude Diskoov', function (p) { return p.estimate; }]
     ];
+    criteria = criteria.filter(function (row) {
+      var values = products.map(function (product) { return row[2](product); });
+      return values.some(function (value) { return value !== values[0]; });
+    });
     var mobileCriteria = [
       ['user', 'Idéal pour', comparisonUse],
       ['automatic', 'Manipulation', comparisonOperation],
@@ -907,7 +955,7 @@
           + '</article>';
       }).join('')
       + '</div>';
-    return '<section class="advisor-compare" aria-label="Comparatif des solutions"><h2 class="advisor-compare-title">Comparer ce qui change vraiment</h2><table aria-label="Comparaison des solutions recommandées"><thead><tr><th>Critère</th>'
+    return '<section class="advisor-compare" id="advisor-results-comparison" aria-label="Comparatif des solutions"><h2 class="advisor-compare-title">Comparer ce qui change vraiment</h2><table aria-label="Comparaison des solutions recommandées"><thead><tr><th>Critère</th>'
       + products.map(function (p) { return '<th>' + escapeHtml(p.title) + '</th>'; }).join('') + '</tr></thead><tbody>'
       + criteria.map(function (row) { return '<tr><td><span class="advisor-compare-criterion">' + icon(row[0]) + '<span>' + escapeHtml(row[1]) + '</span></span></td>' + products.map(function (p) { return '<td>' + escapeHtml(row[2](p)) + '</td>'; }).join('') + '</tr>'; }).join('')
       + '</tbody></table>' + mobileCards + '</section>';
@@ -916,12 +964,12 @@
   function comparisonUse(item) {
     var map = {
       ore_compact: 'Motoriser un bassin compact', ore_essential: 'Protéger le bassin toute l’année',
-      auto: 'Maximiser le confort quotidien', semi: 'Conserver le principe Coverseal avec une commande simplifiée',
-      eden: 'Répondre à un projet atypique', bab: 'Sécuriser avec une solution simple',
+      auto: 'Faire étudier la version automatique', semi: 'Faire étudier la version semi-automatique',
+      eden: 'Définir le projet au cas par cas', bab: 'Sécuriser avec une solution simple',
       volet_hs: 'Automatiser sans intégrer le mécanisme au bassin', volet_immerge: 'Automatiser avec un mécanisme intégré',
-      masterdeck: 'Récupérer la surface au-dessus du bassin'
+      masterdeck: 'Fermer le bassin par un plancher sur mesure'
     };
-    if (item.family === 'shelter') return 'Prolonger les baignades et protéger le bassin';
+    if (item.family === 'shelter') return 'Comparer plusieurs hauteurs d’abri télescopique';
     return map[item.id] || publicReasonText(item.description || 'Protection du bassin', item);
   }
 
@@ -937,18 +985,19 @@
 
   function comparisonPresence(item) {
     var map = {
-      ore_compact: 'Protection basse', ore_essential: 'Protection basse', auto: 'Protection basse',
-      semi: 'Protection basse', eden: 'Finition adaptée au projet', bab: 'Visible une fois fermée',
-      volet_hs: 'Coffre visible', volet_immerge: 'Mécanisme intégré', masterdeck: 'Terrasse au-dessus du bassin',
-      ul: 'Ultra-bas', m18: 'Bas', m30: 'Bas, avec plus de volume', m50: 'Mi-haut', mid: 'Mi-haut'
+      ore_compact: 'Protection basse', ore_essential: 'Protection basse', auto: 'À confirmer pendant l’étude',
+      semi: 'À confirmer pendant l’étude', eden: 'À définir pendant l’étude', bab: 'Visible une fois fermée',
+      volet_hs: 'Axe et supports visibles', volet_immerge: 'Mécanisme intégré', masterdeck: 'Plancher au-dessus du bassin',
+      ul: 'Ultra-bas', m18: 'Bas', m30: 'Bas, avec plus de volume', m50: 'Gamme basse, plus haute', mid: 'Mi-haut'
     };
     return map[item.id] || 'À confirmer';
   }
 
   function comparisonSeason(item) {
-    if (item.family === 'shelter') return 'Prolongée par l’abri';
-    if (item.id === 'ore_essential') return 'Protection toute l’année';
-    return 'Pas d’effet direct à elle seule';
+    if (item.id === 'bab') return 'Limite les déperditions de chaleur';
+    if (item.id === 'volet_hs') return 'Limite l’évaporation et contribue à prolonger la période';
+    if (item.id === 'ore_compact' || item.id === 'ore_essential') return 'Protection 4 saisons';
+    return 'À confirmer selon le modèle';
   }
 
   function comparisonCheck(item) {
@@ -972,29 +1021,29 @@
   function directFamilyDefinitions() {
     return [
       {
-        id: 'covers', icon: 'cover', title: 'Couvertures motorisées', eyebrow: 'Protection discrète', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden'], image: 'ore_essential',
-        text: 'Une protection basse qui simplifie l’ouverture du bassin au quotidien.', bestFor: 'Vous voulez protéger la piscine sans transformer visuellement ses abords.', check: 'La place, le support et l’alimentation sont vérifiés avant de vous la proposer.',
-        proofs: [['Au quotidien', 'Ouverture simplifiée selon le modèle'], ['Autour du bassin', 'Une protection basse et discrète'], ['À prévoir', 'Support, dégagement et alimentation']]
+        id: 'covers', icon: 'cover', title: 'Couvertures motorisées', eyebrow: 'Plusieurs technologies', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden'], image: 'ore_essential',
+        text: 'Oré, Coverseal et Eden répondent à des configurations différentes.', bestFor: 'Vous voulez comparer le fonctionnement, l’implantation et les contraintes de chaque modèle.', check: 'La place, le support, l’alimentation et la pose sont vérifiés avant proposition.',
+        proofs: [['Fonctionnement', 'Défini selon le modèle retenu'], ['Implantation', 'Vérifiée avec les abords du bassin'], ['À prévoir', 'Support, dégagement et alimentation']]
       },
       {
         id: 'bar-cover', icon: 'bars', title: 'Couverture à barres', eyebrow: 'Protection essentielle', products: ['bab'], image: 'bab',
-        text: 'Une solution simple et robuste pour sécuriser le bassin avec un budget plus cadré.', bestFor: 'Vous privilégiez l’essentiel : une protection fiable, sans suréquipement.', check: 'Les ancrages, l’escalier et le bloc de filtration sont confirmés avec vous.',
+        text: 'Une couverture de sécurité manuelle, sans alimentation électrique.', bestFor: 'Vous privilégiez une solution tarifée selon les dimensions et les options utiles.', check: 'Les ancrages, l’escalier et le bloc de filtration sont confirmés avec vous.',
         proofs: [['Au quotidien', 'Une manipulation plus manuelle'], ['Autour du bassin', 'Une protection visible une fois fermée'], ['À prévoir', 'Ancrages, escalier et bloc de filtration']]
       },
       {
         id: 'shutters', icon: 'shutter', title: 'Volets de piscine', eyebrow: 'Confort automatisé', products: ['volet_hs', 'volet_immerge'], image: 'volet_hs',
         text: 'Le confort d’une ouverture automatique, hors-sol ou intégrée au bassin.', bestFor: 'Vous voulez ouvrir et fermer le bassin simplement, avec une finition adaptée au projet.', check: 'L’électricité, l’escalier et l’implantation sont vérifiés avant étude.',
-        proofs: [['Au quotidien', 'Ouverture automatisée selon la configuration'], ['Deux approches', 'Coffre visible ou mécanisme intégré'], ['À prévoir', 'Électricité, escalier et implantation']]
+        proofs: [['Au quotidien', 'Ouverture automatisée selon la configuration'], ['Deux approches', 'Axe et supports visibles ou mécanisme intégré'], ['À prévoir', 'Électricité, escalier et implantation']]
       },
       {
-        id: 'shelters', icon: 'shelter', title: 'Abris télescopiques', eyebrow: 'Baignade prolongée', products: ['ul', 'm18', 'm30', 'm50', 'mid'], image: 'm18',
-        text: 'Une protection qui prolonge les baignades et garde l’eau plus propre.', bestFor: 'Vous voulez mieux profiter de la piscine au fil de la saison.', check: 'L’espace de refoulement, les accès et la terrasse sont étudiés avec vous.',
+        id: 'shelters', icon: 'shelter', title: 'Abris télescopiques', eyebrow: 'Plusieurs hauteurs', products: ['ul', 'm18', 'm30', 'm50', 'mid'], image: 'm18',
+        text: 'Une structure télescopique déclinée en plusieurs hauteurs.', bestFor: 'Vous voulez comparer le volume, la présence visuelle et l’usage sous abri.', check: 'L’espace de refoulement, les accès et la terrasse sont étudiés avec vous.',
         proofs: [['Au quotidien', 'Le bassin reste protégé sous une structure télescopique'], ['Choix déterminant', 'La hauteur change le confort et la présence visuelle'], ['À prévoir', 'Refoulement, accès et terrasse']]
       },
       {
-        id: 'deck', icon: 'deck', title: 'Terrasse mobile', eyebrow: 'Espace récupéré', products: ['masterdeck'], image: 'masterdeck',
-        text: 'Le bassin fermé devient une vraie surface utile pour vos abords.', bestFor: 'Vous voulez une terrasse lorsque la piscine n’est pas utilisée.', check: 'Les dimensions, abords et finitions sont étudiés sur mesure avec Diskoov.',
-        proofs: [['Au quotidien', 'Le bassin fermé devient une surface utilisable'], ['Dans le jardin', 'La finition s’intègre aux abords'], ['À prévoir', 'Un projet étudié entièrement sur mesure']]
+        id: 'deck', icon: 'deck', title: 'Terrasse mobile', eyebrow: 'Fermeture par plancher', products: ['masterdeck'], image: 'masterdeck',
+        text: 'Une structure, des guides et un plancher dimensionnés pour fermer le bassin.', bestFor: 'Vous souhaitez étudier un plancher mobile adapté aux dimensions et aux abords.', check: 'Les usages, charges admissibles, accès et finitions sont confirmés pendant l’étude.',
+        proofs: [['Configuration', 'Structure, guides et plancher sur mesure'], ['Usage', 'Charges admissibles confirmées pendant l’étude'], ['À prévoir', 'Dimensions, accès et finitions']]
       }
     ];
   }
@@ -1012,7 +1061,7 @@
           ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>'
           : '<div class="advisor-family-media advisor-direct-media--fallback" aria-hidden="true">' + icon('shield') + '</div>';
         return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '">' + media
-          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p><dl class="advisor-family-signals"><div><dt>' + escapeHtml(family.proofs[0][0]) + '</dt><dd>' + escapeHtml(family.proofs[0][1]) + '</dd></div><div><dt>' + escapeHtml(family.proofs[2][0]) + '</dt><dd>' + escapeHtml(family.proofs[2][1]) + '</dd></div></dl></div>'
+          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p><dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl></div>'
           + '<button type="button" class="advisor-direct-main" data-action="direct-family" data-value="' + family.id + '">' + actionLabel + ' <span aria-hidden="true">→</span></button></article>';
       }).join('')
       + '</div></div>';
@@ -1029,16 +1078,34 @@
   }
 
   function familyStoryTemplate(family) {
+    var signalIcons = familySignalIconNames(family);
     var heightScale = family.id === 'shelters'
       ? '<div class="advisor-height-scale" aria-label="Hauteurs d’abri à comparer"><span class="is-low">Ultra-bas</span><span class="is-medium">Bas</span><span class="is-high">Mi-haut</span></div>'
       : '';
     return '<section class="advisor-family-story advisor-family-story--' + safeClass(family.id) + '" aria-label="Ce qui caractérise cette famille">'
       + '<div class="advisor-family-story-lead"><span>' + icon(family.icon) + '</span><div><strong>Ce qui change avec cette solution</strong><p>' + escapeHtml(family.bestFor) + '</p></div></div>'
-      + '<div class="advisor-family-story-facts">' + family.proofs.map(function (proof) {
-        return '<div><strong>' + escapeHtml(proof[0]) + '</strong><span>' + escapeHtml(proof[1]) + '</span></div>';
+      + '<div class="advisor-family-story-facts">' + family.proofs.map(function (proof, index) {
+        return '<div><span class="advisor-family-story-fact-icon" aria-hidden="true">' + icon(signalIcons[index]) + '</span><strong>' + escapeHtml(proof[0]) + '</strong><span class="advisor-family-story-fact-copy">' + escapeHtml(proof[1]) + '</span></div>';
       }).join('') + '</div>'
       + heightScale
       + '</section>';
+  }
+
+  function familySignalTemplate(family, index) {
+    var proof = family.proofs[index];
+    var signalIcons = familySignalIconNames(family);
+    return '<div><dt><span class="advisor-family-signal-icon" aria-hidden="true">' + icon(signalIcons[index]) + '</span><span>' + escapeHtml(proof[0]) + '</span></dt><dd>' + escapeHtml(proof[1]) + '</dd></div>';
+  }
+
+  function familySignalIconNames(family) {
+    var map = {
+      covers: ['automatic', 'cover', 'install'],
+      'bar-cover': ['manual', 'cover', 'install'],
+      shutters: ['automatic', 'shutter', 'install'],
+      shelters: ['shelter', 'measure', 'install'],
+      deck: ['space', 'deck', 'install']
+    };
+    return map[family && family.id] || ['check', 'aesthetics', 'install'];
   }
 
   function directProductItem(id) {
@@ -1048,37 +1115,30 @@
     var unavailable = selectable ? null : directUnavailableCopy(item);
     var proof = productSalesProof(item);
     var media = item.image
-      ? '<button type="button" class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(item.image) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"><span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>'
+      ? '<button type="button" class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(item.image) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + productImageNote(item) + '<span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>'
       : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
     return '<article class="advisor-direct-item advisor-family--' + safeClass(item.family) + (selectable ? '' : ' is-unavailable') + '">' + media
       + '<div class="advisor-direct-copy">' + productCategoryTemplate(item) + '<span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(productBestFor(item)) + '</span>' + (proof ? '<span class="advisor-product-proof">' + icon('check') + '<span>' + escapeHtml(proof) + '</span></span>' : '') + decisionFactsTemplate(item, 'advisor-model-facts') + '</div>'
-      + '<div class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Découvrir</button><button type="button" class="advisor-direct-main"' + (selectable ? ' data-action="direct-product" data-product="' + id + '">Étudier ce modèle <span aria-hidden="true">→</span>' : ' disabled>' + escapeHtml(unavailable.label)) + '</button></div></article>';
+      + '<div class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Découvrir</button><button type="button" class="advisor-direct-main"' + (selectable ? ' data-action="direct-product" data-product="' + id + '" aria-label="Choisir ' + escapeHtml(item.title) + '">Choisir ce modèle <span aria-hidden="true">→</span>' : ' disabled>' + escapeHtml(unavailable.label)) + '</button></div></article>';
   }
 
   function footerTemplate() {
-    if (state.screen === 'welcome') return '<div class="advisor-footer-note">Conseil sans engagement · Vos réponses restent sur cet appareil jusqu’à l’envoi du formulaire.</div>';
+    if (state.screen === 'welcome') return '<div class="advisor-footer-note">Conseil personnalisé · Vos réponses restent sur cet appareil jusqu’à l’envoi du formulaire.</div>';
     if (state.screen === 'direct') return '<div class="advisor-footer-actions advisor-footer-actions--direct"><button type="button" class="advisor-button advisor-button--text" data-action="back">← Retour</button></div>';
-    var nextDisabled = state.screen === 'priorities' && !state.priorities.length;
+    var nextDisabled = (state.screen === 'priorities' && !state.priorities.length)
+      || (state.screen === 'pool' && (typeof state.dimensionsKnown !== 'boolean' || (state.dimensionsKnown === true && !dimensionsValid())));
     var nextLabel = state.screen === 'pool' ? 'Voir mes solutions' : 'Continuer';
     var showNext = ['priorities', 'pool'].indexOf(state.screen) !== -1;
     var backLabel = state.screen === 'results' ? 'Modifier' : 'Retour';
     var recommended = state.screen === 'results' && state.results && state.results.recommendations && state.results.recommendations[0];
     var footerNote = state.screen === 'results'
       ? 'Votre sélection n’est pas définitive : Diskoov valide la pose et les accès avec vous.'
-      : 'Vos réponses orientent la sélection ; elles ne vous engagent à rien.';
+      : 'Vos réponses orientent la sélection ; la proposition est affinée après vérification.';
     return '<div class="advisor-footer-note">' + footerNote + '</div><div class="advisor-footer-actions">'
       + '<button type="button" class="advisor-button advisor-button--text" data-action="back">← ' + backLabel + '</button>'
-      + (recommended ? '<button type="button" class="advisor-button" data-action="choose" data-product="' + recommended.id + '">Étudier ' + escapeHtml(shortProductTitle(recommended)) + ' <span aria-hidden="true">→</span></button>' : '')
+      + (recommended ? '<button type="button" class="advisor-button" data-action="choose" data-product="' + recommended.id + '" aria-label="Préparer mon devis pour ' + escapeHtml(recommended.title) + '">Préparer mon devis <span aria-hidden="true">→</span></button>' : '')
       + (showNext ? '<button type="button" class="advisor-button" data-action="next"' + (nextDisabled ? ' disabled' : '') + '>' + nextLabel + ' <span aria-hidden="true">→</span></button>' : '')
       + '</div>';
-  }
-
-  function shortProductTitle(item) {
-    return String(item && item.title || 'cette solution')
-      .replace('Coverseal automatique', 'Coverseal auto')
-      .replace('Coverseal semi-automatique', 'Coverseal semi-auto')
-      .replace('Terrasse mobile ', '')
-      .replace('Bâche à barres ', '');
   }
 
   function updateProgress() {
@@ -1125,7 +1185,7 @@
       priorities: { kicker: 'Vos usages', title: 'Votre quotidien donne la direction.', text: 'Confort, sécurité, saison, esthétique ou budget : deux priorités suffisent pour comparer.', meta: 'Vous pourrez encore explorer toutes les familles.', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
       pool: { kicker: 'Votre bassin', title: 'Les dimensions évitent les fausses pistes.', text: 'Elles servent uniquement à écarter les modèles hors plage, jamais à promettre une pose compatible.', meta: 'Des mesures approximatives suffisent pour commencer.', image: 'assets/produits/conseiller/ore-ouverte.webp' },
       results: { kicker: 'Vos solutions', title: primary ? prospectFamilyLabel(primary) : 'Des approches différentes à comparer.', text: primary ? productBestFor(primary) : 'Comparez les familles, puis faites vérifier le projet qui vous convient le mieux.', meta: 'Pose, accès et options sont confirmés avant devis.', image: primary && primary.image ? primary.image : 'assets/produits/conseiller/ore-fermee.webp' },
-      direct: { kicker: 'Les solutions Diskoov', title: 'Choisissez le bénéfice qui compte le plus.', text: 'Discrétion, sécurité, automatisation, saison ou espace récupéré : chaque famille change l’usage du bassin.', meta: 'Les contraintes de chaque modèle restent vérifiées avant devis.', image: 'assets/produits/conseiller/masterdeck.webp' }
+      direct: { kicker: 'Les solutions Diskoov', title: 'Choisissez l’approche qui vous correspond.', text: 'Type de protection, manipulation, intégration et hauteur : comparez les différences concrètes entre les familles.', meta: 'Les contraintes de chaque modèle restent vérifiées avant devis.', image: 'assets/produits/conseiller/masterdeck.webp' }
     };
     var copy = copies[state.screen] || copies.welcome;
     if (state.screen === 'direct' && state.directFamily) {
@@ -1228,7 +1288,7 @@
   }
 
   function directSelectionAllowed(item) {
-    if (state.poolCompleted && state.shape !== 'rect' && ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item.id) === -1) return false;
+    if (state.poolCompleted && state.shape !== 'rect' && ['eden', 'volet_hs', 'volet_immerge'].indexOf(item.id) === -1) return false;
     if (!state.poolCompleted || !state.dimensionsKnown) return true;
     if (item.id === 'auto' || item.id === 'semi' || item.id === 'eden') return true;
     if (!rules || typeof rules.calculate !== 'function') return true;
@@ -1249,7 +1309,7 @@
   }
 
   function directUnavailableCopy(item) {
-    var acceptsCustomShape = item && ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item.id) !== -1;
+    var acceptsCustomShape = item && ['eden', 'volet_hs', 'volet_immerge'].indexOf(item.id) !== -1;
     if (state.poolCompleted && state.shape !== 'rect' && !acceptsCustomShape) {
       return {
         label: 'Forme à étudier',
@@ -1259,9 +1319,9 @@
     }
     if (state.poolCompleted && state.dimensionsKnown) {
       return {
-        label: 'Dimensions non adaptées',
-        title: 'Ce modèle ne couvre pas les dimensions saisies',
-        text: 'Découvrez les autres modèles ou modifiez les dimensions du bassin.'
+        label: 'Hors plage actuelle',
+        title: 'Dimensions hors de la plage connue',
+        text: 'Découvrez les autres modèles, modifiez les dimensions ou transmettez votre projet pour une étude spécifique.'
       };
     }
     return {
@@ -1427,13 +1487,14 @@
   }
 
   function surfaceText() {
-    if (!state.dimensionsKnown) return 'Dimensions à préciser';
+    if (state.dimensionsKnown !== true) return 'Dimensions à préciser';
     if (!dimensionsValid()) return 'Surface indicative : dimensions à compléter';
     return 'Surface indicative : ' + numberLabel(state.length * state.width) + ' m²';
   }
 
   function dimensionsValid() {
-    if (!state.dimensionsKnown) return true;
+    if (state.dimensionsKnown === false) return true;
+    if (state.dimensionsKnown !== true) return false;
     return isDimensionValueValid(state.length, 3, 20) && isDimensionValueValid(state.width, 2, 12);
   }
 
@@ -1469,7 +1530,12 @@
   }
 
   function showDimensionError() {
-    if (!state.dimensionsKnown) return;
+    if (state.dimensionsKnown === null) {
+      var mode = body.querySelector('[data-action="dimensions-known"]');
+      if (mode) mode.focus({ preventScroll: true });
+      return;
+    }
+    if (state.dimensionsKnown === false) return;
     updateDimensionFeedback();
     var invalidInput = !isDimensionValueValid(state.length, 3, 20)
       ? body.querySelector('[data-field="length"]')
@@ -1504,7 +1570,7 @@
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || !Array.isArray(parsed.priorities)) return null;
-      if (typeof parsed.dimensionsKnown !== 'boolean') parsed.dimensionsKnown = true;
+      if (typeof parsed.dimensionsKnown !== 'boolean') parsed.dimensionsKnown = null;
       if (typeof parsed.poolCompleted !== 'boolean') parsed.poolCompleted = parsed.screen === 'results' || parsed.screen === 'project';
       if (parsed.screen === 'project') parsed.screen = 'results';
       delete parsed.projectStage;
@@ -1556,6 +1622,8 @@
       pool: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 10c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0M6 14c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0"/>',
       install: '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/>',
       mechanism: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1"/><path d="M12 12h8M17 9v6"/>',
+      manual: '<path d="M18 11V6a2 2 0 0 0-4 0v4M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M6 14v-2a2 2 0 0 0-4 0v4a6 6 0 0 0 6 6h4a8 8 0 0 0 8-8v-3a2 2 0 0 0-4 0v1"/>',
+      move: '<path d="m18 8 4 4-4 4M6 8l-4 4 4 4M2 12h20"/>',
       cover: '<rect x="3.5" y="6" width="17" height="12" rx="1.75"/><path d="M4 10h16M9 6.5v11M15 6.5v11"/>',
       bars: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 8h16M4 12h16M4 16h16"/>',
       shutter: '<circle cx="7" cy="12" r="3.5"/><path d="M10.5 8.5H20v7h-9.5M5.5 12h3M13 10.75h4.5M13 13.75h4.5"/>',

@@ -10,7 +10,7 @@ Les 17 images du dossier source ont été copiées sous `assets/produits/` avec 
 | `assets/produits/abris/master-bas-1-8.jpg` | Carte et aperçu Master Bas 1.8 |
 | `assets/produits/abris/master-mi-haut.jpg` | Carte et aperçu Master Mi-Haut |
 
-Ne pas utiliser l'image 1.8 pour représenter automatiquement les modèles 3.0 ou 5.0 sans mention « visuel non contractuel ».
+L'image 1.8 utilisée pour présenter les modèles 3.0 ou 5.0 porte désormais la mention publique « Visuel de gamme ». L'image mi-haut n'est plus utilisée pour représenter le Master Bas 5.0.
 
 ## Couverture à barres
 
@@ -34,7 +34,7 @@ L'image d'encombrement doit accompagner les champs relatifs aux plages disponibl
 
 | Fichier | Produit / usage |
 |---|---|
-| `assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg` | Visuel principal, escalier roman et alimentation solaire |
+| `assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp` | Visuel principal optimisé, escalier roman et alimentation solaire |
 | `assets/produits/volets-hors-sol/enroulement-hors-sol.jpg` | Détail structure/enroulement |
 | `assets/produits/volets-hors-sol/tablier-hors-sol.jpg` | Tablier déployé |
 

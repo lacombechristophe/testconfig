@@ -11,7 +11,7 @@
     season: 'Prolonger la saison de baignade',
     aesthetics: 'Préserver l’esthétique du jardin',
     automatic: 'Tout automatiser',
-    space: 'Récupérer l’espace au-dessus du bassin',
+    space: 'Étudier une fermeture par plancher mobile',
     economy: 'Maîtriser le budget',
     unsure: 'Être conseillé sans préférence arrêtée'
   });
@@ -36,7 +36,7 @@
 
   var FAMILY_PRIORITY_BONUS = Object.freeze({
     clean: Object.freeze({ covers: 8, shutters: 7, shelters: 6, 'bar-cover': 3, deck: 2 }),
-    safety: Object.freeze({ 'bar-cover': 7, covers: 6, shutters: 6, shelters: 5, deck: 5 }),
+    safety: Object.freeze({ 'bar-cover': 7, covers: 0, shutters: 6, shelters: 0, deck: 0 }),
     season: Object.freeze({ shelters: 18, covers: 7, shutters: 2, 'bar-cover': 0, deck: 0 }),
     aesthetics: Object.freeze({ covers: 10, shutters: 9, deck: 9, shelters: 4, 'bar-cover': 0 }),
     automatic: Object.freeze({ shutters: 12, covers: 10, deck: 0, shelters: 0, 'bar-cover': -12 }),
@@ -51,30 +51,30 @@
     candidate('ore_essential', 'Oré Essential', 'Couverture 4 saisons', 'cover', 'cov', 'cm',
       'Une solution quatre saisons qui protège le bassin toute l’année.',
       'assets/produits/conseiller/ore-ouverte.webp', ['clean', 'safety', 'automatic', 'season', 'aesthetics'], '10_15'),
-    candidate('auto', 'Coverseal automatique', 'Couverture haut de gamme', 'coverseal', 'cov', 'cm',
-      'Sécurité, confort d’usage et ouverture entièrement motorisée.',
-      'assets/produits/conseiller/coverseal.webp', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
-    candidate('semi', 'Coverseal semi-automatique', 'Couverture haut de gamme', 'coverseal', 'cov', 'cm',
-      'Le niveau de protection Coverseal avec une commande simplifiée.',
-      'assets/produits/conseiller/coverseal.webp', ['clean', 'safety', 'aesthetics'], '10_15'),
+    candidate('auto', 'Coverseal automatique', 'Couverture motorisée', 'coverseal', 'cov', 'cm',
+      'Dimensions, alimentation, options, pose et tarif sont confirmés après étude du bassin.',
+      'assets/produits/conseiller/coverseal.webp', ['clean', 'automatic', 'aesthetics'], '10_15'),
+    candidate('semi', 'Coverseal semi-automatique', 'Couverture à étudier', 'coverseal', 'cov', 'cm',
+      'Manipulation, dimensions, options, pose et tarif sont confirmés après étude du bassin.',
+      'assets/produits/conseiller/coverseal.webp', ['clean', 'aesthetics'], '10_15'),
     candidate('eden', 'Eden', 'Couverture sur mesure', 'custom-cover', 'cov', 'cm',
-      'Une réponse premium pour les bassins et projets atypiques.',
-      'assets/produits/conseiller/eden.webp', ['clean', 'safety', 'aesthetics', 'space'], 'over25'),
-    candidate('ul', 'Abri Neo / Ultra Bas', 'Abri télescopique', 'shelter', 'shl', 'sm',
+      'Une solution étudiée au cas par cas avant toute proposition.',
+      'assets/produits/conseiller/eden.webp', ['clean', 'aesthetics', 'space'], 'over25'),
+    candidate('ul', 'Master Ultra Bas 1.2', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Une protection très basse qui préserve les lignes du jardin.',
-      'assets/produits/conseiller/abri-ultra-bas.webp', ['clean', 'safety', 'season', 'aesthetics'], '15_25'),
+      'assets/produits/conseiller/abri-ultra-bas.webp', ['clean', 'season', 'aesthetics'], '15_25'),
     candidate('m18', 'Abri Master 18', 'Abri télescopique', 'shelter', 'shl', 'sm',
-      'Un abri bas équilibré pour protéger et profiter plus longtemps.',
-      'assets/produits/conseiller/abri-bas.webp', ['clean', 'safety', 'season'], '15_25'),
+      'Un abri bas télescopique à dimensionner selon le bassin.',
+      'assets/produits/conseiller/abri-bas.webp', ['clean', 'season'], '15_25'),
     candidate('m30', 'Abri Master 30', 'Abri télescopique', 'shelter', 'shl', 'sm',
-      'Davantage de volume pour nager sous l’abri fermé.',
-      'assets/produits/conseiller/abri-bas.webp', ['clean', 'safety', 'season'], '15_25'),
-    candidate('m50', 'Abri Master 50', 'Abri télescopique', 'shelter', 'shl', 'sm',
-      'Un confort annuel généreux, étudié sur devis.',
-      'assets/produits/conseiller/abri-mi-haut.webp', ['clean', 'safety', 'season'], 'over25'),
+      'Davantage de volume tout en conservant une ligne basse.',
+      'assets/produits/conseiller/abri-bas.webp', ['clean', 'season'], '15_25'),
+    candidate('m50', 'Abri Master Bas 5.0', 'Abri télescopique', 'shelter', 'shl', 'sm',
+      'La version la plus haute de la gamme basse, étudiée sur devis.',
+      'assets/produits/conseiller/abri-bas.webp', ['clean', 'season'], 'over25'),
     candidate('mid', 'Abri mi-haut', 'Abri télescopique', 'shelter', 'shl', 'sm',
       'Un compromis entre discrétion et hauteur de circulation.',
-      'assets/produits/conseiller/abri-mi-haut.webp', ['clean', 'safety', 'season'], 'over25'),
+      'assets/produits/conseiller/abri-mi-haut.webp', ['clean', 'season'], 'over25'),
     candidate('bab', 'Bâche à barres Secu Classic', 'Protection essentielle', 'bar-cover', 'oth', 'otherProduct',
       'Une solution simple, robuste et sécurisante au budget contenu.',
       'assets/produits/conseiller/bab.webp', ['safety', 'economy'], 'under5'),
@@ -83,10 +83,10 @@
       'assets/produits/conseiller/volet-hors-sol.webp', ['clean', 'safety', 'automatic', 'economy'], '5_10'),
     candidate('volet_immerge', 'Volet immergé', 'Volet de piscine', 'shutter', 'oth', 'otherProduct',
       'Une protection automatique intégrée et très discrète.',
-      'assets/produits/conseiller/volet-immerge.webp', ['clean', 'safety', 'automatic', 'aesthetics'], '10_15'),
+      'assets/produits/conseiller/volet-immerge.webp', ['clean', 'automatic', 'aesthetics'], '10_15'),
     candidate('masterdeck', 'Terrasse mobile MasterDeck', 'Terrasse mobile', 'mobile-deck', 'oth', 'otherProduct',
-      'Le bassin disparaît sous une terrasse utilisable une fois fermée.',
-      'assets/produits/conseiller/masterdeck.webp', ['safety', 'aesthetics', 'space'], 'over25')
+      'Une structure, des guides et un plancher dimensionnés sur mesure pour fermer le bassin.',
+      'assets/produits/conseiller/masterdeck.webp', ['aesthetics', 'space'], 'over25')
   ]);
 
   function candidate(id, title, category, family, eq, selectionType, description, image, strengths, budget) {
@@ -111,7 +111,7 @@
       shape: ['rect', 'oval', 'libre'].indexOf(input.shape) !== -1 ? input.shape : 'rect',
       length: clampNumber(input.length, 3, 20, 8),
       width: clampNumber(input.width, 2, 12, 4),
-      dimensionsKnown: input.dimensionsKnown !== false,
+      dimensionsKnown: input.dimensionsKnown === true || (typeof input.dimensionsKnown === 'undefined' && input.length !== null && input.length !== '' && input.width !== null && input.width !== '' && Number.isFinite(Number(input.length)) && Number.isFinite(Number(input.width))),
       budget: ['under5', '5_10', '10_15', '15_25', 'over25', 'unknown'].indexOf(input.budget) !== -1 ? input.budget : 'unknown',
       delay: ['urg', '6m', '1a', 'ref', 'unknown'].indexOf(input.delay) !== -1 ? input.delay : 'unknown'
     };
@@ -133,7 +133,7 @@
     if (!input.priorities.length || input.priorities.indexOf('unsure') !== -1) score += balancedBonus(item);
     score += modelPriorityBonus(item, input.priorities);
     if (input.budget !== 'unknown') score += budgetScore(item.budget, input.budget);
-    if (input.shape === 'libre') score += (item.id === 'eden' || item.id === 'masterdeck') ? 26 : -18;
+    if (input.shape === 'libre') score += item.id === 'eden' ? 26 : -18;
     if (input.delay === 'urg' && (item.id === 'bab' || item.id === 'volet_hs')) score += 7;
     if (input.delay === 'ref' && (item.family === 'shelter' || item.id === 'masterdeck')) score += 3;
     return score;
@@ -142,6 +142,7 @@
   function familyPriorityBonus(item, priority, index) {
     var bonusByFamily = FAMILY_PRIORITY_BONUS[priority];
     if (!bonusByFamily) return 0;
+    if (priority === 'safety' && item.strengths.indexOf('safety') === -1) return 0;
     var bonus = bonusByFamily[item.prospectFamily] || 0;
     return index === 0 ? bonus : Math.round(bonus * .7);
   }
@@ -219,7 +220,11 @@
   }
 
   function customStudyProduct(item) {
-    return ['eden', 'm50', 'mid', 'masterdeck'].indexOf(item && item.id) !== -1;
+    return ['eden', 'volet_hs', 'volet_immerge'].indexOf(item && item.id) !== -1;
+  }
+
+  function guidedRecommendationProduct(item) {
+    return ['auto', 'semi', 'eden'].indexOf(item && item.id) === -1;
   }
 
   function certaintyFor(item, result) {
@@ -278,7 +283,7 @@
 
     return {
       input: cleanInput,
-      recommendations: diversify(scored, 3),
+      recommendations: diversify(scored.filter(guidedRecommendationProduct), 3),
       compatible: scored,
       excluded: excluded
     };

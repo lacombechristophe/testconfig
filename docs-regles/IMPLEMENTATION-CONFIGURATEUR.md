@@ -18,29 +18,32 @@ Le catalogue AquaMaster est traité comme une source technique et, si Xavier le 
 
 | Produit | Règles intégrées au moteur | Interface reliée | Statut affiché |
 |---|---|---|---|
-| Coverseal Auto / Semi | Fonctionnement historique conservé, faute de nouvelle grille source dans le dossier | Modèle, membrane, habillage, rail | Prix historique paramétrable |
+| Coverseal Auto / Semi | Grille, limites, pose et options à confirmer | Modèle, membrane, habillage, rail transmis pour étude | Sur devis, sans ancien prix public affiché |
 | Oré Compact | Matrice HT 3–7 m × 2,5–3,5 m, palier supérieur, TVA, transport 428 € HT, pose incluse si demandée, options Oré validées | Choix Compact, support, margelles, plage mécanisme, prestation, options et images | TTC indicatif avec base et options détaillées |
 | Oré Essential | Matrice HT 3–12 m × 2,5–5 m, TVA, transport 428 € HT, pose 310 € HT si demandée, mêmes contraintes techniques | Choix Essential et mêmes questions | TTC indicatif avec base et options détaillées |
 | BAB Secu Classic | Surface `(L+0,50)×(l+0,50)`, PU 36,04 € HT/m², remise 35 %, emballage 96 € HT, transport 132 € HT, petite surface, pans coupés, anti-abrasion, découpe, escalier et Rolling-Up | Produit dédié, options, support, margelles, prestation et images | TTC indicatif ; garantie 3 ans |
 | Volet hors-sol | Limites 12×6/72 m², structures Excel selon dimensions, 11 paliers de lames, PVC/polycarbonate, emballage et transport par département | Produit dédié, matériau, électricité, support, margelles, prestation et images | TTC indicatif ; escalier, solaire et variantes non arbitrées sur devis |
 | Volet immergé | Limites 14×6/84 m², VRSUB4/5/6, palier lames, PVC/polycarbonate, emballage et transport | Même qualification spécifique | TTC indicatif pour paroi simple ; intégrations spéciales et VRSUB6 >5 m sur devis |
-| Ultra Bas / Master 18 / Master 30 | Agrandissement +20/+30 cm, classe de corde, prix publics Excel, remise 33 %, pose 850 € TTC, transport de référence, limites catalogue | Choix hauteur, options, couleur, questions chantier et images | TTC indicatif ; nombre de modules et transport zone à finaliser |
-| Master 50 / Mi-haut | Limites de modules et corde du catalogue intégrées ; méthode commerciale insuffisamment cohérente | Choix désactivé hors taille, questions et images | Compatible techniquement ou hors modèle, prix sur devis |
+| Master Ultra Bas 1.2 / Master 18 / Master 30 | Agrandissement +20/+30 cm, classe de corde, prix publics Excel, remise 33 %, pose 850 € TTC, transport de référence, limites catalogue | Choix hauteur, options, couleur, questions chantier et images | TTC indicatif uniquement pour le scénario 8 × 4 explicitement documenté ; autres dimensions sur devis |
+| Master Bas 5.0 / Mi-haut | Limites de corde du catalogue intégrées ; méthode commerciale insuffisamment cohérente | Questions chantier et images de gamme signalées comme telles | Sur devis ; un nombre de modules non confirmé ne bloque plus le prospect |
 | MasterDeck | Caractéristiques techniques conservées dans la documentation ; matrice et moteurs contradictoires | Produit, questions chantier et visuel générique piscine | Sur devis |
 
 ## Règles de sécurité contre les faux prix
 
 - Une forme non rectangulaire bascule sur étude sur mesure pour les nouveaux moteurs.
 - Une dimension hors matrice n'est jamais extrapolée.
-- Les dimensions Oré inférieures au premier palier sont également bloquées ; le premier prix n'est jamais appliqué à un bassin plus petit sans règle source.
-- Les formes arrondies/libres désactivent côté interface les modèles à estimation directe/indicative qui exigent une base rectangulaire : Coverseal auto/semi, Oré Compact/Essential, BAB, volets et abris calculables. Les sorties explicitement sur mesure restent sélectionnables pour convertir le prospect : Eden, Master 50, Mi-haut et MasterDeck.
-- Les modèles avec plage dimensionnelle connue sont désactivés dès le choix produit si la taille renseignée sort de leur grille : Oré Compact/Essential, BAB, volets et abris calculables. Un ancien lien partagé ou un appel JS ne peut pas forcer une sélection hors plage ; le modèle actif est désélectionné si l'utilisateur modifie ensuite les dimensions.
+- Les dimensions Oré inférieures au premier palier basculent sur étude ; le premier prix n'est jamais appliqué à un bassin plus petit sans règle source et le projet n'est pas déclaré techniquement impossible.
+- Les formes arrondies/libres désactivent côté interface les modèles sans périmètre documenté : Coverseal auto/semi, Oré Compact/Essential, BAB, abris et MasterDeck. Eden reste accessible comme étude au cas par cas ; les volets restent accessibles sur devis conformément à la règle « formes libres : sur devis ».
+- Les modèles avec plage dimensionnelle connue sont désactivés dès le choix produit si la taille renseignée dépasse leur grille : Oré Compact/Essential, BAB, volets et abris. Pour les abris, seule la corde catalogue bloque automatiquement ; la longueur reste sur étude tant que la table officielle longueur → modules n'est pas fournie. Un ancien lien partagé ou un appel JS ne peut pas forcer une sélection hors plage ; le modèle actif est désélectionné si l'utilisateur modifie ensuite les dimensions.
 - Les produits issus des règles Xavier exigent maintenant une qualification minimale avant envoi : prestation souhaitée, support autour du bassin et niveau des margelles/plages.
 - Oré exige explicitement la plage côté mécanisme avant estimation. Le côté du rail et le coloris sont collectés pour la visite technique.
 - Les volets exigent l'information d'alimentation électrique. Le volet immergé exige aussi le type d'intégration : flasques sur paroi, fond de bassin/caillebotis ou autre.
 - Oré avec moins de 80 cm de plage côté mécanisme bascule sur devis ; sous 60 cm, la configuration standard est indiquée hors grille.
 - Supports non standards, margelles/plages incompatibles ou fourniture seule sur des grilles intégrant la pose basculent sur devis au lieu de conserver un prix automatique.
 - Les anciennes bases fixes des abris ne sont plus utilisées.
+- Le calcul générique du nombre de modules d'abri est retiré. Le scénario source 8 × 4 conserve ses quatre modules documentés ; toute autre longueur reste sur devis. La corde catalogue est contrôlée avant ce statut afin de ne jamais présenter une largeur hors gamme comme étudiable.
+- Les montants historiques Coverseal et les plus-values de couleur/rail ne sont plus affichés tant que Xavier n'a pas fourni une grille qualifiée.
+- L'alimentation solaire Coverseal n'est plus précochée : elle est transmise uniquement lorsque le prospect l'a explicitement demandée, puis reste à confirmer pendant l'étude.
 - Les options d'abri à dépendances techniques ne sont plus ajoutées avec les anciens forfaits fixes ; si motorisation ou rail est sélectionné, le produit passe explicitement « sur devis ».
 - La plus-value BAB de 15 % est ajoutée comme supplément réel, sans reproduire la formule source erronée à 115 %.
 - Le Rolling-Up BAB est bloqué au-delà de la largeur documentée de 5,30 m.
@@ -77,7 +80,7 @@ Sur mobile, le visuel est réduit par défaut puis se compacte en bandeau dès q
 
 ## Vérification automatisée et manuelle
 
-- Tests Node : normalisation, bornes et paliers Oré, options Oré automatiques, limites BAB, limite Rolling-Up, options BAB, largeur minimale volets, VRMANU, VRSIL80S/VRSILC120, escalier volet, transport, intégration immergée, VRSUB6, prix Excel abri 8×4, remise Master 30 à 33 %, limites Master 50, exclusion concurrente, images relatives et matrice de sûreté sur tous les produits.
+- Tests Node : normalisation, bornes et paliers Oré, options Oré automatiques, limites BAB, largeur standard 5 m, limite Rolling-Up, options BAB, largeur minimale volets, seuil motorisé 3 m, VRMANU, VRSIL80S/VRSILC120, escalier volet, transport, intégration immergée, VRSUB6, prix Excel abri 8×4, remise Master 30 à 33 %, contrôle de corde avant modules, modules non confirmés sur devis, exclusion concurrente, images relatives et matrice de sûreté sur tous les produits.
 - Compilation TypeScript de l'API e-mail.
 - Contrôle de syntaxe des scripts intégrés à `index.html`.
 - Vérification de tous les chemins d'assets utilisés.
@@ -92,6 +95,8 @@ Ces points sont volontairement visibles comme estimatifs ou sur devis :
 
 - Volets : remises du devis versus simulateurs, escaliers et options avancées ;
 - Abris : règle officielle du nombre de modules, zones de livraison/transport et dépendances d'options ;
-- MasterDeck : correspondance MOT1/MOT2 et matrice commerciale finale.
+- MasterDeck : correspondance MOT1/MOT2, matrice commerciale finale, usages et charges admissibles du plancher ;
+- Coverseal et Eden : fiches commerciales, limites, fonctionnement, options, pose, photos qualifiées et grille tarifaire ;
+- Volet immergé : source produit explicite autorisant l'affichage public de la norme NF P90-308.
 
 Ces arbitrages peuvent être modifiés dans le moteur central sans réécrire les parcours de l'interface.

@@ -18,10 +18,10 @@
     volet_hs: { label: 'Volet hors-sol', family: 'volet', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
     volet_immerge: { label: 'Volet immergé', family: 'volet', image: 'assets/produits/conseiller/volet-immerge.webp' },
     masterdeck: { label: 'Terrasse mobile MasterDeck', family: 'masterdeck', image: 'assets/produits/conseiller/masterdeck.webp' },
-    ul: { label: 'Abri Ultra Bas / Neo', family: 'abri', image: 'assets/produits/conseiller/abri-ultra-bas.webp' },
+    ul: { label: 'Abri Master Ultra Bas 1.2', family: 'abri', image: 'assets/produits/conseiller/abri-ultra-bas.webp' },
     m18: { label: 'Abri Master 18', family: 'abri', image: 'assets/produits/conseiller/abri-bas.webp' },
     m30: { label: 'Abri Master 30', family: 'abri', image: 'assets/produits/conseiller/abri-bas.webp' },
-    m50: { label: 'Abri Master 50', family: 'abri', image: 'assets/produits/conseiller/abri-mi-haut.webp' },
+    m50: { label: 'Abri Master Bas 5.0', family: 'abri', image: 'assets/produits/conseiller/abri-bas.webp' },
     mid: { label: 'Abri mi-haut', family: 'abri', image: 'assets/produits/conseiller/abri-mi-haut.webp' }
   });
 
@@ -138,13 +138,13 @@
     if (!technical) return null;
     var shelterLength = money(dims.length + 0.2);
     var chordCm = Math.ceil((dims.width + 0.3) * 100);
-    var modules = Math.ceil(shelterLength / technical.moduleWidthM);
+    var modules = Math.abs(dims.length - 8) < 0.0001 && Math.abs(dims.width - 4) < 0.0001 ? 4 : null;
     return {
       data: technical,
       shelterLength: shelterLength,
       chordCm: chordCm,
       modules: modules,
-      moduleSupported: technical.modules.indexOf(modules) !== -1,
+      moduleSupported: modules !== null && technical.modules.indexOf(modules) !== -1,
       chordSupported: chordCm >= technical.minChordCm && chordCm <= technical.maxChordCm
     };
   }
@@ -233,8 +233,8 @@
     var table = product === 'ore_compact' ? ORE_COMPACT : ORE_ESSENTIAL;
     if (dims.length < table.lengths[0] || dims.width < table.widths[0]) {
       return result(product, {
-        eligible: false,
-        warnings: ['Dimensions inférieures au premier palier tarifaire documenté (' + table.lengths[0] + ' × ' + String(table.widths[0]).replace('.', ',') + ' m).'],
+        eligible: null,
+        warnings: ['Dimensions inférieures au premier palier tarifaire documenté (' + table.lengths[0] + ' × ' + String(table.widths[0]).replace('.', ',') + ' m) : étude personnalisée requise.'],
         reference: 'REGLES-ORE — matrice dimensions/prix'
       });
     }
@@ -333,6 +333,9 @@
         technical: { maxRollingUpLength: 12, maxRollingUpWidth: 5.3 }
       });
     }
+    if (dims.width > 5) {
+      return manualReview('bab', 'Largeur supérieure à la plage standard 12 × 5 m : la faisabilité jusqu’à la limite technique de 5,40 m doit être confirmée.', 'REGLES-BAB — largeur standard et limite transport', { width: dims.width });
+    }
     var surface = money((dims.length + 0.5) * (dims.width + 0.5));
     var lines = [{ label: 'Secu Classic — ' + String(surface).replace('.', ',') + ' m²', amount: money(surface * 36.04 * 0.65) }];
     if (opts.antiAbrasion) lines.push({ label: 'Bandes anti-abrasion', amount: money(surface * 3.64 * 0.65) });
@@ -427,6 +430,8 @@
       structureRef = 'VRMANU'; structurePrice = 1480;
     } else if (input.electricity !== 'oui') {
       return manualReview(product, 'Sans alimentation proche, le volet hors-sol motorisé doit être étudié avec option solaire ou pré-équipement électrique.', 'REGLES-VOLETS — alimentation solaire / Easy Plug', { electricity: input.electricity });
+    } else if (dims.width < 3) {
+      return manualReview(product, 'Pour un volet hors-sol motorisé de moins de 3 m de largeur, la référence de structure doit être confirmée sur devis.', 'REGLES-VOLETS — structures hors-sol', { width: dims.width });
     } else if (dims.width <= 4 && dims.length <= 8) {
       structureRef = 'VRSIL80S'; structurePrice = 1945.77;
     } else if (dims.width >= 4 && dims.width <= 5 && dims.length <= 10) {
@@ -500,19 +505,19 @@
     }
     var selection = abriTechnicalSelection(product, dims);
     if (!selection) return result(product, { eligible: null, warnings: ['Modèle non relié à une grille technique qualifiée.'] });
-    if (!selection.moduleSupported) {
-      return result(product, {
-        eligible: false,
-        warnings: ['Longueur hors nombre d’éléments disponible pour ce modèle.'],
-        reference: 'REGLES-ABRIS-AQUAMASTER — limites techniques catalogue 2026',
-        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
-      });
-    }
     if (!selection.chordSupported) {
       return result(product, {
         eligible: false,
         warnings: ['Largeur avec marge technique hors plage du modèle (' + selection.data.minChordCm + ' à ' + selection.data.maxChordCm + ' cm).'],
         reference: 'REGLES-ABRIS-AQUAMASTER — limites de corde catalogue 2026',
+        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
+      });
+    }
+    if (!selection.moduleSupported) {
+      return result(product, {
+        eligible: null,
+        warnings: ['Le nombre d’éléments ne peut pas être confirmé à partir des seules dimensions : étude personnalisée requise.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — nombre de modules à valider',
         technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
       });
     }

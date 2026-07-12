@@ -4,12 +4,23 @@ var test = require('node:test');
 var assert = require('node:assert/strict');
 var fs = require('node:fs');
 var path = require('node:path');
+var vm = require('node:vm');
 
 var root = path.resolve(__dirname, '..');
 var html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 var advisor = fs.readFileSync(path.join(root, 'advisor-v2.js'), 'utf8');
 var advisorCss = fs.readFileSync(path.join(root, 'advisor-v2.css'), 'utf8');
 var api = fs.readFileSync(path.join(root, 'api', 'send-email.ts'), 'utf8');
+
+test('tous les scripts intégrés à la page restent syntaxiquement valides', function () {
+  var scripts = Array.from(html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi));
+  assert.ok(scripts.length > 0);
+  scripts.forEach(function (match, index) {
+    assert.doesNotThrow(function () {
+      new vm.Script(match[1], { filename: 'index-inline-' + (index + 1) + '.js' });
+    });
+  });
+});
 
 test('le contexte du conseiller suit le prospect jusqu’au payload', function () {
   assert.match(advisor, /setAdvisorContext/);
@@ -72,7 +83,7 @@ test('la mesure de progression ne transmet aucune valeur de qualification', func
 
 test('la famille couverture n’affiche aucun prix statique contradictoire', function () {
   assert.match(html, /<span class="pc-n">Couvertures motorisées<\/span>/);
-  assert.match(html, /<span class="pc-p">Estimation selon modèle<\/span>/);
+  assert.match(html, /<span class="pc-p">Selon le modèle<\/span>/);
   assert.doesNotMatch(html, /dès 11 000 €/i);
   assert.doesNotMatch(html, /box\.dataset\.reference/);
 });
@@ -80,6 +91,18 @@ test('la famille couverture n’affiche aucun prix statique contradictoire', fun
 test('le CTA recommandé reste visible dans le footer des résultats desktop', function () {
   assert.match(advisor, /recommended \? '<button type="button" class="advisor-button" data-action="choose"/);
   assert.doesNotMatch(advisorCss, /min-width:\s*901px[\s\S]{0,220}data-action='choose'[\s\S]{0,80}display:\s*none/);
+});
+
+test('la recommandation précède le bandeau de comparaison et le comparatif remplace ce bandeau', function () {
+  var resultsTemplate = advisor.match(/function resultsTemplate\(\)[\s\S]*?\n\s*function resultsSummaryTemplate/);
+  assert.ok(resultsTemplate, 'le rendu des résultats doit rester identifiable');
+  assert.ok(resultsTemplate[0].indexOf('primaryResultTemplate(primary)') < resultsTemplate[0].indexOf('familyOverviewTemplate(top)'));
+  assert.match(resultsTemplate[0], /state\.compare && top\.length > 1 \? compareTemplate\(top\)/);
+  assert.match(resultsTemplate[0], /!state\.compare \? familyOverviewTemplate\(top\)/);
+  assert.match(resultsTemplate[0], /aria-expanded="' \+ state\.compare/);
+  assert.match(advisor, /id="advisor-results-comparison"/);
+  assert.match(advisor, /compareButton\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(advisor, /criteria = criteria\.filter/);
 });
 
 test('la reprise d’un résultat recalcule la recommandation avant le visuel', function () {
@@ -110,9 +133,36 @@ test('l’email prospect reste public et ne promet pas un périmètre de pose no
 
 test('la confirmation respecte la préférence de contact choisie', function () {
   assert.match(html, /S\.contactPreference === 'email'/);
-  assert.match(html, /Vous recevrez une réponse sous <strong>48 h<\/strong>/);
+  assert.match(html, /La réponse vous sera envoyée à l’adresse/);
   assert.match(html, /S\.contactPreference === 'telephone'/);
-  assert.match(html, /Vous serez rappelé sous <strong>48 h<\/strong>/);
+  assert.match(html, /Vous serez rappelé au/);
+  assert.doesNotMatch(html, /Réponse sous 48h|contactera sous <strong>48 h|rappelé sous <strong>48 h/);
+  var prospectTemplate = api.match(/function prospectHtml\([\s\S]*?\n}\n\n\/\/ ─── Email interne/);
+  assert.ok(prospectTemplate);
+  assert.doesNotMatch(prospectTemplate[0], /48\s*(?:h|heures)/i);
+});
+
+test('le conseiller exige un choix explicite avant d’utiliser les dimensions 8 × 4', function () {
+  assert.equal((advisor.match(/dimensionsKnown:\s*null/g) || []).length, 2);
+  assert.equal((advisor.match(/length:\s*null/g) || []).length, 2);
+  assert.equal((advisor.match(/width:\s*null/g) || []).length, 2);
+  assert.match(advisor, /state\.screen === 'pool' && \(typeof state\.dimensionsKnown !== 'boolean'/);
+  assert.match(advisor, /state\.dimensionsKnown === true && !dimensionsValid\(\)/);
+  assert.match(advisor, /updateDimensionFeedback\(\);\s*updateFooterOnly\(\);/);
+  assert.match(advisor, /firstTabStop = typeof state\.dimensionsKnown !== 'boolean' && value === true/);
+  assert.match(advisor, /if \(state\.dimensionsKnown !== true\) return false/);
+});
+
+test('le pied de page distingue estimation, informations manquantes et étude personnalisée', function () {
+  assert.match(html, /function setPriceContext\(title, subtitle\)/);
+  assert.match(html, /setPriceContext\('Votre estimation', 'Complétez les informations indiquées'\)/);
+  assert.match(html, /setP\('À compléter', true\)/);
+  assert.match(html, /setPriceContext\('Plage dimensionnelle à vérifier', 'Diskoov étudiera une configuration adaptée'\)/);
+  assert.match(html, /setPriceContext\('Étude personnalisée', 'Prix établi après vérification du projet'\)/);
+  assert.match(html, /setPriceContext\('Estimation TTC 2026', 'Avant validation technique du projet'\)/);
+  assert.match(html, /rr\.eligible === false \? 'Hors plage dimensionnelle connue'/);
+  assert.doesNotMatch(html, /Étude personnalisée'\s*\+\s*' · compatibilité à vérifier/);
+  assert.doesNotMatch(html, /À vérifier — sur devis/);
 });
 
 test('l’API ne confirme jamais un lead que l’email interne n’a pas reçu', function () {
@@ -140,6 +190,7 @@ test('la comparaison garde ses icones centrees et son badge dans la copie', func
 
 test('l entete d accueil conserve un espace sous le bouton d acces direct', function () {
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-header\s*\{\s*padding-bottom:\s*12px;/);
+  assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-shell\[data-screen='welcome'\] \.advisor-visual\s*\{[\s\S]*?min-height:\s*150px/);
 });
 
 test('le logo Diskoov officiel remplace tous les monogrammes temporaires', function () {
@@ -151,19 +202,34 @@ test('le logo Diskoov officiel remplace tous les monogrammes temporaires', funct
   assert.doesNotMatch(html, /class="(?:vi|ph)-mark"/);
 });
 
+test('le visuel principal du configurateur reste optimisé pour le mobile', function () {
+  var heroPath = 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp';
+  assert.equal(fs.existsSync(path.join(root, heroPath)), true);
+  assert.ok(fs.statSync(path.join(root, heroPath)).size < 400 * 1024, 'le visuel initial doit rester sous 400 Ko');
+  assert.match(html, new RegExp(heroPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(html, /volet-hors-sol-escalier-solaire\.jpg/);
+});
+
 test('les listes produit aident a choisir avant de demander une etude', function () {
   assert.match(advisor, /Quelle protection simplifiera vraiment votre quotidien/);
   assert.doesNotMatch(advisor, /vous simplifiera vraiment la piscine/);
   assert.match(advisor, /Qu’aimeriez-vous gagner autour de votre piscine/);
   assert.match(advisor, /advisor-family-signals/);
+  assert.match(advisor, /advisor-family-signal-icon/);
+  assert.match(advisor, /advisor-family-story-fact-icon/);
   assert.match(advisor, /advisor-model-facts/);
+  assert.match(advisor, /advisor-decision-icon/);
+  assert.match(advisor, /advisor-results-summary-icon/);
+  assert.match(advisor, /advisor-primary-fact-icon/);
+  assert.match(advisor, /bab: 'manual'/);
+  assert.match(advisor, /family === 'shelter' \? 'move'/);
   assert.match(advisor, /Manipulation[\s\S]*Présence[\s\S]*À prévoir/);
   assert.match(advisor, /Vous recherchez l’abri le plus discret possible/);
   assert.match(advisor, /Vous voulez davantage de volume sous un abri bas/);
   assert.match(advisor, /Un seul rail de guidage, positionné du côté choisi avec vous/);
   assert.match(advisor, /Enroulement par manivelle et déroulement par sangle de rappel/);
-  assert.match(advisor, /Étudier ce modèle/);
-  assert.match(advisor, /Dimensions non adaptées/);
+  assert.match(advisor, /Choisir ce modèle/);
+  assert.match(advisor, /Hors plage actuelle/);
   assert.match(advisor, /Cette forme demande une étude sur mesure/);
   assert.match(advisor, /function directUnavailableCopy\(item\)/);
   assert.doesNotMatch(advisor, /Hors plage connue/);
@@ -171,7 +237,12 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.doesNotMatch(advisor, /advisor-result-rank/);
   assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
   assert.match(advisorCss, /\.advisor-direct-main:not\(:disabled\):hover/);
-  assert.doesNotMatch(advisor, /Vérifier ce modèle|Vérifier mon projet/);
+  assert.match(advisorCss, /\.advisor-detail-close\s*\{[\s\S]*?width:\s*44px;[\s\S]*?height:\s*44px;/);
+  assert.match(advisorCss, /\.advisor-decision-icon/);
+  assert.match(advisorCss, /\.advisor-model-facts > div:nth-child\(3\)\s*\{[^}]*display:\s*grid/);
+  assert.doesNotMatch(advisorCss, /\.advisor-model-facts > div:nth-child\(3\)\s*\{[^}]*display:\s*none/);
+  assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-primary-result \.advisor-result-category/);
+  assert.doesNotMatch(advisor, /Vérifier ce modèle|Vérifier mon projet|Dimensions non adaptées/);
 });
 
 test('le passage au configurateur garde un langage prospect', function () {
@@ -183,6 +254,37 @@ test('le passage au configurateur garde un langage prospect', function () {
 test('les preuves commerciales restent limitees aux affirmations documentees', function () {
   assert.match(advisor, /Pose incluse lorsque Diskoov fournit et installe la couverture/);
   assert.match(advisor, /NF P90-308 · garantie 3 ans/);
-  assert.match(advisor, /L’estimation prévoit la pose, à confirmer selon le chantier/);
+  assert.match(advisor, /La pose est étudiée et chiffrée selon le chantier/);
   assert.doesNotMatch(advisor, /Coverseal[^\n]{0,180}pose incluse/i);
+  assert.doesNotMatch(advisor, /Coverseal[^\n]{0,180}Sécurité/i);
+  assert.doesNotMatch(advisor, /motorisation solaire et finitions bois|1 ou 2 plateaux|surface utilisable|surface utile|Solution 3 en 1|Nage possible/i);
+  assert.doesNotMatch(advisor, /volet_immerge:\s*'Norme de sécurité NF P90-308'/);
+  assert.doesNotMatch(html, /13 890 €|11 490 €/);
+  assert.match(html, /Dimensions, alimentation, options, pose et tarif Coverseal sont confirmés après étude du bassin/);
+  assert.match(html, /Le chiffrage de la pose est confirmé selon les accès et le support autour du bassin/);
+  assert.doesNotMatch(html, /Pose de référence intégrée|L’estimation de cet abri inclut une pose de référence/);
+  assert.match(advisor, /Master Ultra Bas 1\.2/);
+  assert.match(advisor, /Master Bas 5\.0/);
+  assert.doesNotMatch(advisor + html, /Ultra Bas \/ Neo|Neo \/ Ultra Bas|Master 50/);
+});
+
+test('les coloris Oré hors standard déclenchent automatiquement leur option tarifaire', function () {
+  assert.match(html, /S\.oreSpecialColor = \/\^\(gris_clair_654\|chocolat_7534\)\$\/.test\(value\)/);
+  assert.match(html, /S\.oreSpecialColor = \/\^\(gris_clair_654\|chocolat_7534\)\$\/.test\(S\.productColor\)/);
+  assert.doesNotMatch(html, /S\.oreSpecialColor = p\.get\('osc'\) === '1'/);
+  assert.doesNotMatch(html, /id="prod-osc"/);
+});
+
+test('l’alimentation solaire Coverseal reste un choix explicite du prospect', function () {
+  assert.match(html, /sol:\s*false, rtt:\s*false/);
+  assert.match(html, /if \(S\.sol\) params\.set\('sol', '1'\)/);
+  assert.match(html, /if \(p\.get\('sol'\) === '1'\) \{ S\.sol = true/);
+  assert.match(html, /aria-label="Alimentation solaire souhaitée" id="t-sol"/);
+  assert.doesNotMatch(html, /class="tog on"[^>]+id="t-sol"/);
+});
+
+test('les formes libres conservent uniquement les études produit documentées', function () {
+  assert.match(advisor, /\['eden', 'volet_hs', 'volet_immerge'\]\.indexOf\(item\.id\)/);
+  assert.match(html, /var CUSTOM_SHAPE_PRODUCTS = \{\s*eden: true,\s*volet_hs: true,\s*volet_immerge: true/);
+  assert.doesNotMatch(html, /var CUSTOM_SHAPE_PRODUCTS = \{[^}]*masterdeck: true/);
 });

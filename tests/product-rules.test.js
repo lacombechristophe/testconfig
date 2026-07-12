@@ -161,6 +161,13 @@ test('BAB respecte la limite technique maximale', function () {
   assert.equal(r.total, null);
 });
 
+test('BAB entre 5 et 5,40 m reste sur étude au lieu de recevoir un faux prix standard', function () {
+  var r = rules.calculate('bab', Object.assign({ length: 12, width: 5.2 }, COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, null);
+  assert.equal(r.total, null);
+});
+
 test('BAB refuse Rolling-Up au-delà de 5,30 m de largeur', function () {
   var r = rules.calculate('bab', Object.assign({ length: 12, width: 5.35, options: { rollingUp: true } }, COMMON));
   assert.equal(r.status, 'quote');
@@ -173,6 +180,13 @@ test('volet hors-sol choisit VRSIL80S et le transport du Rhône', function () {
   assert.equal(r.technical.structureRef, 'VRSIL80S');
   assert.equal(rules.shippingPrice('69 - Rhône', 'hors_sol'), 776.62);
   assert.ok(r.total > 0);
+});
+
+test('volet hors-sol motorisé sous 3 m reste sur devis faute de structure documentée', function () {
+  var r = rules.calculate('volet_hs', Object.assign({}, VOLET_COMMON, { length: 6, width: 2.5, options: {} }));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, null);
+  assert.equal(r.total, null);
 });
 
 test('volet hors-sol choisit VRSILC120 pour un bassin 9 × 4', function () {
@@ -264,13 +278,13 @@ test('Master 30 applique la remise Xavier de 33 %', function () {
   assert.equal(rules._data.abriCommercial.m30.discount, 0.33);
 });
 
-test('Oré bloque aussi les dimensions sous le premier palier', function () {
+test('Oré place les dimensions sous le premier palier sur étude', function () {
   var r = rules.calculate('ore_compact', Object.assign({ length: 2.9, width: 2.5 }, ORE_COMMON));
   assert.equal(r.status, 'quote');
-  assert.equal(r.eligible, false);
+  assert.equal(r.eligible, null);
 });
 
-test('Master 50 vérifie les limites techniques avant le devis', function () {
+test('Master Bas 5.0 vérifie les limites techniques avant le devis', function () {
   var compatible = rules.calculate('m50', Object.assign({ length: 8, width: 4 }, COMMON));
   var tooWide = rules.calculate('m50', Object.assign({ length: 8, width: 6 }, COMMON));
   assert.equal(compatible.status, 'quote');
@@ -278,14 +292,28 @@ test('Master 50 vérifie les limites techniques avant le devis', function () {
   assert.equal(tooWide.eligible, false);
 });
 
-test('un abri techniquement compatible sans cellule Excel reste éligible sur devis', function () {
-  var r = rules.calculate('m18', Object.assign({ length: 10, width: 5.2 }, COMMON));
+test('un nombre de modules non confirmé demande une étude sans déclarer le projet incompatible', function () {
+  var r = rules.calculate('m18', Object.assign({ length: 15, width: 4 }, COMMON));
   assert.equal(r.status, 'quote');
-  assert.equal(r.eligible, true);
+  assert.equal(r.eligible, null);
   assert.equal(r.total, null);
 });
 
-test('Master 50 et MasterDeck restent explicitement sur devis', function () {
+test('un abri hors scénario dimensionnel documenté reste à qualifier sur devis', function () {
+  var r = rules.calculate('m18', Object.assign({ length: 10, width: 5.2 }, COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, null);
+  assert.equal(r.total, null);
+});
+
+test('la corde maximale abri est contrôlée avant le nombre de modules', function () {
+  var r = rules.calculate('m18', Object.assign({ length: 15, width: 7 }, COMMON));
+  assert.equal(r.status, 'quote');
+  assert.equal(r.eligible, false);
+  assert.equal(r.total, null);
+});
+
+test('Master Bas 5.0 et MasterDeck restent explicitement sur devis', function () {
   assert.equal(rules.calculate('m50', Object.assign({ length: 8, width: 4 }, COMMON)).status, 'quote');
   assert.equal(rules.calculate('masterdeck', { length: 8, width: 4 }).status, 'quote');
 });

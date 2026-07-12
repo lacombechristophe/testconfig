@@ -508,10 +508,9 @@ function prospectHtml(p: LeadPayload, ref: string): string {
   <!-- ▼ GREETING -->
   <tr><td style="padding:36px 40px 0">
     <p style="margin:0 0 6px;font-size:12px;color:#c9a96e;font-weight:600;text-transform:uppercase;letter-spacing:.1em">Confirmation de demande</p>
-    <h1 style="margin:0 0 14px;font-size:24px;font-weight:700;color:#111;letter-spacing:-.03em;line-height:1.3">Merci ${esc(p.prenom)}, votre projet est entre de bonnes mains.</h1>
+    <h1 style="margin:0 0 14px;font-size:24px;font-weight:700;color:#111;letter-spacing:-.03em;line-height:1.3">Merci ${esc(p.prenom)}, votre demande a bien été reçue.</h1>
     <p style="margin:0;font-size:14.5px;color:#555;line-height:1.8">
-      ${esc(PUBLIC_CONTACT_NAME)} ${contactAction} sous <strong style="color:#111">48 heures</strong>
-      pour échanger sur votre projet et préparer une étude personnalisée.
+      ${esc(PUBLIC_CONTACT_NAME)} ${contactAction} pour échanger sur votre projet et préparer une étude personnalisée.
     </p>
   </td></tr>
 
@@ -575,7 +574,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
           <div style="width:24px;height:24px;border-radius:50%;background:#c9a96e;color:#111;font-size:12px;font-weight:800;text-align:center;line-height:24px">1</div>
         </td>
         <td style="padding:2px 0 12px 12px;font-size:13.5px;color:#444;line-height:1.6">
-          <strong style="color:#111">${esc(PUBLIC_CONTACT_NAME)} vous contacte</strong> sous 48h pour comprendre votre projet en détail.
+          <strong style="color:#111">${esc(PUBLIC_CONTACT_NAME)} reprend contact avec vous</strong> selon la préférence indiquée pour préciser votre projet.
         </td>
       </tr>
       <tr>
@@ -600,7 +599,7 @@ function prospectHtml(p: LeadPayload, ref: string): string {
   <!-- ▼ SIGNATURE -->
   <tr><td style="padding:28px 40px 36px">
     <p style="margin:0;font-size:14.5px;color:#555;line-height:1.8">
-      Nous avons hâte de donner vie à votre projet,<br>
+      À bientôt,<br>
       <strong style="color:#111">${esc(PUBLIC_CONTACT_NAME)}</strong>
     </p>
   </td></tr>

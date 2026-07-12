@@ -158,7 +158,7 @@
       user-select: none;
       background:
         linear-gradient(120deg, rgba(8, 20, 12, .45), rgba(8, 20, 12, .08)),
-        url('assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg') center/cover no-repeat,
+        url('assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp') center/cover no-repeat,
         #0e1a0d;
     }
 
@@ -205,7 +205,7 @@
       background: rgba(0, 0, 0, .48);
       color: #fff;
       font: 800 11px/1 Inter, sans-serif;
-      letter-spacing: -.02em;
+      letter-spacing: 0;
       backdrop-filter: blur(10px);
       cursor: zoom-in;
       transition: background .16s ease, transform .16s ease, opacity .16s ease;
@@ -256,8 +256,8 @@
       position: absolute;
       top: max(16px, env(safe-area-inset-top));
       right: max(16px, env(safe-area-inset-right));
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border: 1px solid rgba(255, 255, 255, .28);
       border-radius: 999px;
       background: rgba(0, 0, 0, .48);
@@ -532,7 +532,7 @@
       font-size: 13.5px;
       font-weight: 800;
       color: var(--ink);
-      letter-spacing: -.02em;
+      letter-spacing: 0;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -1139,7 +1139,7 @@
       font-size: 11.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
+      letter-spacing: 0;
       color: var(--mid);
       margin-bottom: 5px;
     }
@@ -1327,7 +1327,7 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--ink);
-      letter-spacing: -.01em
+      letter-spacing: 0
     }
 
     .pfs {
@@ -1340,7 +1340,7 @@
       font-size: 22px;
       font-weight: 800;
       color: var(--ink);
-      letter-spacing: -.04em;
+      letter-spacing: 0;
       line-height: 1;
       transition: opacity .15s;
       white-space: nowrap;
@@ -1374,7 +1374,7 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      letter-spacing: -.01em;
+      letter-spacing: 0;
       transition: opacity .15s, transform .1s;
     }
 
@@ -1546,7 +1546,7 @@
       font-size: 21px;
       font-weight: 800;
       color: var(--ink);
-      letter-spacing: -.04em;
+      letter-spacing: 0;
       margin-bottom: 9px
     }
 
@@ -1575,7 +1575,7 @@
       font-size: 20px;
       font-weight: 800;
       color: var(--ink);
-      letter-spacing: -.03em;
+      letter-spacing: 0;
       margin-top: 4px;
       display: block;
       text-decoration: none;
@@ -1980,12 +1980,14 @@
     .pf-breakdown {
       max-height: 0;
       overflow: hidden;
-      transition: max-height .3s ease, margin .3s ease;
+      opacity: 0;
+      transition: opacity .18s ease;
       margin: 0;
     }
 
     .pf-breakdown.open {
       max-height: 200px;
+      opacity: 1;
       margin-bottom: 10px;
     }
 
@@ -2171,7 +2173,7 @@
       background: rgba(17, 17, 17, .72);
       color: #fff;
       font: 800 10px/1 Inter, sans-serif;
-      letter-spacing: -.01em;
+      letter-spacing: 0;
       opacity: 0;
       transform: translateY(3px);
       transition: opacity .14s ease, transform .14s ease;
@@ -2241,7 +2243,7 @@
       color: #8f806b;
       font-size: 9.5px;
       font-weight: 850;
-      letter-spacing: .08em;
+      letter-spacing: 0;
       text-transform: uppercase;
     }
 
@@ -2548,6 +2550,11 @@
     }
 
     @media(max-width:520px) {
+      .root {
+        --mobile-vis-height: clamp(112px, 20svh, 160px);
+        --mobile-vis-peek: clamp(124px, 22svh, 172px);
+      }
+
       .p-hd {
         gap: 8px;
         padding-inline: 16px;
@@ -2566,6 +2573,15 @@
         min-height: 44px;
         margin-left: 0;
         padding-inline: 10px;
+      }
+
+      .pfoot {
+        padding: 8px 14px 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .pf-row {
+        margin-bottom: 4px;
       }
     }
 
@@ -2727,7 +2743,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260711-v3-leads17">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260712-v3-leads33">
 
   <noscript>
     <style>
@@ -2760,7 +2776,7 @@
     Uploader dans /public/ sur Vercel.
   -->
       <!-- Visuels produits chargés depuis assets/produits pour éviter les placeholders génériques en production. -->
-      <img class="vi" id="vi-pool" src="assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg" alt="Piscine équipée par Diskoov"
+      <img class="vi" id="vi-pool" src="assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp" alt="Piscine équipée par Diskoov"
         width="1600" height="900" fetchpriority="high" decoding="async">
       <img class="vi off" id="vi-shl" loading="lazy" src="assets/produits/abris/master-bas-1-8.jpg"
         alt="Abri télescopique Master Diskoov" width="1600" height="900" decoding="async">
@@ -2968,7 +2984,7 @@
                 <circle cx="12" cy="13" r="3.4" />
               </svg>
               <div class="file-zone-text">Ajouter une photo ou un plan</div>
-              <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · envoi sécurisé</div>
+              <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · utile pour préparer l’étude</div>
             </div>
             <div class="file-preview" id="file-preview" style="display:none">
               <div class="file-preview-info">
@@ -3162,17 +3178,17 @@
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('cov')}">
               <div class="pc-top">
                 <span class="pc-n">Couvertures motorisées</span>
-                <span class="pc-p">Estimation selon modèle</span>
+                <span class="pc-p">Selon le modèle</span>
               </div>
-              <div class="pc-s">Couverture basse motorisée · confort quotidien · pose vérifiée avec votre bassin</div>
+              <div class="pc-s">Oré, Coverseal ou Eden · contraintes vérifiées selon le projet</div>
             </div>
             <div class="pc" id="eq-shl" role="radio" aria-checked="false" tabindex="0" onclick="selEq('shl')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('shl')}">
               <div class="pc-top">
                 <span class="pc-n">Abri télescopique Master</span>
-                <span class="pc-p">Calcul par dimensions</span>
+                <span class="pc-p">Étude selon dimensions</span>
               </div>
-              <div class="pc-s">Saison de baignade prolongée · 5 hauteurs · pose selon modèle</div>
+              <div class="pc-s">5 hauteurs · modules et pose confirmés selon le projet</div>
             </div>
             <div class="pc" id="eq-oth" role="radio" aria-checked="false" tabindex="0" onclick="selEq('oth')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('oth')}">
@@ -3227,7 +3243,7 @@
               <span class="pc-n">Eden</span>
               <span class="pc-p">Sur devis</span>
             </div>
-            <div class="pc-s">Projet sur mesure · finitions adaptées · étude complète du bassin et des abords</div>
+            <div class="pc-s">Usages, limites, fonctionnement et pose confirmés pendant l’étude</div>
           </div>
         </div>
 
@@ -3237,7 +3253,7 @@
           <div class="product-grid" role="radiogroup" aria-label="Produit de protection piscine">
             <div class="pc" id="op-bab" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('bab')">
               <div class="pc-top"><span class="pc-n">Bâche à barres</span><span class="pc-p">Indicatif</span></div>
-              <div class="pc-s">Secu Classic · jusqu'à 12 × 5,40 m</div>
+              <div class="pc-s">Secu Classic · jusqu'à 12 × 5 m en standard</div>
             </div>
             <div class="pc" id="op-volet_hs" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('volet_hs')">
               <div class="pc-top"><span class="pc-n">Volet hors-sol</span><span class="pc-p">Indicatif</span></div>
@@ -3265,7 +3281,7 @@
               </span>
               <span class="sl-val" id="mem-ral">RAL 7037</span>
             </span>
-            <span class="sr" id="mem-dp">+ 0 €</span>
+            <span class="sr" id="mem-dp">À confirmer</span>
           </div>
           <div class="swat" id="g-mem" role="radiogroup" aria-label="Couleur de membrane"></div>
           <div class="sw-lbl" id="mem-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
@@ -3292,16 +3308,16 @@
         <div class="s hide" id="s-co">
           <div class="sh">
             <span class="sl">Options</span>
-            <span class="sr" id="co-dp">+ 0 €</span>
+            <span class="sr" id="co-dp">À confirmer</span>
           </div>
           <div class="or">
             <div>
-              <span class="ol">Motorisation solaire autonome</span>
-              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Autonomie et fonctionnement confirmés
+              <span class="ol">Alimentation solaire souhaitée</span>
+              <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Disponibilité et fonctionnement confirmés
                 selon la configuration retenue</div>
             </div>
-            <button type="button" class="tog on" role="switch" aria-pressed="true"
-              aria-label="Motorisation solaire autonome" id="t-sol" onclick="togOpt('sol',this)"></button>
+            <button type="button" class="tog" role="switch" aria-pressed="false"
+              aria-label="Alimentation solaire souhaitée" id="t-sol" onclick="togOpt('sol',this)"></button>
           </div>
           <div class="or">
             <div>
@@ -3324,11 +3340,11 @@
                 <div class="hb" style="height:9px"></div>
               </div>
               <div class="hci">
-                <div class="hcn">Ultra Bas · Neo</div>
-                <div class="hcd">Discret · pose intégrée au calcul</div>
+                <div class="hcn">Master Ultra Bas 1.2</div>
+                <div class="hcd">Ligne très basse · pose étudiée avec le projet</div>
               </div>
               <div class="hcr">
-                <div class="hcp">Calcul dimensionnel</div>
+                <div class="hcp">Selon dimensions</div>
                 <div class="hch">&lt; 60 cm</div>
               </div>
             </div>
@@ -3339,10 +3355,10 @@
               </div>
               <div class="hci">
                 <div class="hcn">Master 18</div>
-                <div class="hcd">Design épuré · pose intégrée au calcul</div>
+                <div class="hcd">Ligne basse · pose étudiée avec le projet</div>
               </div>
               <div class="hcr">
-                <div class="hcp">Calcul dimensionnel</div>
+                <div class="hcp">Selon dimensions</div>
                 <div class="hch">~ 80 cm</div>
               </div>
             </div>
@@ -3353,10 +3369,10 @@
               </div>
               <div class="hci">
                 <div class="hcn">Master 30</div>
-                <div class="hcd">Nage possible · pose intégrée au calcul</div>
+                <div class="hcd">Plus de volume · usage sous abri à confirmer</div>
               </div>
               <div class="hcr">
-                <div class="hcp">Calcul dimensionnel</div>
+                <div class="hcp">Selon dimensions</div>
                 <div class="hch">~ 1,20 m</div>
               </div>
             </div>
@@ -3366,12 +3382,12 @@
                 <div class="hb" style="height:30px"></div>
               </div>
               <div class="hci">
-                <div class="hcn">Master 50</div>
-                <div class="hcd">Nage abri fermé · confort annuel</div>
+                <div class="hcn">Master Bas 5.0</div>
+                <div class="hcd">La version la plus haute de la gamme basse</div>
               </div>
               <div class="hcr">
                 <div class="hcp">Sur devis</div>
-                <div class="hch">~ 1,60 m</div>
+                <div class="hch">~ 0,63–1,21 m</div>
               </div>
             </div>
             <div class="hc" id="h-mid" role="radio" aria-checked="false" tabindex="0" onclick="selSM('mid')"
@@ -3436,7 +3452,7 @@
             aria-label="Agrandir l'image du produit" onclick="openProductDetailLightbox(event)"
             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openProductDetailLightbox(event)}"
             style="display:none">
-            <img id="product-detail-image" alt="Détail technique du produit sélectionné" loading="lazy">
+            <img id="product-detail-image" src="assets/produits/ore/encombrements-60-80-45cm.jpg" alt="Détail technique du produit sélectionné" loading="lazy">
           </div>
           <div class="rule-status" id="product-rule-note" role="status" aria-live="polite"></div>
         </div>
@@ -3595,12 +3611,12 @@
         <p class="sb" id="suc-b"></p>
 
         <!-- Référence -->
-        <div id="suc-ref" style="margin:10px auto 0;font-size:11px;color:var(--faint);letter-spacing:.03em"></div>
+        <div id="suc-ref" style="margin:10px auto 0;font-size:11px;color:var(--faint);letter-spacing:0"></div>
 
         <!-- Prochaines étapes -->
         <div style="margin:20px auto;max-width:300px;width:100%;text-align:left">
           <p
-            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:0 0 14px">
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0;color:var(--faint);margin:0 0 14px">
             Prochaines étapes</p>
           <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
             <div
@@ -3608,8 +3624,8 @@
               1</div>
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Échange avec Diskoov</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Sous 48h pour affiner votre projet et répondre
-                à vos questions</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px">Un conseiller reprend vos réponses avec vous
+                et précise les points utiles</div>
             </div>
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
@@ -3628,8 +3644,8 @@
               3</div>
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Devis détaillé</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Prix ferme personnalisé avec planning
-                d'installation</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px">Proposition détaillée après vérification du
+                bassin, des options et des accès</div>
             </div>
           </div>
         </div>
@@ -3638,7 +3654,7 @@
         <div id="suc-recap"
           style="border:1px solid var(--line);border-radius:7px;padding:16px 18px;margin:0 auto 16px;max-width:300px;width:100%;text-align:left;display:none">
           <p
-            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:0 0 10px;display:flex;align-items:center;gap:6px">
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0;color:var(--faint);margin:0 0 10px;display:flex;align-items:center;gap:6px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -3654,7 +3670,7 @@
           style="border:1px solid var(--line);border-radius:7px;padding:14px 22px;margin:0 auto 18px;max-width:300px;width:100%;text-align:center">
           <div style="font-size:11.5px;color:var(--faint)">Une question urgente ?</div>
           <a id="suc-phone" class="sph"
-            style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.03em;margin-top:4px;display:block;text-decoration:none"></a>
+            style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:0;margin-top:4px;display:block;text-decoration:none"></a>
           <div id="suc-contact" style="font-size:11px;color:var(--faint);margin-top:3px"></div>
         </div>
 
@@ -3683,7 +3699,7 @@
               <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
-            Compatibilité vérifiée
+            Projet transmis
           </span>
         </div>
 
@@ -3706,11 +3722,11 @@
       <div class="pfoot" id="pfoot">
         <div class="pf-row">
           <div>
-            <div class="pfl" id="pf-title">Prix estimatif TTC</div>
-            <div class="pfs" id="pf-subtitle">Estimation selon la configuration saisie</div>
+            <div class="pfl" id="pf-title">Votre estimation</div>
+            <div class="pfs" id="pf-subtitle">Affinée selon vos réponses</div>
           </div>
           <div style="text-align:right">
-            <div class="pfv na" id="pfv" aria-live="polite" aria-label="Prix estimatif">–</div>
+            <div class="pfv na" id="pfv" aria-live="polite" aria-label="Votre estimation">–</div>
             <button type="button" class="pf-toggle-detail" id="pf-detail-btn" onclick="toggleBreakdown()"
               style="display:none" aria-label="Voir le détail du prix">
               Détail <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -3737,7 +3753,7 @@
             </svg>
           </button>
         </div>
-        <div class="priv">* Champs requis · Réponse sous 48h · Données confidentielles</div>
+        <div class="priv">* Champs requis · Photo facultative · Proposition après vérification du projet</div>
       </div>
 
     </div><!-- /panel -->
@@ -3759,15 +3775,15 @@
         <line x1="18" y1="6" x2="6" y2="18" />
       </svg>
     </button>
-    <img class="visual-lightbox-img" id="visual-lightbox-img" alt="" decoding="async">
+    <img class="visual-lightbox-img" id="visual-lightbox-img" src="assets/produits/conseiller/ore-fermee.webp" alt="" decoding="async">
     <div class="visual-lightbox-caption" id="visual-lightbox-caption">
       Cliquez ou touchez hors de l’image, ou appuyez sur Échap pour fermer
     </div>
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260711-v3-leads17"></script>
-  <script src="advisor-engine.js?v=20260711-v3-leads17"></script>
+  <script src="product-rules.js?v=20260712-v3-leads33"></script>
+  <script src="advisor-engine.js?v=20260712-v3-leads33"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -3788,8 +3804,8 @@
     var PNMS = {
       auto: 'Coverseal Automatique', semi: 'Coverseal Semi-Automatique',
       ore_compact: 'Oré Compact', ore_essential: 'Oré Essential', eden: 'Couverture Eden',
-      ul: 'Abri Ultra Bas / Neo', m18: 'Abri Master 18', m30: 'Abri Master 30',
-      m50: 'Abri Master 50', mid: 'Abri Mi-haut',
+      ul: 'Abri Master Ultra Bas 1.2', m18: 'Abri Master 18', m30: 'Abri Master 30',
+      m50: 'Abri Master Bas 5.0', mid: 'Abri Mi-haut',
       bab: 'Bâche à barres Secu Classic', volet_hs: 'Volet hors-sol',
       volet_immerge: 'Volet immergé', masterdeck: 'Terrasse mobile MasterDeck',
       oth: 'Bâche / Volet / MasterDeck'
@@ -3797,11 +3813,9 @@
 
     /* ── PALETTES (éditables dans config.js) ──────────── */
     var _memCfg = window.DISKOOV_MEMBRANE_COLORS || null;
-    var MEM, MEM_DELTA;
+    var MEM;
     if (_memCfg) {
       MEM = _memCfg.map(function (c) { return { h: c.h, r: c.r, l: c.l }; });
-      MEM_DELTA = {};
-      _memCfg.forEach(function (c) { MEM_DELTA[c.r] = c.delta || 0; });
     } else {
       MEM = [
         { h: '#898176', r: 'RAL 7037', l: 'Gris poussière' },
@@ -3814,7 +3828,6 @@
         { h: '#006B54', r: 'RAL 6026', l: 'Vert opale' },
         { h: '#0A0A0A', r: 'RAL 9005', l: 'Noir pur' }
       ];
-      MEM_DELTA = { 'RAL 7037': 0, 'RAL 7035': 0, 'RAL 1015': 459, 'RAL 1019': 459, 'RAL 5015': 459, 'RAL 5002': 459, 'RAL 6021': 459, 'RAL 6026': 459, 'RAL 9005': 459 };
     }
     var HAB = window.DISKOOV_COPING_COLORS || [
       { h: '#898176', r: 'RAL 7037', l: 'Gris poussière' },
@@ -3846,10 +3859,6 @@
     var BUDGET_LABELS = { unknown: 'Pas encore défini', under5: 'Moins de 5 000 €', '5_10': '5 000 à 10 000 €', '10_15': '10 000 à 15 000 €', '15_25': '15 000 à 25 000 €', over25: 'Plus de 25 000 €' };
     var CONTACT_PREFERENCE_LABELS = { telephone: 'Téléphone', email: 'Email' };
 
-    /* ── PRICES (éditables dans config.js) ───────────── */
-    var BP = window.DISKOOV_PRICES || { auto: 13890, semi: 11490 };
-    var OPT_P = window.DISKOOV_OPTIONS || { rtt: 800 };
-
     /* ── STATE ─────────────────────────────────────────── */
     var S = {
       loc: 'ext', len: 8, wid: 4,
@@ -3860,7 +3869,7 @@
       eq: '', cm: '', sm: '', otherProduct: '',
       mRal: 'RAL 7037', mLbl: 'Gris poussière',
       hRal: 'RAL 7037', hLbl: 'Gris poussière',
-      sol: true, rtt: false, shlMotor: false, gr: false, strucCol: 'RAL 9016', strucLbl: 'Blanc',
+      sol: false, rtt: false, shlMotor: false, gr: false, strucCol: 'RAL 9016', strucLbl: 'Blanc',
       installation: '', support: '', margellesLevel: '', clearance: '', electricity: '',
       productColor: '', guideSide: '', immergedIntegration: '', projectStatus: '', siteAccess: '', projectBudget: '',
       babAntiAbrasion: false, babBlockCut: false, babRollingUp: false, babCutCorners: false,
@@ -3922,8 +3931,6 @@
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function fmtDelta(n) { return n ? '+ ' + n.toLocaleString('fr-FR') + ' €' : '+ 0 €'; }
-
     function normPoolDims() {
       var a = parseFloat(S.len) || 0;
       var b = parseFloat(S.wid) || 0;
@@ -3948,9 +3955,8 @@
 
     var CUSTOM_SHAPE_PRODUCTS = {
       eden: true,
-      m50: true,
-      mid: true,
-      masterdeck: true
+      volet_hs: true,
+      volet_immerge: true
     };
 
     var RECT_ONLY_PRODUCTS = {
@@ -3961,9 +3967,12 @@
       bab: 'Bâche à barres',
       volet_hs: 'Volet hors-sol',
       volet_immerge: 'Volet immergé',
-      ul: 'Abri Ultra Bas / Neo',
+      ul: 'Abri Master Ultra Bas 1.2',
       m18: 'Abri Master 18',
-      m30: 'Abri Master 30'
+      m30: 'Abri Master 30',
+      m50: 'Abri Master Bas 5.0',
+      mid: 'Abri Mi-haut',
+      masterdeck: 'Terrasse mobile MasterDeck'
     };
 
     var EQUIPMENT_PRODUCTS = {
@@ -4004,8 +4013,14 @@
       var d = normPoolDims();
       if (!d.length || !d.width) return dimOk();
 
-      if (product === 'ore_compact') return checkRectLimit(product, 3, 7, 2.5, 3.5, 'Oré Compact');
-      if (product === 'ore_essential') return checkRectLimit(product, 3, 12, 2.5, 5, 'Oré Essential');
+      if (product === 'ore_compact') {
+        if (d.length > 7 || d.width > 3.5) return dimBlocked('Max. 7 × 3,5 m', 'Oré Compact : dimensions au-delà de la matrice tarifaire actuelle.');
+        return dimOk();
+      }
+      if (product === 'ore_essential') {
+        if (d.length > 12 || d.width > 5) return dimBlocked('Max. 12 × 5 m', 'Oré Essential : dimensions au-delà de la matrice tarifaire actuelle.');
+        return dimOk();
+      }
       if (product === 'bab') {
         if (d.length > 12 || d.width > 5.4) return dimBlocked('Max. 12 × 5,40 m', 'Bâche à barres : limite technique 12 × 5,40 m.');
         return dimOk();
@@ -4022,13 +4037,6 @@
       if (product === 'ul' || product === 'm18' || product === 'm30' || product === 'm50' || product === 'mid') {
         var technical = window.DISKOOV_RULES && window.DISKOOV_RULES._data && window.DISKOOV_RULES._data.abriTechnical ? window.DISKOOV_RULES._data.abriTechnical[product] : null;
         if (!technical) return dimOk();
-        var shelterLength = Math.round((d.length + 0.2) * 100) / 100;
-        var modules = Math.ceil(shelterLength / technical.moduleWidthM);
-        if (technical.modules.indexOf(modules) === -1) {
-          var maxModules = Math.max.apply(Math, technical.modules);
-          var maxLen = Math.round(((maxModules * technical.moduleWidthM) - 0.2) * 10) / 10;
-          return dimBlocked('Longueur hors modèle', 'Abri : longueur maximale indicative de ' + fmtM(maxLen) + ' m pour ce modèle.');
-        }
         var chordCm = Math.ceil((d.width + 0.3) * 100);
         if (chordCm < technical.minChordCm || chordCm > technical.maxChordCm) {
           return dimBlocked('Largeur hors modèle', 'Abri : largeur avec marge technique comprise entre ' + technical.minChordCm + ' et ' + technical.maxChordCm + ' cm pour ce modèle.');
@@ -4045,8 +4053,8 @@
       });
       if (hasCompatibleChoice) return dimOk();
       return dimBlocked(
-        'Sur mesure requis',
-        'Aucun choix direct de cette famille n’est compatible avec la forme ou les dimensions sélectionnées.'
+        'Étude spécifique requise',
+        'Aucun modèle de cette famille ne couvre la forme ou les dimensions renseignées dans les plages actuellement connues.'
       );
     }
 
@@ -4063,7 +4071,7 @@
       var status = node.querySelector('.pc-p, .hcp');
       if (status) {
         if (!status.dataset.baseText) status.dataset.baseText = status.textContent.trim();
-        status.textContent = unavailable ? 'Non compatible' : status.dataset.baseText;
+        status.textContent = unavailable ? 'Hors plage connue' : status.dataset.baseText;
       }
 
       var note = node.querySelector('.dim-unavailable-note');
@@ -4482,7 +4490,7 @@
         S.mRal = c.r; S.mLbl = c.l;
         el('mem-ral').textContent = c.r;
         el('mem-lbl').textContent = c.l + ' — ' + c.r;
-        el('mem-dp').textContent = fmtDelta(MEM_DELTA[c.r] !== undefined ? MEM_DELTA[c.r] : 459);
+        el('mem-dp').textContent = 'À confirmer';
         updP();
       });
       buildSW('g-hab', HAB, 'h', function (c) {
@@ -5010,7 +5018,7 @@
       if (S.mRal !== 'RAL 7037') params.set('mr', S.mRal);
       if (S.hRal !== 'RAL 7037') params.set('hr', S.hRal);
       /* Options */
-      if (!S.sol) params.set('sol', '0');
+      if (S.sol) params.set('sol', '1');
       if (S.rtt) params.set('rtt', '1');
       if (S.shlMotor) params.set('sm_o', '1');
       if (S.gr) params.set('gr', '1');
@@ -5134,7 +5142,7 @@
         if (p.has('sm') && validSm.indexOf(p.get('sm')) !== -1) selSM(p.get('sm'));
         if (p.has('op') && validOp.indexOf(p.get('op')) !== -1) selOtherProduct(p.get('op'));
         /* Options */
-        if (p.get('sol') === '0') { S.sol = false; el('t-sol').classList.remove('on'); el('t-sol').setAttribute('aria-pressed', 'false'); }
+        if (p.get('sol') === '1') { S.sol = true; el('t-sol').classList.add('on'); el('t-sol').setAttribute('aria-pressed', 'true'); }
         if (p.get('rtt') === '1') { S.rtt = true; el('t-rtt').classList.add('on'); el('t-rtt').setAttribute('aria-pressed', 'true'); }
         if (p.get('sm_o') === '1') { S.shlMotor = true; el('t-sm').classList.add('on'); el('t-sm').setAttribute('aria-pressed', 'true'); }
         if (p.get('gr') === '1') { S.gr = true; el('t-gr').classList.add('on'); el('t-gr').setAttribute('aria-pressed', 'true'); }
@@ -5154,7 +5162,7 @@
         S.oreAntiWind = p.get('oaw') === '1';
         S.oreWinterStrap = p.get('ows') === '1';
         S.oreExtraRetreat = p.get('oer') === '1';
-        S.oreSpecialColor = p.get('osc') === '1';
+        S.oreSpecialColor = /^(gris_clair_654|chocolat_7534)$/.test(S.productColor);
         if (p.has('sc')) {
           var scVal = p.get('sc').slice(0, 30);
           STRUC.forEach(function (c) {
@@ -5177,7 +5185,7 @@
               S.mRal = c.r; S.mLbl = c.l;
               el('mem-ral').textContent = c.r;
               el('mem-lbl').textContent = c.l + ' — ' + c.r;
-              el('mem-dp').textContent = fmtDelta(MEM_DELTA[c.r] !== undefined ? MEM_DELTA[c.r] : 459);
+              el('mem-dp').textContent = 'À confirmer';
             }
           });
         }
@@ -5212,16 +5220,16 @@
       S.eq = v; S.cm = ''; S.sm = ''; S.otherProduct = ''; S.lastRuleResult = null;
       notifyAdvisorSelection('');
       /* Reset toutes les options pour éviter les reports entre catégories */
-      S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
+      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
       S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
       S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
-      el('t-sol').classList.add('on'); el('t-sol').setAttribute('aria-pressed', 'true');
+      el('t-sol').classList.remove('on'); el('t-sol').setAttribute('aria-pressed', 'false');
       ['t-rtt', 't-sm', 't-gr'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-pressed', 'false'); });
       selSW('g-struc', 'sc', 'RAL-9016');
       var srl = el('struc-ral'); if (srl) srl.textContent = 'RAL 9016';
       var sll = el('struc-lbl'); if (sll) sll.textContent = 'Blanc — RAL 9016';
-      var codp = el('co-dp'); if (codp) codp.textContent = '+ 0 €';
+      var codp = el('co-dp'); if (codp) codp.textContent = 'À confirmer';
       var sodp = el('so-dp'); if (sodp) sodp.textContent = '+ 0 €';
       ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
       ['b-ore-compact', 'b-ore-essential', 'b-eden'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-checked', 'false'); });
@@ -5283,7 +5291,7 @@
       else { conceal('s-mem'); conceal('s-hab'); conceal('s-co'); }
       if (isOre) { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
       else if (v === 'eden') { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
-      var pm = { auto: '13 890 €', semi: '11 490 €', ore_compact: 'Indicatif', ore_essential: 'Indicatif', eden: 'Sur devis' };
+      var pm = { auto: 'Sur devis', semi: 'Sur devis', ore_compact: 'Indicatif', ore_essential: 'Indicatif', eden: 'Sur devis' };
       el('cm-p').textContent = pm[v] || '–';
       track('config_model', { model: v, category: 'cover' });
       notifyAdvisorSelection(v);
@@ -5336,6 +5344,9 @@
       S[key] = value;
       if (key === 'productColor' && /^poly_/.test(value)) S.voletPoly = true;
       if (key === 'productColor' && /^(blanc|sable|gris_7004)$/.test(value)) S.voletPoly = false;
+      if (key === 'productColor' && (S.cm === 'ore_compact' || S.cm === 'ore_essential')) {
+        S.oreSpecialColor = /^(gris_clair_654|chocolat_7534)$/.test(value);
+      }
       track('config_qualification_field', {
         field: key,
         completed: !!value,
@@ -5360,9 +5371,15 @@
           supply: 'Fourniture seule'
         };
       }
-      if (product === 'volet_hs' || product === 'volet_immerge' || product === 'ul' || product === 'm18' || product === 'm30') {
+      if (product === 'volet_hs' || product === 'volet_immerge') {
         return {
           pose: 'Fourniture et pose (intégrée à l’estimation)',
+          supply: 'Fourniture seule (sur devis)'
+        };
+      }
+      if (product === 'ul' || product === 'm18' || product === 'm30') {
+        return {
+          pose: 'Fourniture et pose (chiffrée selon le projet)',
           supply: 'Fourniture seule (sur devis)'
         };
       }
@@ -5374,6 +5391,18 @@
 
     function productCommercialProof(product) {
       var proofs = {
+        auto: {
+          title: 'Étude Coverseal nécessaire',
+          copy: 'Dimensions, alimentation, options, pose et tarif sont confirmés avant proposition.'
+        },
+        semi: {
+          title: 'Étude Coverseal nécessaire',
+          copy: 'Manipulation, dimensions, options, pose et tarif sont confirmés avant proposition.'
+        },
+        eden: {
+          title: 'Projet défini au cas par cas',
+          copy: 'Usages, limites, fonctionnement, options et pose sont confirmés pendant l’étude.'
+        },
         ore_compact: {
           title: 'Pose incluse',
           copy: 'Votre installation est prise en charge par 2 techniciens Diskoov, sous réserve de validation du site.'
@@ -5395,16 +5424,20 @@
           copy: 'Pour un volet immergé standard, la livraison et la pose sont intégrées à l’estimation avant validation technique.'
         },
         ul: {
-          title: 'Pose de référence intégrée',
-          copy: 'L’estimation de cet abri inclut une pose de référence, sous réserve des accès et du support chantier.'
+          title: 'Pose étudiée avec le projet',
+          copy: 'Le chiffrage de la pose est confirmé selon les accès et le support autour du bassin.'
         },
         m18: {
-          title: 'Pose de référence intégrée',
-          copy: 'L’estimation de cet abri inclut une pose de référence, sous réserve des accès et du support chantier.'
+          title: 'Pose étudiée avec le projet',
+          copy: 'Le chiffrage de la pose est confirmé selon les accès et le support autour du bassin.'
         },
         m30: {
-          title: 'Pose de référence intégrée',
-          copy: 'L’estimation de cet abri inclut une pose de référence, sous réserve des accès et du support chantier.'
+          title: 'Pose étudiée avec le projet',
+          copy: 'Le chiffrage de la pose est confirmé selon les accès et le support autour du bassin.'
+        },
+        masterdeck: {
+          title: 'Configuration à confirmer',
+          copy: 'Les usages du plancher, les charges admissibles, les dimensions, les accès et les finitions sont précisés pendant l’étude.'
         }
       };
       var proof = proofs[product];
@@ -5473,7 +5506,6 @@
           '<label class="cbr"><input id="prod-oaw" type="checkbox" onchange="setProductOption(\'oreAntiWind\',this.checked)"><span>Sangle anti-vent</span></label>' +
           '<label class="cbr"><input id="prod-ows" type="checkbox" onchange="setProductOption(\'oreWinterStrap\',this.checked)"><span>Sangle d’hivernage longitudinale</span></label>' +
           '<label class="cbr"><input id="prod-oer" type="checkbox" onchange="setProductOption(\'oreExtraRetreat\',this.checked)"><span>Recul supplémentaire d’un mètre</span></label>' +
-          '<label class="cbr"><input id="prod-osc" type="checkbox" onchange="setProductOption(\'oreSpecialColor\',this.checked)"><span>Coloris personnalisé</span></label>' +
           '<div class="product-option-note">Ces options seront précisées dans la proposition personnalisée.</div></div>';
       } else if (product === 'bab') {
         html += '<div class="product-options">' +
@@ -5491,14 +5523,14 @@
       Object.keys(values).forEach(function (id) { if (el(id)) el(id).value = values[id] || ''; });
       var checks = {
         'prod-baa': S.babAntiAbrasion, 'prod-bbc': S.babBlockCut, 'prod-bru': S.babRollingUp, 'prod-bcc': S.babCutCorners, 'prod-vpoly': S.voletPoly, 'prod-vsol': S.voletSolar,
-        'prod-osol': S.oreSolar, 'prod-obc': S.oreBlockCut, 'prod-oaw': S.oreAntiWind, 'prod-ows': S.oreWinterStrap, 'prod-oer': S.oreExtraRetreat, 'prod-osc': S.oreSpecialColor
+        'prod-osol': S.oreSolar, 'prod-obc': S.oreBlockCut, 'prod-oaw': S.oreAntiWind, 'prod-ows': S.oreWinterStrap, 'prod-oer': S.oreExtraRetreat
       };
       Object.keys(checks).forEach(function (id) { if (el(id)) el(id).checked = checks[id]; });
       var detailImages = {
         ore_compact: 'assets/produits/ore/encombrements-60-80-45cm.jpg',
         ore_essential: 'assets/produits/ore/encombrements-60-80-45cm.jpg',
         bab: 'assets/produits/bab/rolling-up.jpg',
-        volet_hs: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg',
+        volet_hs: 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp',
         volet_immerge: 'assets/produits/volets-immerges/volet-immerge-blanc.jpg'
       };
       var media = el('product-media');
@@ -5530,20 +5562,25 @@
       else if (k === 'gr') { S.gr = !S.gr; btn.classList.toggle('on', S.gr); }
       else if (k === 'filt') { S.filtration = !S.filtration; btn.classList.toggle('on', S.filtration); }
       btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
-      var codp = el('co-dp'); if (codp) codp.textContent = fmtDelta(S.rtt ? OPT_P.rtt : 0);
+      var codp = el('co-dp'); if (codp) codp.textContent = S.rtt ? 'À chiffrer' : 'À confirmer';
       var sodp = el('so-dp'); if (sodp) sodp.textContent = (S.shlMotor || S.gr) ? 'Sur devis' : '+ 0 €';
       updP();
     }
 
     /* ── PRICE ──────────────────────────────────────────── */
+    function setPriceContext(title, subtitle) {
+      el('pf-title').textContent = title;
+      el('pf-subtitle').textContent = subtitle;
+    }
+
     function updP() {
       var eq = S.eq, cm = S.cm, sm = S.sm, base = 0;
       var lines = [];
       S.lastRuleResult = null;
-      el('pf-title').textContent = 'Prix estimatif TTC';
-      el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
+      setPriceContext('Votre estimation', 'Affinée selon vos réponses');
       if (S.shape === 'libre') {
         S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Forme libre : plan et validation technique nécessaires.'], reference: 'Étude sur mesure', technical: {} };
+        setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
         setP('Sur devis', true); updBreakdown(0, null);
         updateRuleStatus(S.lastRuleResult);
         el('share-btn').style.display = S.eq ? 'inline-flex' : 'none';
@@ -5554,14 +5591,12 @@
         if (cm === 'ore_compact' || cm === 'ore_essential') return applyRulePrice(cm);
         if (cm === 'eden') {
           S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Eden est étudiée sur mesure selon le bassin, les abords et les finitions souhaitées.'], reference: 'Étude personnalisée Eden', technical: {} };
+          setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
           setP('Sur devis', true); updBreakdown(0, null); updateRuleStatus(S.lastRuleResult); return;
         }
-        var bpCm = BP[cm] || 0;
-        lines.push([PNMS[cm] || 'Base', bpCm.toLocaleString('fr-FR') + ' €']);
-        base = bpCm;
-        var memD = MEM_DELTA[S.mRal] !== undefined ? MEM_DELTA[S.mRal] : 459;
-        if (memD) { lines.push(['Membrane ' + S.mLbl, '+ ' + memD.toLocaleString('fr-FR') + ' €']); base += memD; }
-        if (S.rtt) { lines.push(['Rail tout-terrain', '+ ' + OPT_P.rtt.toLocaleString('fr-FR') + ' €']); base += OPT_P.rtt; }
+        S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Dimensions, alimentation, options, pose et tarif Coverseal sont confirmés après étude du bassin.'], reference: 'Étude personnalisée Coverseal', technical: {} };
+        setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
+        setP('Sur devis', true); updBreakdown(0, null); updateRuleStatus(S.lastRuleResult); return;
       } else if (eq === 'shl') {
         if (!sm) { setP('–', true); updBreakdown(0, null); return; }
         return applyRulePrice(sm);
@@ -5581,6 +5616,7 @@
         reference: 'Tarif Coverseal configurateur', technical: {}
       };
       updateRuleStatus(S.lastRuleResult);
+      setPriceContext('Estimation indicative TTC', 'À confirmer après vérification du projet');
       setP('dès ' + base.toLocaleString('fr-FR') + ' €', false);
       updBreakdown(base, lines.length > 1 ? lines : null);
       el('share-btn').style.display = 'inline-flex';
@@ -5588,6 +5624,7 @@
 
     function applyRulePrice(product) {
       if (!window.DISKOOV_RULES) {
+        setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
         setP('Sur devis', true); updBreakdown(0, null);
         updateRuleStatus({ status: 'quote', warnings: ['Cette configuration doit être vérifiée avant estimation.'], reference: '' });
         return;
@@ -5628,12 +5665,22 @@
       });
       S.lastRuleResult = rr;
       updateRuleStatus(rr);
-      el('pf-title').textContent = 'Prix estimatif TTC';
-      el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
+      var missingRuleInputs = rr.technical && Array.isArray(rr.technical.missingInputs) && rr.technical.missingInputs.length > 0;
+      var missingDimensions = !S.len || !S.wid;
       if (rr.status === 'quote' || rr.total === null) {
-        setP(rr.eligible === false ? 'À vérifier — sur devis' : 'Sur devis', true);
+        if (missingDimensions || missingRuleInputs) {
+          setPriceContext('Votre estimation', 'Complétez les informations indiquées');
+          setP('À compléter', true);
+        } else if (rr.eligible === false) {
+          setPriceContext('Plage dimensionnelle à vérifier', 'Diskoov étudiera une configuration adaptée');
+          setP('À vérifier', true);
+        } else {
+          setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
+          setP('Sur devis', true);
+        }
         updBreakdown(0, null);
       } else {
+        setPriceContext('Estimation TTC 2026', 'Avant validation technique du projet');
         var total = Math.round(rr.total);
         var ruleLines = (rr.breakdown || []).map(function (line) {
           return [line.label, Math.round(line.amount).toLocaleString('fr-FR') + ' €'];
@@ -5681,8 +5728,8 @@
       var gaps = getProductGaps();
       box.classList.toggle('blocked', gaps.length > 0 || rr.status === 'quote');
       box.classList.toggle('ok', gaps.length === 0 && rr.eligible === true && rr.status !== 'quote');
-      var statusLabel = rr.status === 'indicative' ? 'Première estimation' : (rr.status === 'exact' ? 'Estimation calculée' : 'Étude personnalisée');
-      var eligibility = rr.eligible === false ? ' · étude sur mesure' : '';
+      var statusLabel = gaps.length ? 'Informations à compléter' : (rr.eligible === false ? 'Hors plage dimensionnelle connue' : (rr.status === 'indicative' ? 'Première estimation' : (rr.status === 'exact' ? 'Estimation calculée' : 'Étude personnalisée')));
+      var statusKicker = gaps.length || rr.eligible === false ? 'Votre projet' : 'Votre estimation';
       var seenWarnings = {};
       var warnings = (rr.warnings || []).map(function (w) {
         return publicRuleWarning(w, product);
@@ -5693,14 +5740,16 @@
       });
       var summary = gaps.length
         ? 'Complétez ces informations pour préparer une estimation fiable.'
-        : (rr.status === 'quote'
+        : (rr.eligible === false
+          ? 'La configuration saisie doit être vérifiée. Diskoov peut étudier une solution adaptée.'
+          : (rr.status === 'quote'
           ? 'Votre projet fera l’objet d’une proposition personnalisée.'
-          : 'Une première estimation est disponible pour votre configuration.');
-      var chip = gaps.length ? gaps.length + ' info' + (gaps.length > 1 ? 's' : '') + ' à préciser' : (rr.status === 'quote' ? 'Sur mesure' : 'Disponible');
+          : 'Une première estimation est disponible pour votre configuration.'));
+      var chip = gaps.length ? gaps.length + ' info' + (gaps.length > 1 ? 's' : '') + ' à préciser' : (rr.eligible === false ? 'À vérifier' : (rr.status === 'quote' ? 'Sur mesure' : 'Disponible'));
       var warningHtml = warnings.map(function (w) { return '<div class="rule-status-line"><span>' + esc(w) + '</span></div>'; }).join('');
       var missingHtml = gaps.length ? '<div class="missing-list">' + gaps.map(function (g) { return '<span>' + esc(g) + '</span>'; }).join('') + '</div>' : '';
       box.innerHTML =
-        '<div class="rule-status-head"><div><div class="rule-status-kicker">Votre estimation</div><strong>' + esc(statusLabel + eligibility) + '</strong></div><span class="rule-status-chip">' + esc(chip) + '</span></div>' +
+        '<div class="rule-status-head"><div><div class="rule-status-kicker">' + esc(statusKicker) + '</div><strong>' + esc(statusLabel) + '</strong></div><span class="rule-status-chip">' + esc(chip) + '</span></div>' +
         '<p class="rule-status-copy">' + esc(summary) + '</p>' +
         missingHtml +
         warningHtml;
@@ -5740,7 +5789,7 @@
       if (!e) return;
       var PSHORT = {
         auto: 'Coverseal Auto', semi: 'Coverseal Semi', ore_compact: 'Oré Compact', ore_essential: 'Oré Essential', eden: 'Eden',
-        ul: 'Ultra Bas', m18: 'Master 18', m30: 'Master 30', m50: 'Master 50', mid: 'Mi-haut',
+        ul: 'Ultra Bas 1.2', m18: 'Master 18', m30: 'Master 30', m50: 'Master Bas 5.0', mid: 'Mi-haut',
         bab: 'Bâche à barres', volet_hs: 'Volet hors-sol', volet_immerge: 'Volet immergé', masterdeck: 'MasterDeck'
       };
       var SHAPES = { rect: 'Rect.', oval: 'Arrondie', libre: 'Libre' };
@@ -5986,7 +6035,7 @@
       var img = el('vi-product');
       img.src = meta.image;
       img.alt = meta.label + ' Diskoov';
-      img.classList.toggle('fit-contain', product === 'm50' || product === 'mid');
+      img.classList.toggle('fit-contain', product === 'mid');
       showImg('vi-product');
     }
     function loadYT() {
@@ -6206,7 +6255,7 @@
           });
           showSuccess(pname);
           if (!emailOk) {
-            showToast('Votre demande est bien sauvegardée. L’équipe Diskoov vous contactera sous 48h.', true);
+            showToast('Votre demande est bien sauvegardée. L’équipe Diskoov reprendra contact avec vous.', true);
           }
         }
       });
@@ -6248,10 +6297,10 @@
       el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
       var contactLabel = CONTACT_NAME === 'l’équipe Diskoov' ? 'l’équipe Diskoov' : CONTACT_NAME;
       var contactMessage = S.contactPreference === 'email'
-        ? 'Vous recevrez une réponse sous <strong>48 h</strong> à l’adresse <strong>' + esc(S.em) + '</strong>.'
+        ? 'La réponse vous sera envoyée à l’adresse <strong>' + esc(S.em) + '</strong>.'
         : (S.contactPreference === 'telephone'
-          ? 'Vous serez rappelé sous <strong>48 h</strong> au <strong>' + esc(S.ph) + '</strong>.'
-          : esc(contactLabel) + ' vous contactera sous <strong>48 h</strong> par téléphone ou par email.');
+          ? 'Vous serez rappelé au <strong>' + esc(S.ph) + '</strong>.'
+          : esc(contactLabel) + ' vous contactera par téléphone ou par email.');
       el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise à ' + esc(contactLabel) + '.<br>' + contactMessage;
       /* Numéro de référence unique (timestamp lisible) */
       var refEl = el('suc-ref');
@@ -6310,8 +6359,8 @@
       if ((S.cm === 'auto' || S.cm === 'semi') && S.hLbl) rows.push(['Habillage', S.hLbl]);
       /* Options couverture */
       if (S.eq === 'cov' && (S.cm === 'auto' || S.cm === 'semi')) {
-        if (S.sol) rows.push(['Motorisation solaire', 'Incluse']);
-        if (S.rtt) rows.push(['Rail tout-terrain', '+ ' + OPT_P.rtt.toLocaleString('fr-FR') + ' €']);
+        if (S.sol) rows.push(['Alimentation solaire', 'Souhaitée · à confirmer']);
+        if (S.rtt) rows.push(['Rail tout-terrain', 'À chiffrer']);
       }
       /* Options abri */
       if (S.eq === 'shl') {
@@ -6374,7 +6423,7 @@
       S.planFile = null; S.planB64 = ''; S.planName = ''; S.planDesc = ''; S.planKind = ''; S.planPending = false;
       S.mRal = 'RAL 7037'; S.mLbl = 'Gris poussière';
       S.hRal = 'RAL 7037'; S.hLbl = 'Gris poussière';
-      S.sol = true; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
+      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
       S.installation = ''; S.support = ''; S.margellesLevel = ''; S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
       S.projectStatus = ''; S.siteAccess = ''; S.projectBudget = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
@@ -6495,8 +6544,8 @@
       var nc = el('note-count'); if (nc) nc.textContent = '800 caractères restants';
       selSW('g-mem', 'm', 'RAL-7037');
       selSW('g-hab', 'h', 'RAL-7037');
-      el('t-sol').classList.add('on');
-      el('t-sol').setAttribute('aria-pressed', 'true');
+      el('t-sol').classList.remove('on');
+      el('t-sol').setAttribute('aria-pressed', 'false');
       ['t-rtt', 't-sm', 't-gr'].forEach(function (id) {
         el(id).classList.remove('on');
         el(id).setAttribute('aria-pressed', 'false');
@@ -6714,7 +6763,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260711-v3-leads17"></script>
+  <script src="advisor-v2.js?v=20260712-v3-leads33"></script>
 </body>
 
 </html>
