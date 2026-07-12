@@ -433,7 +433,7 @@
       + '<h1 class="advisor-title">Quelle protection simplifiera vraiment <span class="advisor-title-accent">votre quotidien</span> ?</h1>'
       + '<p class="advisor-subtitle">Partez de vos usages, pas des noms de produits. Diskoov compare sa sélection de protections selon votre bassin et vous explique clairement ce qui les distingue.</p>'
       + '<div class="advisor-welcome-actions">'
-      + '  <button type="button" class="advisor-button" data-action="start">Obtenir mes recommandations <span aria-hidden="true">→</span></button>'
+      + '  <button type="button" class="advisor-button" data-action="start">Obtenir mes recommandations <span class="advisor-button-icon" aria-hidden="true">' + icon('arrow-right') + '</span></button>'
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button>'
       + '</div>'
       + '<p class="advisor-welcome-start-note">' + icon('check') + '<span>Commencez sans dimensions précises ni coordonnées.</span></p>'
@@ -443,7 +443,7 @@
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Ce que permet votre bassin</b><small>Forme et dimensions, même approximatives</small></span></div>'
       + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Ce qui change vraiment</b><small>Des familles différentes, comparées simplement</small></span></div>'
       + '</div>'
-      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('idea') + '</span><span><strong>Notre engagement : des conseils clairs, adaptés à votre projet.</strong><small>Nous comparons selon vos priorités et votre bassin. La faisabilité, la pose, les accès et les options sont confirmés avec vous avant devis.</small></span></aside>'
+      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('user') + '</span><span><strong>Première sélection en ligne, vérification humaine avant devis.</strong><small>Un conseiller Diskoov confirme avec vous le modèle, la faisabilité, la pose, les accès et les options.</small></span></aside>'
       + googleReviewsTemplate()
       + '</div>';
   }
@@ -1677,7 +1677,7 @@
       deck: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v14M13 5v14M18 5v14M3 10h18M3 15h18"/>',
       target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
       compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
-      idea: '<path d="M9 18h6M10 22h4"/><path d="M8.7 15.3C7 14.2 6 12.3 6 10a6 6 0 1 1 12 0c0 2.3-1 4.2-2.7 5.3-.8.5-1.3 1.2-1.3 2.2h-4c0-1-.5-1.7-1.3-2.2Z"/>',
+      'arrow-right': '<path d="M5 12h14M13 6l6 6-6 6"/>',
       star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
       'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
       'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',

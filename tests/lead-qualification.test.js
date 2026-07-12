@@ -262,9 +262,13 @@ test('la reassurance d accueil reste visuelle et factuelle', function () {
   assert.match(advisor, /class="advisor-visual-proof"/);
   assert.match(advisor, /Protection, confort, entretien : comparez ce qui compte/);
   assert.match(advisor, /class="advisor-welcome-assurance"/);
-  assert.match(advisor, /Notre engagement : des conseils clairs, adaptés à votre projet/);
-  assert.match(advisor, /La faisabilité, la pose, les accès et les options sont confirmés avec vous avant devis/);
+  assert.match(advisor, /Première sélection en ligne, vérification humaine avant devis/);
+  assert.match(advisor, /Un conseiller Diskoov confirme avec vous le modèle, la faisabilité, la pose, les accès et les options/);
+  assert.match(advisor, /class="advisor-button-icon"[\s\S]*?icon\('arrow-right'\)/);
   assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border-radius:\s*var\(--advisor-radius-lg\)/);
+  assert.match(advisorCss, /\.advisor-welcome-path > div:nth-child\(1\)\s*\{[\s\S]*?box-shadow:\s*inset 0 3px 0/);
+  assert.match(advisorCss, /\.advisor-welcome-assurance\s*\{[\s\S]*?background:\s*var\(--advisor-sage-soft\)/);
+  assert.match(advisorCss, /\.advisor-google-proof\s*\{[\s\S]*?box-shadow:\s*var\(--advisor-shadow\)/);
   assert.match(advisorCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
   assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
 });

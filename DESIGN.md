@@ -36,13 +36,14 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 ## Composants
 
 - **CTA principal** : vert profond, flèche laiton, une seule action dominante par zone.
+- **Rail d’accueil** : trois étapes réellement séquentielles, différenciées par les couleurs navigation, bassin et comparaison ; accents colorés courts, jamais décoratifs hors de ce contexte.
 - **Action secondaire** : fond clair, bord visible, texte bleu ou vert foncé.
 - **Cartes de priorité** : icône teintée, description courte, état sélectionné avec fond, contour complet et coche.
 - **Limite de choix** : deux priorités maximum ; les autres choix sont désactivés avec une explication visible, sans remplacement silencieux.
 - **Sélecteurs segmentés** : icône + libellé, état actif bleu marque, navigation clavier par flèches.
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
-- **Réassurance** : engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
+- **Réassurance** : fond sauge réservé à la vérification humaine ; engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
 - **Avis Google** : module unique réunissant `4,9/5`, plus de 30 avis, un témoignage court et le lien vers la fiche publique ; données contrôlées le 12 juillet 2026 et nouvelle vérification obligatoire avant chaque publication.
 - **Preuves d’expertise** : `13 ans` d’expérience terrain, partenariat Premium avec trois fabricants et accompagnement du projet repris du [site officiel Diskoov](https://diskoov.fr/), contrôlé le 12 juillet 2026.
 - **Témoignage** : extrait court de l’avis Google de Dagmar S. publié sur le [site officiel Diskoov](https://diskoov.fr/) ; attribution visible et date de contrôle conservée dans le code.

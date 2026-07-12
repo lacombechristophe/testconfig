@@ -261,8 +261,9 @@
   display: grid;
   place-items: center;
   border-radius: var(--advisor-radius-sm);
-  background: rgba(255, 255, 255, .08);
+  background: rgba(215, 193, 132, .14);
   color: #d7c184;
+  box-shadow: inset 0 0 0 1px rgba(215, 193, 132, .18);
 }
 
 .advisor-visual-expert-icon svg {
@@ -279,7 +280,7 @@
 
 .advisor-visual-expert strong {
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 760;
   line-height: 1.35;
 }
@@ -287,7 +288,7 @@
 .advisor-visual-expert small {
   margin-top: 2px;
   color: rgba(255, 255, 255, .72);
-  font-size: 11px;
+  font-size: 11.5px;
   line-height: 1.4;
 }
 
@@ -309,7 +310,7 @@
 
 .advisor-visual-facts strong {
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
 }
@@ -317,7 +318,7 @@
 .advisor-visual-facts small {
   margin-top: 4px;
   color: rgba(255, 255, 255, .68);
-  font-size: 10px;
+  font-size: 10.5px;
   line-height: 1.35;
   text-wrap: pretty;
 }
@@ -592,6 +593,26 @@
   margin-top: 28px;
 }
 
+.advisor-welcome-actions .advisor-button {
+  min-height: 48px;
+  padding-inline: 20px;
+  font-size: 13.5px;
+}
+
+.advisor-button-icon {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.advisor-button-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
 .advisor-welcome-start-note {
   min-height: 40px;
   display: flex;
@@ -599,14 +620,14 @@
   gap: 8px;
   margin: 14px 0 0;
   color: var(--advisor-muted-strong);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 650;
   line-height: 1.4;
 }
 
 .advisor-welcome-start-note svg {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
   flex: 0 0 auto;
   color: var(--advisor-sage);
 }
@@ -615,11 +636,12 @@
   display: grid;
   grid-template-columns: minmax(140px, .75fr) minmax(0, 1.6fr) minmax(150px, .75fr);
   align-items: center;
-  margin-top: 18px;
+  margin-top: 16px;
   padding: 16px 18px;
-  border: 1px solid var(--advisor-line);
+  border: 0;
   border-radius: var(--advisor-radius-md);
-  background: #f7faf8;
+  background: #fff;
+  box-shadow: var(--advisor-shadow);
 }
 
 .advisor-google-score {
@@ -728,20 +750,34 @@
 .advisor-welcome-path {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 36px;
+  margin-top: 30px;
   overflow: hidden;
   border: 1px solid var(--advisor-line);
   border-radius: var(--advisor-radius-lg);
-  background: #fff;
+  background: #fbfdfc;
 }
 
 .advisor-welcome-path > div {
+  position: relative;
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  gap: 11px;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
   min-width: 0;
-  padding: 18px 17px;
+  padding: 19px 17px 18px;
+  background: rgba(255, 255, 255, .72);
+}
+
+.advisor-welcome-path > div:nth-child(1) {
+  box-shadow: inset 0 3px 0 rgba(26, 66, 104, .45);
+}
+
+.advisor-welcome-path > div:nth-child(2) {
+  box-shadow: inset 0 3px 0 rgba(49, 135, 154, .45);
+}
+
+.advisor-welcome-path > div:nth-child(3) {
+  box-shadow: inset 0 3px 0 rgba(209, 132, 56, .5);
 }
 
 .advisor-welcome-path > div + div {
@@ -751,14 +787,14 @@
 .advisor-welcome-path strong {
   margin-bottom: 2px;
   color: var(--advisor-brass-dark);
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 850;
   letter-spacing: 0;
 }
 
 .advisor-welcome-path-icon {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   border-radius: var(--advisor-radius-sm);
@@ -777,8 +813,20 @@
 }
 
 .advisor-welcome-path-icon svg {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
+}
+
+.advisor-welcome-path > div:nth-child(1) strong {
+  color: var(--advisor-navy);
+}
+
+.advisor-welcome-path > div:nth-child(2) strong {
+  color: var(--advisor-water-dark);
+}
+
+.advisor-welcome-path > div:nth-child(3) strong {
+  color: var(--advisor-brass-dark);
 }
 
 .advisor-welcome-path b,
@@ -788,7 +836,7 @@
 
 .advisor-welcome-path b {
   color: var(--advisor-forest);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 780;
   line-height: 1.25;
 }
@@ -796,7 +844,7 @@
 .advisor-welcome-path small {
   margin-top: 4px;
   color: var(--advisor-muted);
-  font-size: 12px;
+  font-size: 12.5px;
   line-height: 1.4;
 }
 
@@ -804,10 +852,10 @@
   display: flex;
   align-items: center;
   gap: 13px;
-  margin-top: 20px;
+  margin-top: 16px;
   padding: 15px 16px;
   border-radius: var(--advisor-radius-md);
-  background: var(--advisor-water-soft);
+  background: var(--advisor-sage-soft);
   color: var(--advisor-muted-strong);
 }
 
@@ -819,7 +867,7 @@
   place-items: center;
   border-radius: var(--advisor-radius-sm);
   background: #fff;
-  color: var(--advisor-water-dark);
+  color: var(--advisor-sage);
 }
 
 .advisor-welcome-assurance-icon svg {
@@ -2833,6 +2881,19 @@ button.advisor-direct-media img {
 
   .advisor-shell[data-screen='welcome'] .advisor-visual-copy {
     padding-block: 30px 28px;
+  }
+
+  .advisor-visual-expert strong,
+  .advisor-visual-facts strong {
+    font-size: 13px;
+  }
+
+  .advisor-visual-expert small {
+    font-size: 11px;
+  }
+
+  .advisor-visual-facts small {
+    font-size: 10px;
   }
 
   .advisor-visual-copy::before {
