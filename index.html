@@ -1631,11 +1631,12 @@
 ───────────────────────────────────────────────────────── */
     .shape-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
     .shape-btn {
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1686,11 +1687,21 @@
       font-size: 12px;
       font-weight: 600;
       color: var(--mid);
+      text-align: center;
+      text-wrap: balance;
       transition: color .12s
     }
 
     .shape-btn.on span {
       color: var(--ink)
+    }
+
+    .shape-hint {
+      margin: 9px 0 0;
+      color: var(--faint);
+      font-size: 11.5px;
+      line-height: 1.45;
+      text-wrap: pretty;
     }
 
     /* ─────────────────────────────────────────────────────────
@@ -2585,6 +2596,19 @@
       }
     }
 
+    @media (max-width: 680px) {
+      .product-intro,
+      .rule-status-copy,
+      .shape-hint {
+        font-size: 12px;
+      }
+
+      .field-help,
+      .file-zone-hint {
+        font-size: 11.5px;
+      }
+    }
+
     /* ─────────────────────────────────────────────────────────
    REDUCED MOTION
 ───────────────────────────────────────────────────────── */
@@ -2743,7 +2767,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260712-v4-design03">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260712-v4-design04">
 
   <noscript>
     <style>
@@ -2861,8 +2885,8 @@
           <div class="sh">
             <span class="sl" id="lbl-shape">Forme du bassin</span>
           </div>
-          <div class="shape-grid" role="radiogroup" aria-labelledby="lbl-shape">
-            <button type="button" class="shape-btn on" id="sh-rect" role="radio" aria-checked="true"
+          <div class="shape-grid" role="radiogroup" aria-labelledby="lbl-shape" aria-describedby="shape-hint">
+            <button type="button" class="shape-btn" id="sh-rect" role="radio" aria-checked="false" tabindex="0"
               onclick="selShape('rect')">
               <svg viewBox="0 0 48 36">
                 <rect x="6" y="5" width="36" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
@@ -2872,9 +2896,9 @@
                 <line x1="14" y1="18" x2="34" y2="18" stroke="currentColor" stroke-width=".5" opacity=".15" />
                 <line x1="16" y1="22" x2="32" y2="22" stroke="currentColor" stroke-width=".5" opacity=".2" />
               </svg>
-              <span>Rectangulaire</span>
+              <span>Rectangle</span>
             </button>
-            <button type="button" class="shape-btn" id="sh-oval" role="radio" aria-checked="false"
+            <button type="button" class="shape-btn" id="sh-oval" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('oval')">
               <svg viewBox="0 0 48 36">
                 <ellipse cx="24" cy="18" rx="18" ry="13" fill="none" stroke="currentColor" stroke-width="1.8" />
@@ -2883,9 +2907,9 @@
                 <path d="M14 16 Q24 12, 34 16" fill="none" stroke="currentColor" stroke-width=".5" opacity=".2" />
                 <path d="M12 20 Q24 16, 36 20" fill="none" stroke="currentColor" stroke-width=".5" opacity=".15" />
               </svg>
-              <span>Arrondie</span>
+              <span>Ovale / ronde</span>
             </button>
-            <button type="button" class="shape-btn" id="sh-libre" role="radio" aria-checked="false"
+            <button type="button" class="shape-btn" id="sh-libre" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('libre')">
               <svg viewBox="0 0 48 36">
                 <path d="M10 28 C8 18, 12 7, 22 6 C32 5, 38 10, 39 18 C40 26, 34 31, 24 30 C14 29, 10 28, 10 28Z"
@@ -2898,6 +2922,7 @@
               <span>Forme libre</span>
             </button>
           </div>
+          <p class="shape-hint" id="shape-hint">Choisissez la forme qui se rapproche le plus de votre bassin.</p>
         </div>
 
         <!-- DIMENSIONS -->
@@ -3782,8 +3807,8 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260712-v4-design03"></script>
-  <script src="advisor-engine.js?v=20260712-v4-design03"></script>
+  <script src="product-rules.js?v=20260712-v4-design04"></script>
+  <script src="advisor-engine.js?v=20260712-v4-design04"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -3863,6 +3888,7 @@
     var S = {
       loc: 'ext', len: 8, wid: 4,
       shape: 'rect',
+      shapeConfirmed: false,
       stair: false, stairType: '', stairSide: '', stairCorner: '', stairWidth: 1.5, stairPos: 'interieur', stairDesc: '',
       filtration: false,
       planFile: null, planB64: '', planName: '', planDesc: '', planKind: '', planPending: false,
@@ -3897,7 +3923,7 @@
       S.advisorVersion = String(context.version || 'v3').slice(0, 20);
     };
 
-    window.clearAdvisorPoolDimensions = function (shape) {
+    window.clearAdvisorPoolDimensions = function (shape, shapeConfirmed) {
       S.len = 0;
       S.wid = 0;
       var lengthInput = el('d-l');
@@ -3905,7 +3931,7 @@
       if (lengthInput) lengthInput.value = '';
       if (widthInput) widthInput.value = '';
       document.querySelectorAll('.dim-pre').forEach(function (button) { button.classList.remove('on'); });
-      selShape(['rect', 'oval', 'libre'].indexOf(shape) !== -1 ? shape : 'rect', { silent: true });
+      selShape(['rect', 'oval', 'libre'].indexOf(shape) !== -1 ? shape : 'rect', { silent: true, confirmed: shapeConfirmed === true });
       updSurface();
       updSummary();
       updP();
@@ -3916,7 +3942,7 @@
       return {
         equipment: S.eq,
         product: activeProduct(),
-        shape: S.shape,
+        shape: S.shapeConfirmed ? S.shape : '',
         length: S.len,
         width: S.wid
       };
@@ -3982,10 +4008,11 @@
     };
 
     function shapeCompatibility(product) {
+      if (!S.shapeConfirmed) return dimOk();
       if (!product || S.shape === 'rect' || CUSTOM_SHAPE_PRODUCTS[product]) return dimOk();
       var label = RECT_ONLY_PRODUCTS[product];
       if (!label) return dimOk();
-      var shapeLabel = S.shape === 'oval' ? 'forme arrondie' : 'forme libre';
+      var shapeLabel = S.shape === 'oval' ? 'forme ovale ou ronde' : 'forme libre';
       return dimBlocked(
         'Rectangulaire requis',
         label + ' : estimation disponible uniquement pour bassin rectangulaire. Pour une ' + shapeLabel + ', sélectionnez une option sur mesure ou transmettez une photo/plan pour étude.'
@@ -4006,6 +4033,7 @@
     }
 
     function dimensionAvailability(product) {
+      if (!S.shapeConfirmed) return dimOk();
       if (!product) return dimOk();
       var shapeAv = shapeCompatibility(product);
       if (!shapeAv.available) return shapeAv;
@@ -4181,7 +4209,7 @@
     }
 
     function advisorPoolSnapshot() {
-      return { shape: S.shape, length: S.len, width: S.wid };
+      return { shape: S.shapeConfirmed ? S.shape : '', length: S.len, width: S.wid };
     }
 
     function notifyAdvisorSelection(product) {
@@ -4202,6 +4230,7 @@
 
     function getProjectGaps() {
       var gaps = [];
+      if (!S.shapeConfirmed) gaps.push('forme du bassin');
       if (S.shape === 'libre' && !String(S.planDesc || '').trim() && !S.planB64) {
         gaps.push('description de la forme ou photo/plan');
       }
@@ -4247,8 +4276,8 @@
     /* ── BARRE DE PROGRESSION ─────────────────────────── */
     function updProgress() {
       var steps = 0, done = 0;
-      /* Forme — toujours sélectionnée */
-      steps += 1; done += 1;
+      /* Forme — sélection explicite */
+      steps += 1; if (S.shapeConfirmed) done += 1;
       /* Dimensions — obligatoires hors forme libre */
       if (S.shape !== 'libre') {
         steps += 1;
@@ -4520,6 +4549,19 @@
       setupMobileChrome();
       setupMobileVisualPull();
       setupVisualLightbox();
+      var shapeGrid = document.querySelector('.shape-grid');
+      if (shapeGrid) {
+        shapeGrid.addEventListener('keydown', function (event) {
+          if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(event.key) === -1) return;
+          event.preventDefault();
+          var shapes = ['rect', 'oval', 'libre'];
+          var current = shapes.indexOf(document.activeElement && document.activeElement.id ? document.activeElement.id.replace('sh-', '') : 'rect');
+          var direction = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
+          var nextShape = shapes[(Math.max(0, current) + direction + shapes.length) % shapes.length];
+          selShape(nextShape);
+          el('sh-' + nextShape).focus();
+        });
+      }
       /* Restore config from URL if shared */
       restoreFromURL();
       restoreConfigDraft();
@@ -4713,10 +4755,13 @@
     /* ── SHAPE SELECTION ─────────────────────────────── */
     function selShape(v, options) {
       S.shape = v;
+      S.shapeConfirmed = !(options && options.confirmed === false);
       ['rect', 'oval', 'libre'].forEach(function (k) {
         var b = el('sh-' + k);
-        b.classList.toggle('on', k === v);
-        b.setAttribute('aria-checked', String(k === v));
+        var selected = S.shapeConfirmed && k === v;
+        b.classList.toggle('on', selected);
+        b.setAttribute('aria-checked', String(selected));
+        b.tabIndex = S.shapeConfirmed ? (selected ? 0 : -1) : (k === 'rect' ? 0 : -1);
       });
       if (v === 'libre') {
         el('s-dim').style.display = 'none';
@@ -4747,6 +4792,10 @@
     /* ── SURFACE CALCULATION ─────────────────────────── */
     function updSurface() {
       var tag = el('surface-tag');
+      if (!S.shapeConfirmed) {
+        if (tag) { tag.textContent = 'Forme à choisir'; tag.style.display = ''; }
+        return;
+      }
       if (S.shape === 'libre') {
         if (tag) { tag.textContent = 'Sur mesure'; tag.style.display = ''; }
         return;
@@ -5006,7 +5055,7 @@
     /* ── SHARE CONFIGURATION ─────────────────────────── */
     function buildConfigParams() {
       var params = new URLSearchParams();
-      params.set('sh', S.shape);
+      if (S.shapeConfirmed) params.set('sh', S.shape);
       params.set('l', S.len); params.set('w', S.wid);
       if (S.stair) { params.set('st', '1'); params.set('stt', S.stairType); if (S.stairSide) params.set('sts', S.stairSide); if (S.stairCorner) params.set('stc', S.stairCorner); if (S.stairType !== 'angle') params.set('stw', S.stairWidth); }
       if (S.filtration) params.set('filt', '1');
@@ -5578,6 +5627,14 @@
       var lines = [];
       S.lastRuleResult = null;
       setPriceContext('Votre estimation', 'Affinée selon vos réponses');
+      if (!S.shapeConfirmed) {
+        S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: [], reference: '', technical: {} };
+        setPriceContext('Votre estimation', 'Choisissez la forme du bassin');
+        setP('À compléter', true); updBreakdown(0, null);
+        updateRuleStatus(S.lastRuleResult);
+        el('share-btn').style.display = 'none';
+        return;
+      }
       if (S.shape === 'libre') {
         S.lastRuleResult = { status: 'quote', eligible: null, total: null, breakdown: [], warnings: ['Forme libre : plan et validation technique nécessaires.'], reference: 'Étude sur mesure', technical: {} };
         setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
@@ -5725,7 +5782,7 @@
       var box = el('product-rule-note');
       if (!box || !rr) return;
       var product = activeProduct();
-      var gaps = getProductGaps();
+      var gaps = getAllQualificationGaps();
       box.classList.toggle('blocked', gaps.length > 0 || rr.status === 'quote');
       box.classList.toggle('ok', gaps.length === 0 && rr.eligible === true && rr.status !== 'quote');
       var statusLabel = gaps.length ? 'Informations à compléter' : (rr.eligible === false ? 'Hors plage dimensionnelle connue' : (rr.status === 'indicative' ? 'Première estimation' : (rr.status === 'exact' ? 'Estimation calculée' : 'Étude personnalisée')));
@@ -5792,7 +5849,7 @@
         ul: 'Ultra Bas 1.2', m18: 'Master 18', m30: 'Master 30', m50: 'Master Bas 5.0', mid: 'Mi-haut',
         bab: 'Bâche à barres', volet_hs: 'Volet hors-sol', volet_immerge: 'Volet immergé', masterdeck: 'MasterDeck'
       };
-      var SHAPES = { rect: 'Rect.', oval: 'Arrondie', libre: 'Libre' };
+      var SHAPES = { rect: 'Rect.', oval: 'Ovale / ronde', libre: 'Libre' };
       var parts = [];
       if (S.shape !== 'rect') parts.push(SHAPES[S.shape] || '');
       var prod = S.cm || S.sm || S.otherProduct;
@@ -5818,6 +5875,7 @@
       else if (S.eq === 'cov' && !S.cm) lbl = 'Choisissez un modèle';
       else if (S.eq === 'shl' && !S.sm) lbl = 'Choisissez une hauteur';
       else if (S.eq === 'oth' && !S.otherProduct) lbl = 'Choisissez un produit';
+      else if (!S.shapeConfirmed) lbl = 'Choisissez la forme du bassin';
       else if (S.shape !== 'libre' && !(S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12)) lbl = 'Indiquez les dimensions du bassin';
       else if (getAllQualificationGaps().length) lbl = 'Précisez : ' + getAllQualificationGaps()[0];
       else if (!S.tl) lbl = 'Indiquez votre délai';
@@ -5840,7 +5898,7 @@
       if (S.eq === 'cov' && !S.cm) eqOk = false;
       if (S.eq === 'shl' && !S.sm) eqOk = false;
       if (S.eq === 'oth' && !S.otherProduct) eqOk = false;
-      var dimensionsOk = S.shape === 'libre' || (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12);
+      var dimensionsOk = S.shapeConfirmed && (S.shape === 'libre' || (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12));
       var ok = !!(eqOk && dimensionsOk && !getAllQualificationGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && postalOk && S.city && S.dept && S.ok && S.tl);
       el('cta').disabled = !ok;
       updCTA();
@@ -6080,7 +6138,7 @@
       btn.classList.add('spin');
 
       var TLS = { urg: "Dès que possible", '6m': 'Dans les 6 mois', '1a': "Dans l'année", ref: 'En réflexion' };
-      var SHAPES_LABEL = { rect: 'Rectangulaire', oval: 'Arrondie / Ovale', libre: 'Forme libre' };
+      var SHAPES_LABEL = { rect: 'Rectangulaire', oval: 'Ovale / ronde', libre: 'Forme libre' };
       var surface = S.shape === 'oval' ? Math.PI * (S.len / 2) * (S.wid / 2) : S.len * S.wid;
       var selectedProduct = S.cm || S.sm || S.otherProduct || S.eq;
       var productOptions = [];
@@ -6335,7 +6393,7 @@
     function buildSucRecap() {
       var rows = [];
       var CATS = { cov: 'Couverture', shl: 'Abri télescopique', oth: 'Bâche / Volet / MasterDeck' };
-      var SHAPES_L = { rect: 'Rectangulaire', oval: 'Arrondie', libre: 'Forme libre' };
+      var SHAPES_L = { rect: 'Rectangulaire', oval: 'Ovale / ronde', libre: 'Forme libre' };
       var TLS = { urg: "Dès que possible", '6m': '6 mois', '1a': '1 an', ref: 'En réflexion' };
       rows.push(['Forme', SHAPES_L[S.shape] || 'Rectangulaire']);
       if (S.shape !== 'libre') {
@@ -6763,7 +6821,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260712-v4-design03"></script>
+  <script src="advisor-v2.js?v=20260712-v4-design04"></script>
 </body>
 
 </html>

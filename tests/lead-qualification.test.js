@@ -146,11 +146,45 @@ test('le conseiller exige un choix explicite avant d’utiliser les dimensions 8
   assert.equal((advisor.match(/dimensionsKnown:\s*null/g) || []).length, 2);
   assert.equal((advisor.match(/length:\s*null/g) || []).length, 2);
   assert.equal((advisor.match(/width:\s*null/g) || []).length, 2);
-  assert.match(advisor, /state\.screen === 'pool' && \(typeof state\.dimensionsKnown !== 'boolean'/);
+  assert.match(advisor, /state\.screen === 'pool' && \(!state\.shapeConfirmed \|\| typeof state\.dimensionsKnown !== 'boolean'/);
   assert.match(advisor, /state\.dimensionsKnown === true && !dimensionsValid\(\)/);
   assert.match(advisor, /updateDimensionFeedback\(\);\s*updateFooterOnly\(\);/);
   assert.match(advisor, /firstTabStop = typeof state\.dimensionsKnown !== 'boolean' && value === true/);
   assert.match(advisor, /if \(state\.dimensionsKnown !== true\) return false/);
+});
+
+test('le conseiller ne remplace jamais une priorité silencieusement', function () {
+  assert.doesNotMatch(advisor, /priorities\.shift\(/);
+  assert.match(advisor, /if \(state\.priorities\.length >= 2\) return;/);
+  assert.match(advisor, /button\.disabled = limitReached && !selected/);
+  assert.match(advisor, /Deux priorités sélectionnées\. Retirez-en une pour en choisir une autre/);
+  assert.match(advisorCss, /\.advisor-choice:disabled\s*\{/);
+});
+
+test('la forme du bassin doit être confirmée dans les deux parcours', function () {
+  assert.equal((advisor.match(/shapeConfirmed:\s*false/g) || []).length, 2);
+  assert.match(advisor, /var selected = state\.shapeConfirmed && state\.shape === value/);
+  assert.match(advisor, /state\.screen === 'pool' && \(!state\.shapeConfirmed/);
+  assert.match(advisor, /if \(key === 'shape'\) state\.shapeConfirmed = true/);
+  assert.match(html, /shape:\s*'rect',\s*shapeConfirmed:\s*false/);
+  assert.match(html, /class="shape-btn" id="sh-rect" role="radio" aria-checked="false"/);
+  assert.match(html, /S\.shapeConfirmed && \(S\.shape === 'libre'/);
+  assert.match(html, /shape: S\.shapeConfirmed \? S\.shape : ''/);
+  assert.match(html, /setPriceContext\('Votre estimation', 'Choisissez la forme du bassin'\)/);
+  assert.match(html, /function updateRuleStatus\(rr\)[\s\S]*?var gaps = getAllQualificationGaps\(\)/);
+  assert.match(advisor, /var hasPoolShapeContext = \(source === 'guided' \|\| state\.poolCompleted\) && state\.shapeConfirmed/);
+  assert.match(advisor, /clearAdvisorPoolDimensions\(hasPoolShapeContext \? state\.shape : 'rect', hasPoolShapeContext\)/);
+  assert.match(html, /clearAdvisorPoolDimensions = function \(shape, shapeConfirmed\)/);
+  assert.match(html, /confirmed: shapeConfirmed === true/);
+  assert.match(html, /shapeGrid\.addEventListener\('keydown'/);
+  assert.match(html, /b\.tabIndex = S\.shapeConfirmed \? \(selected \? 0 : -1\)/);
+});
+
+test('la forme ovale utilise un libellé non ambigu', function () {
+  assert.match(advisor, /shapeButton\('oval', 'Ovale \/ ronde'\)/);
+  assert.match(html, /<span>Ovale \/ ronde<\/span>/);
+  assert.match(advisor, /la forme ou les dimensions sortent de sa plage connue/);
+  assert.doesNotMatch(advisor + html, /Arrondie/);
 });
 
 test('le pied de page distingue estimation, informations manquantes et étude personnalisée', function () {
@@ -213,8 +247,10 @@ test('la palette moderne garde un repli et les cartes restent lisibles a 320 px'
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*?\.advisor-family-item,[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
 });
 
-test('l entete d accueil conserve un espace sous le bouton d acces direct', function () {
+test('l accueil garde un seul acces direct visible', function () {
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-header\s*\{\s*padding-bottom:\s*12px;/);
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-help\s*\{\s*display:\s*none;/);
+  assert.match(advisor, /class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections/);
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*\.advisor-shell\[data-screen='welcome'\] \.advisor-visual\s*\{[\s\S]*?min-height:\s*150px/);
 });
 

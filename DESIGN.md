@@ -38,6 +38,7 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **CTA principal** : vert profond, flèche laiton, une seule action dominante par zone.
 - **Action secondaire** : fond clair, bord visible, texte bleu ou vert foncé.
 - **Cartes de priorité** : icône teintée, description courte, état sélectionné avec fond, contour complet et coche.
+- **Limite de choix** : deux priorités maximum ; les autres choix sont désactivés avec une explication visible, sans remplacement silencieux.
 - **Sélecteurs segmentés** : icône + libellé, état actif bleu marque, navigation clavier par flèches.
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
 - **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
@@ -62,4 +63,5 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - Ne pas remplacer une photo produit utile par une illustration générique.
 - Ne pas utiliser de promesse commerciale comme état visuel si elle n'est pas documentée.
 - Ne pas masquer une contrainte pour alléger une fiche produit.
+- Ne jamais présélectionner silencieusement une réponse qui influence la compatibilité ou le devis.
 - Respecter `prefers-reduced-motion` et limiter les transitions aux propriétés compositées ou aux états courts.

@@ -15,6 +15,7 @@
     history: [],
     priorities: [],
     shape: 'rect',
+    shapeConfirmed: false,
     length: null,
     width: null,
     dimensionsKnown: null,
@@ -234,7 +235,7 @@
     savedState = null;
     state = {
       screen: 'welcome', history: [], priorities: [], shape: 'rect', length: null, width: null,
-      dimensionsKnown: null, poolCompleted: false,
+      shapeConfirmed: false, dimensionsKnown: null, poolCompleted: false,
       results: null, compare: false, directFamily: '', activeProduct: ''
     };
     document.body.classList.remove('diskoov-guided-config');
@@ -277,6 +278,11 @@
   function goNext() {
     if (state.screen === 'priorities' && state.priorities.length) navigate('pool');
     else if (state.screen === 'pool') {
+      if (!state.shapeConfirmed) {
+        var firstShape = body.querySelector('[data-action="shape"]');
+        if (firstShape) firstShape.focus({ preventScroll: true });
+        return;
+      }
       if (!dimensionsValid()) {
         showDimensionError();
         return;
@@ -299,7 +305,7 @@
       if (value === 'unsure') state.priorities = ['unsure'];
       else {
         state.priorities = state.priorities.filter(function (item) { return item !== 'unsure'; });
-        if (state.priorities.length >= 2) state.priorities.shift();
+        if (state.priorities.length >= 2) return;
         state.priorities.push(value);
       }
     }
@@ -315,6 +321,7 @@
 
   function setStateValue(key, value) {
     state[key] = value;
+    if (key === 'shape') state.shapeConfirmed = true;
     render({ preserveScroll: true, focusTitle: false });
     if (key === 'shape') {
       requestAnimationFrame(function () {
@@ -335,10 +342,12 @@
   }
 
   function updatePriorityDom() {
+    var limitReached = state.priorities.length >= 2;
     body.querySelectorAll('[data-action="priority"]').forEach(function (button) {
       var selected = state.priorities.indexOf(button.getAttribute('data-value')) !== -1;
       button.classList.toggle('is-selected', selected);
       button.setAttribute('aria-pressed', String(selected));
+      button.disabled = limitReached && !selected;
     });
     var hint = body.querySelector('.advisor-hint');
     if (hint) hint.textContent = prioritySelectionHint();
@@ -416,7 +425,7 @@
   function prioritiesTemplate() {
     var labels = {
       clean: 'Réduire l’entretien', safety: 'Sécuriser le bassin', season: 'Se baigner plus longtemps',
-      aesthetics: 'Préserver le jardin', automatic: 'Ouvrir sans effort', space: 'Plancher mobile',
+      aesthetics: 'Préserver le jardin', automatic: 'Ouvrir sans effort', space: 'Fermer le bassin par un plancher',
       economy: 'Maîtriser le budget', unsure: 'Je ne sais pas encore'
     };
     var descriptions = {
@@ -425,7 +434,7 @@
       season: 'Profiter plus longtemps de la piscine.',
       aesthetics: 'Garder des abords élégants et discrets.',
       automatic: 'Ouvrir et fermer avec le moins de manipulation possible.',
-      space: 'Étudier une fermeture du bassin par plancher mobile.',
+      space: 'Étudier une terrasse mobile adaptée au bassin et à ses abords.',
       economy: 'Comparer en donnant plus de poids au budget.',
       unsure: 'Découvrir une sélection équilibrée sans connaître les produits.'
     };
@@ -434,24 +443,25 @@
       + '<div class="advisor-step-label">Votre besoin</div>'
       + '<h1 class="advisor-title">Qu’aimeriez-vous changer au quotidien ?</h1>'
       + '<p class="advisor-subtitle">Choisissez une priorité, et éventuellement une seconde. Elles servent à comparer les compromis qui comptent vraiment pour vous.</p>'
+      + '<p class="advisor-hint" aria-live="polite">' + prioritySelectionHint() + '</p>'
       + '<div class="advisor-choice-list" role="group" aria-label="Vos priorités">'
       + values.map(function (value) {
         var selected = state.priorities.indexOf(value) !== -1;
-        return '<button type="button" class="advisor-choice advisor-choice--' + value + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '">'
+        var disabled = state.priorities.length >= 2 && !selected;
+        return '<button type="button" class="advisor-choice advisor-choice--' + value + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '"' + (disabled ? ' disabled' : '') + '>'
           + '<span class="advisor-choice-icon">' + icon(value) + '</span>'
           + '<span class="advisor-choice-copy"><span class="advisor-choice-title">' + labels[value] + '</span><span class="advisor-choice-desc">' + descriptions[value] + '</span></span>'
           + '<span class="advisor-choice-check" aria-hidden="true"></span>'
           + '</button>';
       }).join('')
       + '</div>'
-      + '<p class="advisor-hint" aria-live="polite">' + prioritySelectionHint() + '</p>'
       + '</div>';
   }
 
   function prioritySelectionHint() {
-    if (!state.priorities.length) return 'Sélectionnez au moins une réponse pour recevoir des pistes utiles.';
-    if (state.priorities.length === 1) return 'Une priorité suffit. Vous pouvez en ajouter une seconde pour mieux départager les solutions.';
-    return 'Vos deux attentes serviront à départager les solutions.';
+    if (!state.priorities.length) return 'Choisissez une ou deux réponses pour recevoir des pistes utiles.';
+    if (state.priorities.length === 1) return 'Une priorité suffit. Vous pouvez en ajouter une seconde.';
+    return 'Deux priorités sélectionnées. Retirez-en une pour en choisir une autre.';
   }
 
   function poolTemplate() {
@@ -473,8 +483,9 @@
       + '  <div class="advisor-pool-controls">'
       + '  <fieldset class="advisor-fieldset"><legend class="advisor-legend">Forme du bassin</legend>'
       + '    <div class="advisor-segmented" role="radiogroup" aria-label="Forme du bassin">'
-      + shapeButton('rect', 'Rectangle') + shapeButton('oval', 'Arrondie') + shapeButton('libre', 'Forme libre')
+      + shapeButton('rect', 'Rectangle') + shapeButton('oval', 'Ovale / ronde') + shapeButton('libre', 'Forme libre')
       + '    </div>'
+      + '    <p class="advisor-field-help">Choisissez la forme qui se rapproche le plus de votre bassin.</p>'
       + '  </fieldset>'
       + '  <fieldset class="advisor-fieldset advisor-dimension-mode"><legend class="advisor-legend">Avez-vous les dimensions ?</legend><div class="advisor-segmented" role="radiogroup" aria-label="Disponibilité des dimensions">'
       + dimensionModeButton(true, 'Oui, même approximatives') + dimensionModeButton(false, 'Pas encore')
@@ -482,9 +493,9 @@
       + dimensionsControls
       + (state.dimensionsKnown === true ? '  <p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>' : '')
       + '  </div>'
-      + (state.dimensionsKnown === true ? poolPreviewTemplate() : poolUnknownTemplate())
+      + (state.dimensionsKnown === true && state.shapeConfirmed ? poolPreviewTemplate() : poolUnknownTemplate())
       + '</div>'
-      + (state.shape === 'libre' ? '<div class="advisor-resume"><span>Une forme libre demande une étude sur mesure. Une photo ou un plan aidera ensuite Diskoov à comprendre les contours du bassin.</span></div>' : '')
+      + (state.shapeConfirmed && state.shape === 'libre' ? '<div class="advisor-resume"><span>Une forme libre demande une étude sur mesure. Une photo ou un plan aidera ensuite Diskoov à comprendre les contours du bassin.</span></div>' : '')
       + '</div>';
   }
 
@@ -495,14 +506,15 @@
   }
 
   function poolUnknownTemplate() {
+    var needsShape = !state.shapeConfirmed;
     return '<aside class="advisor-pool-unknown" aria-label="Conseil pour préparer vos mesures">'
       + '<span class="advisor-pool-unknown-icon">' + icon('pool') + '</span>'
-      + '<div><strong>Pour la suite, mesurez l’intérieur du bassin.</strong><p>Une photo prise depuis un angle large aide aussi à repérer les plages, les obstacles et l’accès au chantier.</p></div>'
+      + '<div><strong>' + (needsShape ? 'La forme affine la sélection.' : 'Pour la suite, mesurez l’intérieur du bassin.') + '</strong><p>' + (needsShape ? 'Ce choix évite de vous présenter comme compatibles des modèles prévus pour une autre forme.' : 'Une photo prise depuis un angle large aide aussi à repérer les plages, les obstacles et l’accès au chantier.') + '</p></div>'
       + '</aside>';
   }
 
   function poolPreviewTemplate() {
-    var shapeLabels = { rect: 'Rectangle', oval: 'Arrondie', libre: 'Forme libre' };
+    var shapeLabels = { rect: 'Rectangle', oval: 'Ovale / ronde', libre: 'Forme libre' };
     var ratio = poolPreviewRatio();
     return '<figure class="advisor-pool-preview" aria-label="Aperçu du bassin déclaré">'
       + '<figcaption><span>' + icon('measure') + '</span><div><strong>Votre bassin</strong><small>Mesures intérieures déclarées</small></div></figcaption>'
@@ -521,9 +533,10 @@
   }
 
   function shapeButton(value, label) {
-    var selected = state.shape === value;
+    var selected = state.shapeConfirmed && state.shape === value;
+    var firstTabStop = !state.shapeConfirmed && value === 'rect';
     var iconName = value === 'rect' ? 'shape-rect' : value === 'oval' ? 'shape-oval' : 'shape-free';
-    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="shape" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected ? '0' : '-1') + '"><span aria-hidden="true">' + icon(iconName) + '</span>' + label + '</button>';
+    return '<button type="button" class="' + (selected ? 'is-selected' : '') + '" data-action="shape" data-value="' + value + '" role="radio" aria-checked="' + selected + '" tabindex="' + (selected || firstTabStop ? '0' : '-1') + '"><span aria-hidden="true">' + icon(iconName) + '</span>' + label + '</button>';
   }
 
   function inputDimension(field, label, value, min, max) {
@@ -1124,10 +1137,10 @@
   }
 
   function footerTemplate() {
-    if (state.screen === 'welcome') return '<div class="advisor-footer-note">Conseil personnalisé · Vos réponses restent sur cet appareil jusqu’à l’envoi du formulaire.</div>';
+    if (state.screen === 'welcome') return '<div class="advisor-footer-note">Conseil personnalisé · Vos réponses restent dans ce navigateur pendant votre parcours.</div>';
     if (state.screen === 'direct') return '<div class="advisor-footer-actions advisor-footer-actions--direct"><button type="button" class="advisor-button advisor-button--text" data-action="back">← Retour</button></div>';
     var nextDisabled = (state.screen === 'priorities' && !state.priorities.length)
-      || (state.screen === 'pool' && (typeof state.dimensionsKnown !== 'boolean' || (state.dimensionsKnown === true && !dimensionsValid())));
+      || (state.screen === 'pool' && (!state.shapeConfirmed || typeof state.dimensionsKnown !== 'boolean' || (state.dimensionsKnown === true && !dimensionsValid())));
     var nextLabel = state.screen === 'pool' ? 'Voir mes solutions' : 'Continuer';
     var showNext = ['priorities', 'pool'].indexOf(state.screen) !== -1;
     var backLabel = state.screen === 'results' ? 'Modifier' : 'Retour';
@@ -1221,11 +1234,12 @@
     state.activeProduct = productId;
     saveState();
 
-    var hasKnownPoolContext = (source === 'guided' || state.poolCompleted) && state.dimensionsKnown;
+    var hasPoolShapeContext = (source === 'guided' || state.poolCompleted) && state.shapeConfirmed;
+    var hasKnownPoolContext = hasPoolShapeContext && state.dimensionsKnown;
     if (hasKnownPoolContext) {
       syncPoolState();
     } else if (typeof window.clearAdvisorPoolDimensions === 'function') {
-      window.clearAdvisorPoolDimensions(source === 'guided' || state.poolCompleted ? state.shape : 'rect');
+      window.clearAdvisorPoolDimensions(hasPoolShapeContext ? state.shape : 'rect', hasPoolShapeContext);
     }
     if (typeof window.setAdvisorProjectStage === 'function') window.setAdvisorProjectStage('');
     syncLeadAdvisorContext(item, source);
@@ -1284,7 +1298,7 @@
       priorities: state.priorities.map(function (priority) { return labels[priority] || priority; }),
       recommendations: recommendations,
       choiceReason: choiceReason,
-      dimensionsKnown: !!((source === 'guided' || state.poolCompleted) && state.dimensionsKnown)
+      dimensionsKnown: !!((source === 'guided' || state.poolCompleted) && state.shapeConfirmed && state.dimensionsKnown)
     });
   }
 
@@ -1359,7 +1373,7 @@
         : 'Retenue pour votre bassin ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m. Ces dimensions sont enregistrées ; le modèle, la pose et les accès restent à confirmer avec vous.')
       : guided
         ? 'Retenue selon vos priorités. Ajoutez les dimensions et les détails de pose pour confirmer le modèle adapté.'
-        : 'Renseignez les dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
+        : 'Renseignez la forme, les dimensions et les contraintes de pose pour vérifier que ce produit convient à votre bassin.';
     var proof = guided ? '<div class="guided-summary-proof">' + escapeHtml(priorityFit(item)) + '</div>' : '';
     var next = '<div class="guided-summary-next"><strong>À préciser maintenant</strong><span>L’état du projet, la prestation et les abords du bassin. Si vous choisissez la pose, nous préciserons aussi l’accès au chantier. Une photo facultative aide à repérer les obstacles et les équipements.</span></div>';
     summary.innerHTML = '<div class="guided-summary-kicker">' + (guided ? 'Solution retenue' : 'Modèle choisi') + '</div><div class="guided-summary-row"><div><div class="guided-summary-title">' + escapeHtml(item.title) + '</div><div class="guided-summary-meta">' + escapeHtml(meta) + '</div>' + proof + '</div><button type="button" data-open-advisor data-advisor-destination="' + (guided ? 'results' : 'direct') + '">' + (guided ? 'Revoir les solutions' : 'Voir les familles') + '</button></div>' + next;
@@ -1396,7 +1410,7 @@
     var item = engine.findCandidate(productId);
     var label = item ? item.title : 'Le modèle sélectionné';
     summary.classList.add('guided-summary--warning');
-    summary.innerHTML = '<div class="guided-summary-kicker">Modèle à revoir</div><div class="guided-summary-row"><div><div class="guided-summary-title">Choisissez une autre option</div><div class="guided-summary-meta">' + escapeHtml(label + ' a été retiré de la sélection. ' + (detail || 'Les informations du bassin sortent de sa plage connue.')) + '</div></div><button type="button" data-open-advisor data-advisor-destination="' + escapeHtml(destination) + '">Revoir les solutions</button></div><div class="guided-summary-next"><strong>Pourquoi</strong><span>Le configurateur évite de conserver un modèle hors de sa plage de dimensions connue. Une étude sur mesure reste possible selon le projet.</span></div>';
+    summary.innerHTML = '<div class="guided-summary-kicker">Modèle à revoir</div><div class="guided-summary-row"><div><div class="guided-summary-title">Choisissez une autre option</div><div class="guided-summary-meta">' + escapeHtml(label + ' a été retiré de la sélection. ' + (detail || 'Les informations du bassin sortent de sa plage connue.')) + '</div></div><button type="button" data-open-advisor data-advisor-destination="' + escapeHtml(destination) + '">Revoir les solutions</button></div><div class="guided-summary-next"><strong>Pourquoi</strong><span>Le configurateur retire un modèle lorsque la forme ou les dimensions sortent de sa plage connue. Une étude sur mesure reste possible selon le projet.</span></div>';
   }
 
   function syncAdvisorPoolFromConfigurator(pool) {
@@ -1406,9 +1420,12 @@
     var hasShape = ['rect', 'oval', 'libre'].indexOf(pool.shape) !== -1;
     var hasValidDimensions = length >= 3 && length <= 20 && width >= 2 && width <= 12;
     if (!hasShape && !hasValidDimensions) return;
-    if (hasShape) state.shape = pool.shape;
+    if (hasShape) {
+      state.shape = pool.shape;
+      state.shapeConfirmed = true;
+    }
     state.dimensionsKnown = hasValidDimensions;
-    state.poolCompleted = true;
+    state.poolCompleted = hasShape;
     state.results = null;
     if (hasValidDimensions) {
       state.length = length;
@@ -1555,6 +1572,7 @@
         screen: state.screen,
         priorities: state.priorities,
         shape: state.shape,
+        shapeConfirmed: state.shapeConfirmed,
         length: state.length,
         width: state.width,
         dimensionsKnown: state.dimensionsKnown,
@@ -1573,6 +1591,7 @@
       if (!parsed || !Array.isArray(parsed.priorities)) return null;
       if (typeof parsed.dimensionsKnown !== 'boolean') parsed.dimensionsKnown = null;
       if (typeof parsed.poolCompleted !== 'boolean') parsed.poolCompleted = parsed.screen === 'results' || parsed.screen === 'project';
+      if (typeof parsed.shapeConfirmed !== 'boolean') parsed.shapeConfirmed = !!parsed.poolCompleted;
       if (parsed.screen === 'project') parsed.screen = 'results';
       delete parsed.projectStage;
       delete parsed.budget;
