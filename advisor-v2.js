@@ -686,6 +686,16 @@
     return '';
   }
 
+  function familyImageNote(family) {
+    var labels = {
+      covers: 'Exemple : couverture Oré',
+      shutters: 'Exemple : volet hors-sol',
+      shelters: 'Exemple : abri télescopique',
+      deck: 'Visuel de gamme · à confirmer'
+    };
+    return labels[family && family.id] ? '<span class="advisor-media-note">' + labels[family.id] + '</span>' : '';
+  }
+
   function primaryResultTemplate(item) {
     var benefits = commercialBenefits(item);
     if (item.certainty === 'dimension_fit') benefits = benefits.concat(['Dimensions dans la plage connue']);
@@ -1125,7 +1135,7 @@
         var item = engine.findCandidate(family.image);
         var actionLabel = family.products.length > 1 ? 'Voir les modèles' : 'Découvrir ce produit';
         var media = item && item.image
-          ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>'
+          ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + familyImageNote(family) + '</div>'
           : '<div class="advisor-family-media advisor-direct-media--fallback" aria-hidden="true">' + icon('shield') + '</div>';
         return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '" style="--advisor-order:' + index + '">' + media
           + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p><dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl></div>'

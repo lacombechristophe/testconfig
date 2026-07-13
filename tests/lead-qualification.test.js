@@ -235,18 +235,33 @@ test('la direction visuelle conserve une empreinte coherente par famille', funct
   assert.match(advisor, /class="advisor-choice advisor-choice--/);
   assert.match(advisor, /advisor-compare-card advisor-prospect--/);
   assert.match(advisor, /advisor-compare-product/);
-  assert.match(advisorCss, /\.advisor-prospect--covers[\s\S]*?--advisor-family-accent/);
-  assert.match(advisorCss, /\.advisor-prospect--bar-cover[\s\S]*?--advisor-family-accent/);
-  assert.match(advisorCss, /\.advisor-prospect--shutters[\s\S]*?--advisor-family-accent/);
-  assert.match(advisorCss, /\.advisor-prospect--shelters[\s\S]*?--advisor-family-accent/);
-  assert.match(advisorCss, /\.advisor-prospect--deck[\s\S]*?--advisor-family-accent/);
+  assert.match(advisorCss, /\.advisor-prospect--covers[\s\S]*?--advisor-family-accent:\s*var\(--advisor-navy\)/);
+  assert.match(advisorCss, /\.advisor-prospect--bar-cover[\s\S]*?--advisor-family-accent:\s*var\(--advisor-navy\)/);
+  assert.match(advisorCss, /\.advisor-prospect--shutters[\s\S]*?--advisor-family-accent:\s*var\(--advisor-navy\)/);
+  assert.match(advisorCss, /\.advisor-prospect--shelters[\s\S]*?--advisor-family-accent:\s*var\(--advisor-navy\)/);
+  assert.match(advisorCss, /\.advisor-prospect--deck[\s\S]*?--advisor-family-accent:\s*var\(--advisor-navy\)/);
+  assert.doesNotMatch(advisorCss, /--advisor-family-accent:\s*var\(--advisor-(?:water|brass|sage)/);
 });
 
 test('la palette moderne garde un repli et les cartes restent lisibles a 320 px', function () {
-  assert.match(advisorCss, /--advisor-forest:\s*#153b29/);
+  assert.match(advisorCss, /--advisor-forest:\s*#1f407c/);
+  assert.match(advisorCss, /--advisor-navy:\s*#1f407c/);
+  assert.match(advisorCss, /--advisor-brass:\s*#f37021/);
+  assert.match(advisorCss, /--advisor-control:\s*#7f8c9f/);
   assert.match(advisorCss, /@supports \(color: oklch\(50% \.1 180\)\)/);
-  assert.match(advisorCss, /background:\s*#fff;\s*background:\s*color-mix/);
+  assert.match(advisorCss, /oklch\(from #1f407c l c h\)/);
+  assert.match(advisorCss, /--advisor-focus:[^;]*var\(--advisor-accent-dark\)/);
   assert.match(advisorCss, /@media \(max-width: 360px\)[\s\S]*?\.advisor-family-item,[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
+});
+
+test('les couleurs fonctionnelles ne se confondent plus avec les familles produit', function () {
+  assert.match(advisorCss, /\.advisor-detail-benefits > span\s*\{[\s\S]*?background:\s*var\(--advisor-brand-soft\)/);
+  assert.match(advisorCss, /\.advisor-detail-section--notice\s*\{[\s\S]*?background:\s*var\(--advisor-brand-soft\)/);
+  assert.match(advisorCss, /\.advisor-detail-proof svg,[\s\S]*?color:\s*var\(--advisor-brand\)/);
+  assert.match(advisorCss, /\.advisor-detail-list li::before\s*\{[\s\S]*?border-left-color:\s*var\(--advisor-brand\)/);
+  assert.match(advisorCss, /\.advisor-compare-criterion svg,[\s\S]*?color:\s*var\(--advisor-brand\)/);
+  assert.match(advisorCss, /\.advisor-google-link > span,[\s\S]*?color:\s*var\(--advisor-brand\)/);
+  assert.match(advisorCss, /@media \(max-width: 680px\)[\s\S]*?\.advisor-detail-footer\s*\{[\s\S]*?position:\s*sticky[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
 });
 
 test('l accueil garde un seul acces direct visible', function () {
@@ -270,10 +285,10 @@ test('la reassurance d accueil reste visuelle et factuelle', function () {
   assert.match(advisor, /Un conseiller Diskoov confirme votre projet/);
   assert.match(advisor, /Faisabilité, pose, accès et options avant devis/);
   assert.match(advisor, /class="advisor-button-icon"[\s\S]*?icon\('arrow-right'\)/);
-  assert.match(advisorCss, /\.advisor-welcome-path > div:nth-child\(1\)\s*\{[\s\S]*?background:\s*var\(--advisor-navy-soft\)/);
+  assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border:\s*1px solid var\(--advisor-line\)/);
   assert.match(advisorCss, /\.advisor-welcome-proof-grid\s*\{/);
-  assert.match(advisorCss, /\.advisor-welcome-assurance\s*\{[\s\S]*?background:\s*var\(--advisor-sage-soft\)/);
-  assert.match(advisorCss, /\.advisor-google-proof\s*\{[\s\S]*?box-shadow:\s*var\(--advisor-shadow\)/);
+  assert.match(advisorCss, /\.advisor-welcome-assurance\s*\{[\s\S]*?background:\s*var\(--advisor-brand-soft\)/);
+  assert.match(advisorCss, /\.advisor-google-proof\s*\{[\s\S]*?background:\s*#fff/);
   assert.match(advisorCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
   assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
 });
@@ -346,6 +361,10 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /function directUnavailableCopy\(item\)/);
   assert.doesNotMatch(advisor, /Hors plage (?:actuelle|connue)/);
   assert.match(advisor, /advisor-media-zoom/);
+  assert.match(advisor, /function familyImageNote\(family\)/);
+  assert.match(advisor, /Exemple : couverture Oré/);
+  assert.match(advisor, /Visuel de gamme · à confirmer/);
+  assert.match(advisorCss, /\.advisor-family-media\s*\{[\s\S]*?position:\s*relative/);
   assert.doesNotMatch(advisor, /advisor-result-rank/);
   assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
   assert.match(advisorCss, /\.advisor-direct-main:not\(:disabled\):hover/);

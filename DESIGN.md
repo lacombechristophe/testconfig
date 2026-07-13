@@ -10,46 +10,39 @@ Registre : professionnel, calme, précis et orienté piscine. L'interface n'est 
 
 | Rôle | Token | Usage |
 | --- | --- | --- |
-| Action | `--advisor-forest` | CTA principal, titres structurants |
-| Navigation | `--advisor-navy` | sélection courante, sélecteurs, accès direct |
-| Guidage | `--advisor-water` | progression, focus, informations bassin |
-| Accent | `--advisor-brass` | repère prioritaire et signature Diskoov, avec parcimonie |
-| Validation humaine | `--advisor-sage` | accompagnement et famille abris |
+| Marque et action | `--advisor-brand` (`#1F407C`) | CTA principal, titres, navigation et sélection |
+| Fond de marque | `--advisor-brand-deep` (`#0F264D`) | panneau média et surfaces à fort contraste |
+| Signature | `--advisor-accent` (`#F37021`) | flèches, étoiles et accents de marque courts |
+| Accent fonctionnel | `--advisor-accent-dark` (`#9A3E00`) | focus, progression active et libellé du premier rang |
+| Information bassin | `--advisor-water` | schémas et aides de mesure uniquement |
+| Validation | `--advisor-success` | compatibilité ou confirmation réellement documentée |
 | Structure | `--advisor-paper`, `--advisor-line` | fonds secondaires et séparateurs |
 
-Les couleurs modernes sont définies en OKLCH, avec un repli hexadécimal. Tous les textes fonctionnels dépassent 4,5:1 de contraste. La couleur n'est jamais le seul indicateur d'un état : sélection, priorité et statut gardent aussi une icône ou un libellé.
+Le bleu et l'orange sont extraits du logo Diskoov fourni. La stratégie est restreinte : blanc et neutres bleutés structurent l'interface, le bleu porte l'identité et l'orange reste rare. Les couleurs modernes sont exprimées en OKLCH à partir des références de marque, avec un repli hexadécimal. Tous les textes fonctionnels dépassent 4,5:1 de contraste. La couleur n'est jamais le seul indicateur d'un état.
 
 ## Empreinte des familles
 
-La même couleur accompagne une famille dans l'accès direct, les fiches, la recommandation et le comparatif.
+Les familles ne reçoivent plus de couleur propre. Une palette par famille obligeait le prospect à apprendre une légende, concurrençait les états métier et donnait un aspect de nuancier.
 
-| Famille prospect | Couleur |
-| --- | --- |
-| Couvertures de piscine | Eau / turquoise |
-| Couverture à barres | Laiton / orange Diskoov |
-| Volets de piscine | Bleu marque |
-| Abris télescopiques | Vert sauge |
-| Terrasse mobile | Vert profond |
-
-Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. Une compatibilité ou une étude reste toujours exprimée par du texte.
+La reconnaissance repose sur quatre éléments stables : photo du produit, pictogramme physique, nom de la famille et trois repères comparables (`Manipulation`, `Présence`, `À prévoir`). Une légende précise lorsque l'image illustre un exemple ou un visuel de gamme. Une compatibilité ou une étude est toujours exprimée par un libellé.
 
 ## Composants
 
-- **CTA principal** : vert profond, flèche laiton, une seule action dominante par zone.
-- **Rail d’accueil** : trois étapes réellement séquentielles, différenciées par les couleurs navigation, bassin et comparaison ; accents colorés courts, jamais décoratifs hors de ce contexte.
-- **Action secondaire** : fond clair, bord visible, texte bleu ou vert foncé.
-- **Cartes de priorité** : icône teintée, description courte, état sélectionné avec fond, contour complet et coche.
+- **CTA principal** : bleu Diskoov, flèche orange, une seule action dominante par zone.
+- **Rail d’accueil** : une seule bande blanche, trois étapes et des séparateurs ; numéros orange et pictogrammes bleus.
+- **Action secondaire** : fond blanc, bord visible et texte bleu profond.
+- **Choix de priorité** : surface neutre et pictogramme monochrome ; seul l'état sélectionné reçoit un fond et un contour bleus.
 - **Limite de choix** : deux priorités maximum ; les autres choix sont désactivés avec une explication visible, sans remplacement silencieux.
 - **Sélecteurs segmentés** : icône + libellé, état actif bleu marque, navigation clavier par flèches.
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
-- **Vue des solutions** : trois familles maximum, classées selon les priorités, avec couleur, fonctionnement et présence visuelle avant le développement du premier produit.
-- **Réassurance** : fond sauge réservé à la vérification humaine ; engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
+- **Vue des solutions** : un index classé dans une surface unique ; la première proposition est soulignée par le fond bleu clair et un libellé orange.
+- **Réassurance** : une bande structurée par des séparateurs ; engagements de processus vérifiables, jamais de preuve non sourcée.
 - **Avis Google** : module unique réunissant `4,9/5`, plus de 30 avis, un témoignage court et le lien vers la fiche publique ; données contrôlées le 12 juillet 2026 et nouvelle vérification obligatoire avant chaque publication.
 - **Preuves d’expertise** : `13 ans` d’expérience terrain, partenariat Premium avec trois fabricants et accompagnement du projet repris du [site officiel Diskoov](https://diskoov.fr/), contrôlé le 12 juillet 2026.
 - **Témoignage** : extrait court de l’avis Google de Dagmar S. publié sur le [site officiel Diskoov](https://diskoov.fr/) ; attribution visible et date de contrôle conservée dans le code.
 - **Recommandation** : image réelle, catégorie, bénéfices, raison du classement, contrainte principale et CTA devis.
-- **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
-- **Détail produit** : dialogue focalisé, contrainte visible avant le CTA, caractéristiques secondaires repliables, fermeture 44 x 44 px et retour du focus au déclencheur.
+- **Comparatif** : pictogrammes monochromes ; tableau sur desktop, cartes sur mobile.
+- **Détail produit** : dialogue focalisé, contrainte visible avant le CTA, CTA collant sur mobile, caractéristiques secondaires repliables, fermeture 44 x 44 px et retour du focus au déclencheur.
 
 ## Mouvement
 
