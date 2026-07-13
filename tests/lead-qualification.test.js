@@ -93,12 +93,13 @@ test('le CTA recommandé reste visible dans le footer des résultats desktop', f
   assert.doesNotMatch(advisorCss, /min-width:\s*901px[\s\S]{0,220}data-action='choose'[\s\S]{0,80}display:\s*none/);
 });
 
-test('la recommandation précède le bandeau de comparaison et le comparatif remplace ce bandeau', function () {
-  var resultsTemplate = advisor.match(/function resultsTemplate\(\)[\s\S]*?\n\s*function resultsSummaryTemplate/);
+test('la vue des solutions précède le produit principal et le comparatif reste facultatif', function () {
+  var resultsTemplate = advisor.match(/function resultsTemplate\(\)[\s\S]*?\n\s*function resultsOverviewTemplate/);
   assert.ok(resultsTemplate, 'le rendu des résultats doit rester identifiable');
-  assert.ok(resultsTemplate[0].indexOf('primaryResultTemplate(primary)') < resultsTemplate[0].indexOf('familyOverviewTemplate(top)'));
+  assert.ok(resultsTemplate[0].indexOf('resultsOverviewTemplate(top)') < resultsTemplate[0].indexOf('primaryResultTemplate(primary)'));
   assert.match(resultsTemplate[0], /state\.compare && top\.length > 1 \? compareTemplate\(top\)/);
-  assert.match(resultsTemplate[0], /!state\.compare \? familyOverviewTemplate\(top\)/);
+  assert.doesNotMatch(resultsTemplate[0], /familyOverviewTemplate/);
+  assert.match(advisor, /class="advisor-result-map"/);
   assert.match(resultsTemplate[0], /aria-expanded="' \+ state\.compare/);
   assert.match(advisor, /id="advisor-results-comparison"/);
   assert.match(advisor, /compareButton\.focus\(\{ preventScroll: true \}\)/);
@@ -157,7 +158,8 @@ test('le conseiller ne remplace jamais une priorité silencieusement', function 
   assert.doesNotMatch(advisor, /priorities\.shift\(/);
   assert.match(advisor, /if \(state\.priorities\.length >= 2\) return;/);
   assert.match(advisor, /button\.disabled = limitReached && !selected/);
-  assert.match(advisor, /Deux priorités sélectionnées\. Retirez-en une pour en choisir une autre/);
+  assert.match(advisor, /Vos priorités sont prêtes/);
+  assert.match(advisor, /class="advisor-hint-count">' \+ state\.priorities\.length \+ '\/2/);
   assert.match(advisorCss, /\.advisor-choice:disabled\s*\{/);
 });
 
@@ -215,11 +217,11 @@ test('le filet local conserve un lead même si la pièce jointe dépasse le quot
   assert.match(html, /lightweightLeads\.map\(pendingLeadWithoutAttachment\)/);
 });
 
-test('la comparaison garde ses icones centrees et son badge dans la copie', function () {
-  assert.match(advisor, /class="advisor-family-overview-copy"[\s\S]*?\+ \(index === 0 \? '<small>À étudier en priorité<\/small>' : ''\) \+ '<\/div><\/article>'/);
-  assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item small\s*\{[^}]*grid-column/);
-  assert.doesNotMatch(advisorCss, /\.advisor-family-overview-item span\s*[,\{]/);
-  assert.match(advisorCss, /\.advisor-family-overview-icon svg\s*\{[^}]*display:\s*block/);
+test('la vue des solutions garde ses icones centrees et son ordre explicite', function () {
+  assert.match(advisor, /class="advisor-result-map-item advisor-prospect--/);
+  assert.match(advisor, /index === 0 \? '<b>À étudier d’abord<\/b>' : ''/);
+  assert.match(advisorCss, /\.advisor-result-map-icon\s*\{[\s\S]*?display:\s*grid;[\s\S]*?place-items:\s*center/);
+  assert.match(advisorCss, /\.advisor-result-map-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/);
 });
 
 test('la progression expose ses etapes et leur statut aux technologies d assistance', function () {
@@ -256,17 +258,20 @@ test('l accueil garde un seul acces direct visible', function () {
 
 test('la reassurance d accueil reste visuelle et factuelle', function () {
   assert.match(advisor, /class="advisor-title-accent">votre piscine<\/span>/);
-  assert.match(advisor, /Diskoov compare sa sélection de protections/);
+  assert.match(advisor, /Diskoov compare les protections selon vos priorités et votre piscine/);
   assert.match(advisor, /Obtenir mes recommandations/);
-  assert.match(advisor, /Des dimensions approximatives suffisent\. Aucune coordonnée n’est demandée à cette étape/);
+  assert.match(advisor, /class="advisor-welcome-reassurance"/);
+  assert.match(advisor, /Mesures approximatives/);
+  assert.match(advisor, /Sans coordonnées à cette étape/);
+  assert.match(advisor, /Conseiller avant devis/);
   assert.match(advisor, /class="advisor-visual-proof"/);
   assert.match(advisor, /Comparez les protections selon vos priorités/);
   assert.match(advisor, /class="advisor-welcome-assurance"/);
-  assert.match(advisor, /Un conseiller Diskoov confirme votre projet avant le devis/);
-  assert.match(advisor, /Vous vérifiez ensemble le modèle, la faisabilité, la pose, les accès et les options/);
+  assert.match(advisor, /Un conseiller Diskoov confirme votre projet/);
+  assert.match(advisor, /Faisabilité, pose, accès et options avant devis/);
   assert.match(advisor, /class="advisor-button-icon"[\s\S]*?icon\('arrow-right'\)/);
-  assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border-radius:\s*var\(--advisor-radius-lg\)/);
-  assert.match(advisorCss, /\.advisor-welcome-path > div:nth-child\(1\)\s*\{[\s\S]*?box-shadow:\s*inset 0 3px 0/);
+  assert.match(advisorCss, /\.advisor-welcome-path > div:nth-child\(1\)\s*\{[\s\S]*?background:\s*var\(--advisor-navy-soft\)/);
+  assert.match(advisorCss, /\.advisor-welcome-proof-grid\s*\{/);
   assert.match(advisorCss, /\.advisor-welcome-assurance\s*\{[\s\S]*?background:\s*var\(--advisor-sage-soft\)/);
   assert.match(advisorCss, /\.advisor-google-proof\s*\{[\s\S]*?box-shadow:\s*var\(--advisor-shadow\)/);
   assert.match(advisorCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
@@ -326,7 +331,7 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /advisor-family-story-fact-icon/);
   assert.match(advisor, /advisor-model-facts/);
   assert.match(advisor, /advisor-decision-icon/);
-  assert.match(advisor, /advisor-results-summary-icon/);
+  assert.match(advisor, /advisor-result-map-icon/);
   assert.match(advisor, /advisor-primary-fact-icon/);
   assert.match(advisor, /bab: 'manual'/);
   assert.match(advisor, /family === 'shelter' \? 'move'/);
@@ -356,9 +361,35 @@ test('les textes du conseiller restent directs et adaptes au prospect', function
   assert.match(advisor, /var STAGES = \['Vos priorités', 'Votre piscine', 'Vos recommandations'\]/);
   assert.match(advisor, /Qu’attendez-vous de votre protection de piscine/);
   assert.match(advisor, /Quelle est la forme et la taille de votre piscine/);
-  assert.match(advisor, /Trois types de protection à comparer pour votre piscine/);
+  assert.match(advisor, /Trois protections à comparer/);
   assert.match(advisor, /Comparer les solutions point par point/);
   assert.doesNotMatch(advisor, /Choisissez par l’usage, pas par le jargon|Partez de vos usages, pas des noms de produits|Première sélection en ligne|vérification humaine|simplifiera vraiment|ce qui change vraiment|approches cohérentes|piste prioritaire|sélection équilibrée|fausses pistes/i);
+});
+
+test('la nouvelle experience garde une motion courte et accessible', function () {
+  assert.match(advisorCss, /--advisor-motion-screen:\s*220ms/);
+  assert.match(advisor, /function animateRenderedScreen\(\)/);
+  assert.match(advisor, /screen\.classList\.add\('is-entering'\)/);
+  assert.match(advisorCss, /\.advisor-screen\.is-entering\s*\{[\s\S]*?translateY\(8px\)/);
+  assert.match(advisor, /reducedMotionQuery\.matches \? 'auto' : 'smooth'/);
+  assert.match(advisor, /window\.clearTimeout\(detailCleanupTimer\)/);
+  assert.match(advisor, /window\.clearTimeout\(previewCleanupTimer\)/);
+  assert.match(advisor, /image\.onerror = revealImage/);
+  assert.match(advisorCss, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?animation:\s*none/);
+  assert.doesNotMatch(advisorCss, /transition:\s*all/);
+});
+
+test('la piscine revele les dimensions apres la forme et reste empilee sur mobile', function () {
+  assert.match(advisor, /var dimensionStep = state\.shapeConfirmed/);
+  assert.match(advisor, /class="advisor-pool-disclosure"/);
+  assert.match(advisor, /Deux mesures suffisent/);
+  assert.match(advisorCss, /@media \(max-width: 680px\)[\s\S]*?\.advisor-pool-layout\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
+});
+
+test('les fiches produit masquent seulement les caracteristiques secondaires', function () {
+  assert.match(advisor, /<details class="advisor-detail-more"><summary>Voir les caractéristiques<\/summary>/);
+  assert.match(advisor, /advisor-detail-section advisor-detail-section--notice/);
+  assert.match(advisorCss, /\.advisor-detail-more summary:focus-visible/);
 });
 
 test('le passage au configurateur garde un langage prospect', function () {

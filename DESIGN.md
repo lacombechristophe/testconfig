@@ -25,7 +25,7 @@ La même couleur accompagne une famille dans l'accès direct, les fiches, la rec
 
 | Famille prospect | Couleur |
 | --- | --- |
-| Couvertures motorisées | Eau / turquoise |
+| Couvertures de piscine | Eau / turquoise |
 | Couverture à barres | Laiton / orange Diskoov |
 | Volets de piscine | Bleu marque |
 | Abris télescopiques | Vert sauge |
@@ -42,21 +42,29 @@ Ces couleurs servent à la reconnaissance, pas à qualifier la compatibilité. U
 - **Limite de choix** : deux priorités maximum ; les autres choix sont désactivés avec une explication visible, sans remplacement silencieux.
 - **Sélecteurs segmentés** : icône + libellé, état actif bleu marque, navigation clavier par flèches.
 - **Progression** : liste ordonnée sémantique, étape courante la plus visible, statut vocalisé hors écran.
-- **Résumé projet** : bande compacte, trois informations maximum, couleurs distinctes par rôle.
+- **Vue des solutions** : trois familles maximum, classées selon les priorités, avec couleur, fonctionnement et présence visuelle avant le développement du premier produit.
 - **Réassurance** : fond sauge réservé à la vérification humaine ; engagements de processus vérifiables (choix modifiable, contraintes et pose confirmées), jamais de note, ancienneté ou témoignage sans source validée.
 - **Avis Google** : module unique réunissant `4,9/5`, plus de 30 avis, un témoignage court et le lien vers la fiche publique ; données contrôlées le 12 juillet 2026 et nouvelle vérification obligatoire avant chaque publication.
 - **Preuves d’expertise** : `13 ans` d’expérience terrain, partenariat Premium avec trois fabricants et accompagnement du projet repris du [site officiel Diskoov](https://diskoov.fr/), contrôlé le 12 juillet 2026.
 - **Témoignage** : extrait court de l’avis Google de Dagmar S. publié sur le [site officiel Diskoov](https://diskoov.fr/) ; attribution visible et date de contrôle conservée dans le code.
-- **Recommandation** : image réelle, catégorie, bénéfices, deux points de décision et CTA devis.
+- **Recommandation** : image réelle, catégorie, bénéfices, raison du classement, contrainte principale et CTA devis.
 - **Comparatif** : mêmes couleurs et icônes que les familles ; tableau sur desktop, cartes sur mobile.
-- **Détail produit** : dialogue focalisé, fermeture 44 x 44 px, retour du focus au déclencheur.
+- **Détail produit** : dialogue focalisé, contrainte visible avant le CTA, caractéristiques secondaires repliables, fermeture 44 x 44 px et retour du focus au déclencheur.
+
+## Mouvement
+
+- `150 ms` pour le retour tactile, `180 ms` pour un état et `220 ms` pour un changement d’écran.
+- Le mouvement explique une navigation, une sélection, une révélation progressive ou l’ouverture d’un dialogue ; aucune animation décorative au scroll.
+- Les écrans restent lisibles dans leur état initial : l’entrée utilise au maximum `8 px` de déplacement et un fondu partiel, jamais un contenu entièrement masqué.
+- Les médias changent par fondu court après chargement. Les contenus d’un dialogue restent présents pendant sa fermeture.
+- `prefers-reduced-motion` supprime les animations et remplace le défilement fluide JavaScript par un déplacement instantané.
 
 ## Mise en page
 
 - Desktop : visuel contextualisant à gauche, tâche active à droite.
 - Sous 960 px : disparition du panneau visuel hors accueil pour maximiser l'espace utile.
-- Sous 680 px : une colonne, footer d'action collant, comparatif en cartes.
-- Sous 360 px : cartes familles et modèles en pleine largeur avec image au-dessus du contenu.
+- Sous 680 px : une colonne, footer d'action collant, comparatif en cartes et images produit en pleine largeur.
+- Sous 360 px : composition et textes restent lisibles sans réduction typographique supplémentaire.
 - Aucune typographie ne rétrécit en fonction de la largeur du viewport.
 - Les zones interactives font au moins 40 x 40 px, 44 px pour les actions mobiles principales.
 - L’accueil du conseiller conserve une navigation focalisée : le logo et l’accès direct suffisent. La navigation complète du site n’est pas dupliquée afin de ne pas multiplier les sorties avant le démarrage.

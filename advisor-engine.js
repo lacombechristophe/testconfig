@@ -17,7 +17,7 @@
   });
 
   var PROSPECT_FAMILIES = Object.freeze({
-    covers: Object.freeze({ id: 'covers', label: 'Couvertures motorisées' }),
+    covers: Object.freeze({ id: 'covers', label: 'Couvertures de piscine' }),
     'bar-cover': Object.freeze({ id: 'bar-cover', label: 'Couverture à barres' }),
     shutters: Object.freeze({ id: 'shutters', label: 'Volets de piscine' }),
     shelters: Object.freeze({ id: 'shelters', label: 'Abris télescopiques' }),

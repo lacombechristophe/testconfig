@@ -40,9 +40,12 @@
   var lastFocus = null;
   var modalLastFocus = null;
   var detailLastFocus = null;
+  var previewCleanupTimer = 0;
+  var detailCleanupTimer = 0;
   var detailSource = 'guided';
   var focusScreenTitleOnRender = false;
   var screenEnteredAt = Date.now();
+  var reducedMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 
   var shell = document.createElement('section');
   shell.className = 'advisor-shell';
@@ -365,8 +368,10 @@
       button.setAttribute('aria-pressed', String(selected));
       button.disabled = limitReached && !selected;
     });
-    var hint = body.querySelector('.advisor-hint');
+    var hint = body.querySelector('[data-priority-hint]');
+    var count = body.querySelector('.advisor-hint-count');
     if (hint) hint.textContent = prioritySelectionHint();
+    if (count) count.textContent = state.priorities.length + '/2';
   }
 
   function updateFooterOnly() {
@@ -387,6 +392,7 @@
     updateVisualCopy();
     body.innerHTML = screenTemplate();
     footer.innerHTML = footerTemplate();
+    if (!options.preserveScroll) animateRenderedScreen();
     if (options.preserveScroll) {
       body.scrollTop = Math.min(previousTop, body.scrollHeight);
       requestAnimationFrame(function () {
@@ -398,6 +404,18 @@
     if (state.screen !== 'welcome' && state.screen !== 'direct') saveState();
     if (!shouldFocusTitle) return;
     requestAnimationFrame(focusScreenHeading);
+  }
+
+  function animateRenderedScreen() {
+    if (reducedMotionQuery.matches) return;
+    var screen = body.querySelector('.advisor-screen');
+    if (!screen) return;
+    screen.classList.add('is-entering');
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (screen.isConnected) screen.classList.remove('is-entering');
+      });
+    });
   }
 
   function focusScreenHeading() {
@@ -431,50 +449,56 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Conseiller Diskoov</div>'
       + '<h1 class="advisor-title">Quelle protection choisir pour <span class="advisor-title-accent">votre piscine</span> ?</h1>'
-      + '<p class="advisor-subtitle">Indiquez vos priorités et les caractéristiques de votre piscine. Diskoov compare sa sélection de protections et vous aide à choisir.</p>'
+      + '<p class="advisor-subtitle">Répondez à deux questions. Diskoov compare les protections selon vos priorités et votre piscine.</p>'
       + '<div class="advisor-welcome-actions">'
       + '  <button type="button" class="advisor-button" data-action="start">Obtenir mes recommandations <span class="advisor-button-icon" aria-hidden="true">' + icon('arrow-right') + '</span></button>'
       + '  <button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button>'
       + '</div>'
-      + '<p class="advisor-welcome-start-note">' + icon('check') + '<span>Des dimensions approximatives suffisent. Aucune coordonnée n’est demandée à cette étape.</span></p>'
+      + '<div class="advisor-welcome-reassurance" role="list" aria-label="Informations avant de commencer">'
+      + '<span role="listitem">' + icon('measure') + '<b>Mesures approximatives</b></span>'
+      + '<span role="listitem">' + icon('shield') + '<b>Sans coordonnées à cette étape</b></span>'
+      + '<span role="listitem">' + icon('user') + '<b>Conseiller avant devis</b></span>'
+      + '</div>'
       + resume
       + '<div class="advisor-welcome-path" aria-label="Ce que vous obtenez">'
-      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Vos priorités</b><small>Confort, sécurité, entretien ou budget</small></span></div>'
-      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Votre piscine</b><small>Forme et dimensions, même approximatives</small></span></div>'
-      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Vos recommandations</b><small>Avantages, contraintes et modèles à étudier</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('target') + '</span><span><strong>01</strong><b>Vos priorités</b><small>Ce qui compte pour vous</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('pool') + '</span><span><strong>02</strong><b>Votre piscine</b><small>Forme et dimensions</small></span></div>'
+      + '<div><span class="advisor-welcome-path-icon" aria-hidden="true">' + icon('compare') + '</span><span><strong>03</strong><b>Vos solutions</b><small>Bénéfices et contraintes</small></span></div>'
       + '</div>'
-      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('user') + '</span><span><strong>Un conseiller Diskoov confirme votre projet avant le devis.</strong><small>Vous vérifiez ensemble le modèle, la faisabilité, la pose, les accès et les options.</small></span></aside>'
+      + '<div class="advisor-welcome-proof-grid">'
+      + '<aside class="advisor-welcome-assurance" aria-label="Comment votre sélection est vérifiée"><span class="advisor-welcome-assurance-icon" aria-hidden="true">' + icon('user') + '</span><span><strong>Un conseiller Diskoov confirme votre projet.</strong><small>Faisabilité, pose, accès et options avant devis.</small></span></aside>'
       + googleReviewsTemplate()
+      + '</div>'
       + '</div>';
   }
 
   function prioritiesTemplate() {
     var labels = {
       clean: 'Réduire l’entretien', safety: 'Sécuriser le bassin', season: 'Se baigner plus longtemps',
-      aesthetics: 'Préserver le jardin', automatic: 'Ouvrir sans effort', space: 'Fermer le bassin par un plancher',
+      aesthetics: 'Préserver les abords', automatic: 'Simplifier l’ouverture', space: 'Fermer le bassin par un plancher',
       economy: 'Maîtriser le budget', unsure: 'Je ne sais pas encore'
     };
     var descriptions = {
-      clean: 'Limiter feuilles, saletés et entretien.',
-      safety: 'Sécuriser l’accès au bassin au quotidien.',
-      season: 'Profiter plus longtemps de la piscine.',
-      aesthetics: 'Garder des abords élégants et discrets.',
-      automatic: 'Ouvrir et fermer avec le moins de manipulation possible.',
-      space: 'Étudier une terrasse mobile adaptée au bassin et à ses abords.',
-      economy: 'Comparer en donnant plus de poids au budget.',
-      unsure: 'Comparer plusieurs solutions sans connaître les produits.'
+      clean: 'Moins de feuilles et de nettoyage',
+      safety: 'Limiter l’accès au bassin',
+      season: 'Conserver la chaleur plus longtemps',
+      aesthetics: 'Une protection discrète dans le jardin',
+      automatic: 'Ouvrir et fermer plus simplement',
+      space: 'Couvrir le bassin par un plancher',
+      economy: 'Donner la priorité au budget',
+      unsure: 'Comparer sans préférence particulière'
     };
     var values = ['clean', 'safety', 'season', 'aesthetics', 'automatic', 'space', 'economy', 'unsure'];
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Vos priorités</div>'
       + '<h1 class="advisor-title">Qu’attendez-vous de votre protection de piscine ?</h1>'
-      + '<p class="advisor-subtitle">Choisissez jusqu’à deux priorités. Elles nous aideront à comparer les solutions pour votre projet.</p>'
-      + '<p class="advisor-hint" aria-live="polite">' + prioritySelectionHint() + '</p>'
+      + '<p class="advisor-subtitle">Sélectionnez ce qui compte le plus pour votre projet.</p>'
+      + '<p class="advisor-hint" aria-live="polite"><span class="advisor-hint-count">' + state.priorities.length + '/2</span><span data-priority-hint>' + prioritySelectionHint() + '</span></p>'
       + '<div class="advisor-choice-list" role="group" aria-label="Vos priorités">'
-      + values.map(function (value) {
+      + values.map(function (value, index) {
         var selected = state.priorities.indexOf(value) !== -1;
         var disabled = state.priorities.length >= 2 && !selected;
-        return '<button type="button" class="advisor-choice advisor-choice--' + value + (selected ? ' is-selected' : '') + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '"' + (disabled ? ' disabled' : '') + '>'
+        return '<button type="button" class="advisor-choice advisor-choice--' + value + (selected ? ' is-selected' : '') + '" style="--advisor-order:' + index + '" data-action="priority" data-value="' + value + '" aria-pressed="' + selected + '"' + (disabled ? ' disabled' : '') + '>'
           + '<span class="advisor-choice-icon">' + icon(value) + '</span>'
           + '<span class="advisor-choice-copy"><span class="advisor-choice-title">' + labels[value] + '</span><span class="advisor-choice-desc">' + descriptions[value] + '</span></span>'
           + '<span class="advisor-choice-check" aria-hidden="true"></span>'
@@ -485,9 +509,9 @@
   }
 
   function prioritySelectionHint() {
-    if (!state.priorities.length) return 'Sélectionnez une ou deux priorités.';
-    if (state.priorities.length === 1) return 'Vous pouvez continuer ou ajouter une seconde priorité.';
-    return 'Deux priorités sélectionnées. Retirez-en une pour en choisir une autre.';
+    if (!state.priorities.length) return 'Choisissez jusqu’à deux priorités';
+    if (state.priorities.length === 1) return 'Vous pouvez continuer ou ajouter un choix';
+    return 'Vos priorités sont prêtes';
   }
 
   function poolTemplate() {
@@ -500,24 +524,29 @@
         + '</div><div class="advisor-surface" data-advisor-surface>' + surfaceText() + '</div></fieldset>'
       : state.dimensionsKnown === false
         ? '<div class="advisor-dimensions-later" role="note">' + icon('measure') + '<span><strong>Vous pourrez les ajouter ensuite.</strong><small>Sans dimensions, nous comparerons les familles sans confirmer qu’un modèle convient à votre bassin.</small></span></div>'
-        : '<div class="advisor-dimensions-later advisor-dimensions-later--prompt" role="note">' + icon('measure') + '<span><strong>Indiquez si vous connaissez les dimensions.</strong><small>Des mesures approximatives suffisent. Vous pouvez aussi continuer sans les connaître.</small></span></div>';
+        : '<div class="advisor-dimensions-later advisor-dimensions-later--prompt" role="note">' + icon('measure') + '<span><strong>Connaissez-vous les dimensions ?</strong><small>Des mesures approximatives suffisent.</small></span></div>';
+    var dimensionStep = state.shapeConfirmed
+      ? '<div class="advisor-pool-disclosure">'
+        + '<fieldset class="advisor-fieldset advisor-dimension-mode"><legend class="advisor-legend">Avez-vous les dimensions ?</legend><div class="advisor-segmented" role="radiogroup" aria-label="Disponibilité des dimensions">'
+        + dimensionModeButton(true, 'Oui, même approximatives') + dimensionModeButton(false, 'Pas encore')
+        + '</div></fieldset>'
+        + dimensionsControls
+        + (state.dimensionsKnown === true ? '<p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>' : '')
+        + '</div>'
+      : '';
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Votre piscine</div>'
       + '<h1 class="advisor-title">Quelle est la forme et la taille de votre piscine ?</h1>'
-      + '<p class="advisor-subtitle">La forme et les dimensions intérieures nous aident à écarter les modèles dont les dimensions ne conviennent pas. Des mesures approximatives suffisent.</p>'
+      + '<p class="advisor-subtitle">Ces informations servent à écarter les modèles qui ne correspondent pas aux dimensions indiquées.</p>'
       + '<div class="advisor-pool-layout">'
       + '  <div class="advisor-pool-controls">'
       + '  <fieldset class="advisor-fieldset"><legend class="advisor-legend">Forme du bassin</legend>'
       + '    <div class="advisor-segmented" role="radiogroup" aria-label="Forme du bassin">'
       + shapeButton('rect', 'Rectangle') + shapeButton('oval', 'Ovale / ronde') + shapeButton('libre', 'Forme libre')
       + '    </div>'
-      + '    <p class="advisor-field-help">Choisissez la forme qui se rapproche le plus de votre bassin.</p>'
+      + '    <p class="advisor-field-help">Choisissez la silhouette la plus proche de votre bassin.</p>'
       + '  </fieldset>'
-      + '  <fieldset class="advisor-fieldset advisor-dimension-mode"><legend class="advisor-legend">Avez-vous les dimensions ?</legend><div class="advisor-segmented" role="radiogroup" aria-label="Disponibilité des dimensions">'
-      + dimensionModeButton(true, 'Oui, même approximatives') + dimensionModeButton(false, 'Pas encore')
-      + '  </div></fieldset>'
-      + dimensionsControls
-      + (state.dimensionsKnown === true ? '  <p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>' : '')
+      + dimensionStep
       + '  </div>'
       + (state.dimensionsKnown === true && state.shapeConfirmed ? poolPreviewTemplate() : poolUnknownTemplate())
       + '</div>'
@@ -533,9 +562,13 @@
 
   function poolUnknownTemplate() {
     var needsShape = !state.shapeConfirmed;
+    var needsDimensionChoice = state.shapeConfirmed && typeof state.dimensionsKnown !== 'boolean';
+    var visual = needsShape
+      ? '<span>' + icon('shape-rect') + '</span><span>' + icon('shape-oval') + '</span><span>' + icon('shape-free') + '</span>'
+      : '<span class="is-measure">' + icon('measure') + '</span><span class="is-pool">' + icon('pool') + '</span>';
     return '<aside class="advisor-pool-unknown" aria-label="Conseil pour préparer vos mesures">'
-      + '<span class="advisor-pool-unknown-icon">' + icon('pool') + '</span>'
-      + '<div><strong>' + (needsShape ? 'Commencez par choisir la forme du bassin.' : 'Pour aller plus loin, mesurez l’intérieur du bassin.') + '</strong><p>' + (needsShape ? 'Elle permet d’écarter les modèles conçus uniquement pour une autre forme.' : 'Une photo prise depuis un angle large aide aussi à repérer les plages, les obstacles et l’accès au chantier.') + '</p></div>'
+      + '<div class="advisor-pool-unknown-visual" aria-hidden="true">' + visual + '</div>'
+      + '<div><strong>' + (needsShape ? 'Choisissez d’abord la forme du bassin.' : needsDimensionChoice ? 'Deux mesures suffisent.' : 'Les mesures pourront être ajoutées ensuite.') + '</strong><p>' + (needsShape ? 'Rectangle, ovale ou forme libre : ce premier choix écarte les modèles prévus pour une autre forme.' : needsDimensionChoice ? 'Indiquez la longueur et la largeur intérieures, même approximatives, ou continuez sans les connaître.' : 'Une photo large aidera aussi à repérer les plages, les obstacles et l’accès au chantier.') + '</p></div>'
       + '</aside>';
   }
 
@@ -579,9 +612,9 @@
     var primary = top[0];
     var alternatives = top.slice(1);
     var resultTitle = top.length >= 3
-      ? 'Trois types de protection à comparer pour votre piscine.'
+      ? 'Trois protections à comparer.'
       : top.length === 2
-        ? 'Deux types de protection à comparer pour votre piscine.'
+        ? 'Deux protections à comparer.'
         : 'Une protection à étudier pour votre piscine.';
     var excludedReason = state.shape !== 'rect'
       ? 'Certaines solutions ne sont pas affichées car la forme déclarée demande une étude sur mesure. Les contours, les dimensions et les abords seront confirmés avec vous.'
@@ -590,36 +623,33 @@
       ? '<p class="advisor-hint">' + escapeHtml(excludedReason) + '</p>'
       : '';
     var resultContext = state.dimensionsKnown
-      ? 'Pour votre bassin de ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m, les modèles dont les dimensions connues ne conviennent pas ont été écartés. La pose et les abords restent à confirmer avant devis.'
-      : 'Comme vous n’avez pas encore indiqué les dimensions, nous comparons les familles selon vos priorités. Les modèles à étudier seront confirmés après vos mesures.';
+      ? 'Dimensions ' + numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m prises en compte. La pose et les abords restent à confirmer.'
+      : 'Sans dimensions, le classement repose sur vos priorités. Les modèles seront confirmés après vos mesures.';
     return '<div class="advisor-screen">'
       + '<div class="advisor-results-head"><div>'
       + '  <div class="advisor-step-label">Vos recommandations</div>'
       + '  <h1 class="advisor-title">' + escapeHtml(resultTitle) + '</h1>'
       + '  <p class="advisor-subtitle">' + escapeHtml(resultContext) + '</p>'
       + '</div><div class="advisor-result-actions">' + (top.length > 1 ? '<button type="button" class="advisor-button advisor-button--secondary" data-action="compare" aria-expanded="' + state.compare + '" aria-controls="advisor-results-comparison">' + (state.compare ? 'Masquer le comparatif' : 'Comparer point par point') + '</button>' : '') + '<button type="button" class="advisor-button advisor-button--text" data-action="restart">Recommencer</button></div></div>'
-      + resultsSummaryTemplate()
+      + resultsOverviewTemplate(top)
       + (state.compare && top.length > 1 ? compareTemplate(top) : '')
       + (primary ? primaryResultTemplate(primary) : '')
-      + (!state.compare ? familyOverviewTemplate(top) : '')
       + (alternatives.length ? '<section class="advisor-alternatives"><div class="advisor-alternatives-head"><div><span class="advisor-section-kicker">' + (alternatives.length === 1 ? 'Une autre solution' : 'Deux autres solutions') + '</span><h2>Autres solutions à comparer</h2></div><p>Chaque famille propose un équilibre différent entre confort, discrétion, saison de baignade et budget.</p></div><div class="advisor-alternative-list">' + alternatives.map(alternativeResultTemplate).join('') + '</div></section>' : '')
       + excludedCopy
       + '<section class="advisor-results-explore"><div><strong>Vous voulez voir tous les modèles ?</strong><span>Explorez les cinq familles Diskoov sans perdre vos réponses.</span></div><button type="button" class="advisor-button advisor-button--secondary" data-action="direct">Explorer les protections</button></section>'
       + '</div>';
   }
 
-  function resultsSummaryTemplate() {
-    var poolTitle = state.dimensionsKnown ? numberLabel(state.length) + ' × ' + numberLabel(state.width) + ' m' : 'Dimensions à préciser';
-    var poolText = state.dimensionsKnown ? 'Dimensions intérieures déclarées' : 'Comparaison basée sur vos priorités';
-    return '<div class="advisor-results-summary" aria-label="Résumé de votre projet">'
-      + resultsSummaryItemTemplate(prioritySummaryIconName(), prioritySummaryLabel(), 'Ce qui compte dans votre projet')
-      + resultsSummaryItemTemplate('pool', poolTitle, poolText)
-      + resultsSummaryItemTemplate('user', 'Projet confirmé avant devis', 'Modèle, pose, accès et options vérifiés avec vous')
-      + '</div>';
-  }
-
-  function resultsSummaryItemTemplate(iconName, title, text) {
-    return '<div><span class="advisor-results-summary-icon" aria-hidden="true">' + icon(iconName) + '</span><span class="advisor-results-summary-copy"><strong>' + escapeHtml(title) + '</strong><span>' + escapeHtml(text) + '</span></span></div>';
+  function resultsOverviewTemplate(products) {
+    return '<section class="advisor-result-map" aria-label="Vue d’ensemble des protections proposées">'
+      + '<div class="advisor-result-map-head"><strong>Vos solutions</strong><span>Classées selon vos priorités</span></div>'
+      + '<div class="advisor-result-map-grid">' + products.map(function (item, index) {
+        return '<div class="advisor-result-map-item advisor-prospect--' + safeClass(item.prospectFamily) + '">'
+          + '<span class="advisor-result-map-icon" aria-hidden="true">' + icon(familyIconName(item)) + '</span>'
+          + '<span class="advisor-result-map-copy"><strong>' + escapeHtml(prospectFamilyLabel(item)) + '</strong><small>' + escapeHtml(comparisonOperation(item)) + ' · ' + escapeHtml(comparisonPresence(item)) + '</small></span>'
+          + (index === 0 ? '<b>À étudier d’abord</b>' : '')
+          + '</div>';
+      }).join('') + '</div></section>';
   }
 
   function prioritySummaryIconName() {
@@ -636,14 +666,6 @@
     var selected = state.priorities.filter(function (priority) { return labels[priority]; }).map(function (priority) { return labels[priority]; });
     var summary = selected.length ? frenchList(selected) : 'sans priorité particulière';
     return summary.charAt(0).toUpperCase() + summary.slice(1);
-  }
-
-  function familyOverviewTemplate(products) {
-    var title = products.length >= 3 ? 'Différences entre les trois solutions' : products.length === 2 ? 'Différences entre les deux solutions' : 'Points clés de la solution';
-    return '<section class="advisor-family-overview" aria-label="Vue d’ensemble des solutions proposées"><div class="advisor-family-overview-head"><span class="advisor-section-kicker">En un coup d’œil</span><h2>' + title + '</h2></div><div class="advisor-family-overview-grid" style="--advisor-family-count:' + Math.max(1, products.length) + '">'
-      + products.map(function (item, index) {
-        return '<article class="advisor-family-overview-item advisor-prospect--' + safeClass(item.prospectFamily) + (index === 0 ? ' is-primary' : '') + '"><span class="advisor-family-overview-icon">' + icon(familyIconName(item)) + '</span><div class="advisor-family-overview-copy"><strong>' + escapeHtml(prospectFamilyLabel(item)) + '</strong><span>' + escapeHtml(comparisonOperation(item)) + ' · ' + escapeHtml(comparisonPresence(item)) + '</span>' + (index === 0 ? '<small>À étudier en priorité</small>' : '') + '</div></article>';
-      }).join('') + '</div></section>';
   }
 
   function productMedia(item, className) {
@@ -677,15 +699,15 @@
       + '<h2>' + escapeHtml(item.title) + '</h2><p class="advisor-primary-lead">' + escapeHtml(productBestFor(item)) + '</p>'
       + benefitsTemplate(item, benefits, '')
       + (proof ? '<p class="advisor-primary-proof">' + icon('check') + '<span>' + escapeHtml(proof) + '</span></p>' : '')
-      + '<dl class="advisor-primary-facts"><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon(prioritySummaryIconName()) + '</span><dt>Pourquoi elle vous convient</dt><dd>' + escapeHtml(match) + '</dd></div><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon('install') + '</span><dt>À valider avant devis</dt><dd>' + escapeHtml(tradeoff) + '</dd></div></dl>'
+      + '<dl class="advisor-primary-facts"><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon(prioritySummaryIconName()) + '</span><dt>Pourquoi elle ressort</dt><dd>' + escapeHtml(match) + '</dd></div><div><span class="advisor-primary-fact-icon" aria-hidden="true">' + icon('install') + '</span><dt>À valider avant devis</dt><dd>' + escapeHtml(tradeoff) + '</dd></div></dl>'
       + '<div class="advisor-primary-actions"><div><strong>' + escapeHtml(item.estimate) + '</strong><span>Étude de pose avant devis</span></div><div class="advisor-result-buttons"><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '" aria-label="Préparer mon devis pour ' + escapeHtml(item.title) + '">Préparer mon devis <span aria-hidden="true">→</span></button></div></div>'
       + '<p class="advisor-primary-next"><strong>Pourquoi joindre une photo ?</strong> ' + escapeHtml(photoHelpText(item)) + ' Elle reste facultative.</p></div>'
       + '</article>';
   }
 
-  function alternativeResultTemplate(item) {
+  function alternativeResultTemplate(item, index) {
     var status = resultStatusLabel(item, 1);
-    return '<article class="advisor-alternative advisor-family--' + safeClass(item.family) + '">'
+    return '<article class="advisor-alternative advisor-family--' + safeClass(item.family) + '" style="--advisor-order:' + index + '">'
       + productMedia(item, 'advisor-alternative-media')
       + '<div class="advisor-alternative-copy"><div class="advisor-result-category">' + productCategoryTemplate(item, true) + '<span class="advisor-result-match advisor-result-match--' + safeClass(status.key) + '">' + escapeHtml(status.label) + '</span></div><h3>' + escapeHtml(item.title) + '</h3><p class="advisor-alternative-fit">' + escapeHtml(productBestFor(item)) + '</p><p class="advisor-alternative-check"><strong>À savoir</strong>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + '<div class="advisor-alternative-actions"><span>' + escapeHtml(item.estimate) + '</span><div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir</button><button type="button" class="advisor-button" data-action="choose" data-product="' + item.id + '" aria-label="Choisir ' + escapeHtml(item.title) + '">Choisir cette solution <span aria-hidden="true">→</span></button></div></div>'
@@ -842,6 +864,7 @@
   function openProductDetails(productId, trigger, source) {
     var item = findResultProduct(productId);
     if (!item || !detailModal || !detailContent) return;
+    window.clearTimeout(detailCleanupTimer);
     detailSource = source === 'direct' ? 'direct' : 'guided';
     detailLastFocus = trigger || document.activeElement;
     detailContent.className = 'advisor-detail-card advisor-family--' + safeClass(item.family);
@@ -859,10 +882,14 @@
     detailModal.classList.remove('is-open');
     detailModal.setAttribute('aria-hidden', 'true');
     detailModal.setAttribute('aria-label', 'Détails du produit');
-    detailContent.innerHTML = '';
-    detailContent.className = 'advisor-detail-card';
     restoreFocus(detailLastFocus);
     detailLastFocus = null;
+    window.clearTimeout(detailCleanupTimer);
+    detailCleanupTimer = window.setTimeout(function () {
+      if (detailModal.classList.contains('is-open')) return;
+      detailContent.innerHTML = '';
+      detailContent.className = 'advisor-detail-card';
+    }, reducedMotionQuery.matches ? 0 : 180);
   }
 
   function findResultProduct(productId) {
@@ -898,12 +925,12 @@
       + '<p class="advisor-detail-lead">' + escapeHtml(productSalesIntro(item)) + '</p>'
       + benefitsTemplate(item, benefits, 'advisor-detail-benefits')
       + decisionFactsTemplate(item, 'advisor-detail-decision')
-      + '<div class="advisor-detail-section"><strong>À choisir si</strong><p>' + escapeHtml(productBestFor(item)) + '</p></div>'
-      + '<ul class="advisor-detail-list">' + bullets.map(function (bullet) { return '<li>' + escapeHtml(bullet) + '</li>'; }).join('') + '</ul>'
       + '<div class="advisor-detail-section advisor-detail-section--notice"><strong>À vérifier ensemble</strong><p>' + escapeHtml(productTradeoff(item)) + '</p></div>'
       + directNotice
-      + (reasons.length ? '<div class="advisor-detail-fit"><strong>Adapté à votre projet</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
       + '<div class="advisor-detail-footer"><div class="advisor-detail-offer"><strong>' + escapeHtml(item.estimate || 'Étude personnalisée') + '</strong><small>Proposition affinée après vérification du bassin</small></div><div class="advisor-detail-cta"><button type="button" class="advisor-button"' + actionAttributes + '>' + actionLabel + (directBlocked ? '' : ' <span aria-hidden="true">→</span>') + '</button><small>Photo facultative · proposition après vérification</small></div></div>'
+      + '<div class="advisor-detail-section"><strong>À choisir si</strong><p>' + escapeHtml(productBestFor(item)) + '</p></div>'
+      + '<details class="advisor-detail-more"><summary>Voir les caractéristiques</summary><ul class="advisor-detail-list">' + bullets.map(function (bullet) { return '<li>' + escapeHtml(bullet) + '</li>'; }).join('') + '</ul></details>'
+      + (reasons.length ? '<div class="advisor-detail-fit"><strong>Correspond à vos réponses</strong><span>' + reasons.map(escapeHtml).join('</span><span>') + '</span></div>' : '')
       + '</div>';
   }
 
@@ -1061,14 +1088,9 @@
   function directFamilyDefinitions() {
     return [
       {
-        id: 'covers', icon: 'cover', title: 'Couvertures motorisées', eyebrow: 'Plusieurs technologies', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden'], image: 'ore_essential',
+        id: 'covers', icon: 'cover', title: 'Couvertures de piscine', eyebrow: 'Plusieurs technologies', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden'], image: 'ore_essential',
         text: 'Oré, Coverseal et Eden répondent à des configurations différentes.', bestFor: 'Vous voulez comparer le fonctionnement, l’implantation et les contraintes de chaque modèle.', check: 'La place, le support, l’alimentation et la pose sont vérifiés avant proposition.',
         proofs: [['Fonctionnement', 'Défini selon le modèle retenu'], ['Implantation', 'Vérifiée avec les abords du bassin'], ['À prévoir', 'Support, dégagement et alimentation']]
-      },
-      {
-        id: 'bar-cover', icon: 'bars', title: 'Couverture à barres', eyebrow: 'Protection essentielle', products: ['bab'], image: 'bab',
-        text: 'Une couverture de sécurité manuelle, sans alimentation électrique.', bestFor: 'Vous privilégiez une solution tarifée selon les dimensions et les options utiles.', check: 'Les ancrages, l’escalier et le bloc de filtration sont confirmés avec vous.',
-        proofs: [['Au quotidien', 'Une manipulation plus manuelle'], ['Autour du bassin', 'Une protection visible une fois fermée'], ['À prévoir', 'Ancrages, escalier et bloc de filtration']]
       },
       {
         id: 'shutters', icon: 'shutter', title: 'Volets de piscine', eyebrow: 'Confort automatisé', products: ['volet_hs', 'volet_immerge'], image: 'volet_hs',
@@ -1079,6 +1101,11 @@
         id: 'shelters', icon: 'shelter', title: 'Abris télescopiques', eyebrow: 'Plusieurs hauteurs', products: ['ul', 'm18', 'm30', 'm50', 'mid'], image: 'm18',
         text: 'Une structure télescopique déclinée en plusieurs hauteurs.', bestFor: 'Vous voulez comparer le volume, la présence visuelle et l’usage sous abri.', check: 'L’espace de refoulement, les accès et la terrasse sont étudiés avec vous.',
         proofs: [['Au quotidien', 'Le bassin reste protégé sous une structure télescopique'], ['Choix déterminant', 'La hauteur change le confort et la présence visuelle'], ['À prévoir', 'Refoulement, accès et terrasse']]
+      },
+      {
+        id: 'bar-cover', icon: 'bars', title: 'Couverture à barres', eyebrow: 'Protection essentielle', products: ['bab'], image: 'bab',
+        text: 'Une couverture de sécurité manuelle, sans alimentation électrique.', bestFor: 'Vous privilégiez une solution tarifée selon les dimensions et les options utiles.', check: 'Les ancrages, l’escalier et le bloc de filtration sont confirmés avec vous.',
+        proofs: [['Au quotidien', 'Une manipulation plus manuelle'], ['Autour du bassin', 'Une protection visible une fois fermée'], ['À prévoir', 'Ancrages, escalier et bloc de filtration']]
       },
       {
         id: 'deck', icon: 'deck', title: 'Terrasse mobile', eyebrow: 'Fermeture par plancher', products: ['masterdeck'], image: 'masterdeck',
@@ -1092,15 +1119,15 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Explorer les solutions</div>'
       + '<h1 class="advisor-title">Quel type de protection recherchez-vous ?</h1>'
-      + '<p class="advisor-subtitle">Comparez les principales différences entre couvertures, volets, abris et terrasses mobiles, puis découvrez les modèles disponibles.</p>'
+      + '<p class="advisor-subtitle">Comparez couvertures, volets, abris et terrasses mobiles, puis découvrez les modèles disponibles.</p>'
       + '<div class="advisor-family-list">'
-      + families.map(function (family) {
+      + families.map(function (family, index) {
         var item = engine.findCandidate(family.image);
         var actionLabel = family.products.length > 1 ? 'Voir les modèles' : 'Découvrir ce produit';
         var media = item && item.image
           ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>'
           : '<div class="advisor-family-media advisor-direct-media--fallback" aria-hidden="true">' + icon('shield') + '</div>';
-        return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '">' + media
+        return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '" style="--advisor-order:' + index + '">' + media
           + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p><dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl></div>'
           + '<button type="button" class="advisor-direct-main" data-action="direct-family" data-value="' + family.id + '">' + actionLabel + ' <span aria-hidden="true">→</span></button></article>';
       }).join('')
@@ -1148,7 +1175,7 @@
     return map[family && family.id] || ['check', 'aesthetics', 'install'];
   }
 
-  function directProductItem(id) {
+  function directProductItem(id, index) {
     var item = engine.findCandidate(id);
     if (!item) return '';
     var selectable = directSelectionAllowed(item);
@@ -1157,7 +1184,7 @@
     var media = item.image
       ? '<button type="button" class="advisor-direct-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(item.image) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + productImageNote(item) + '<span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>'
       : '<span class="advisor-direct-media advisor-direct-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</span>';
-    return '<article class="advisor-direct-item advisor-family--' + safeClass(item.family) + (selectable ? '' : ' is-unavailable') + '">' + media
+    return '<article class="advisor-direct-item advisor-family--' + safeClass(item.family) + (selectable ? '' : ' is-unavailable') + '" style="--advisor-order:' + index + '">' + media
       + '<div class="advisor-direct-copy">' + productCategoryTemplate(item) + '<span class="advisor-direct-name">' + escapeHtml(item.title) + '</span><span class="advisor-direct-desc">' + escapeHtml(productBestFor(item)) + '</span>' + (proof ? '<span class="advisor-product-proof">' + icon('check') + '<span>' + escapeHtml(proof) + '</span></span>' : '') + decisionFactsTemplate(item, 'advisor-model-facts') + '</div>'
       + '<div class="advisor-direct-buttons"><button type="button" class="advisor-info-button advisor-info-button--inline" data-action="details" data-product="' + id + '">Découvrir</button><button type="button" class="advisor-direct-main"' + (selectable ? ' data-action="direct-product" data-product="' + id + '" aria-label="Choisir ' + escapeHtml(item.title) + '">Choisir ce modèle <span aria-hidden="true">→</span>' : ' disabled>' + escapeHtml(unavailable.label)) + '</button></div></article>';
   }
@@ -1221,11 +1248,11 @@
   function updateVisualCopy() {
     var primary = state.results && state.results.recommendations && state.results.recommendations[0];
     var copies = {
-      welcome: { kicker: 'Conseil personnalisé', title: 'Trouvez la protection adaptée à votre piscine.', text: 'Comparez les solutions Diskoov selon vos priorités et les caractéristiques de votre bassin.', meta: 'Vos réponses restent modifiables pendant le parcours.', image: 'assets/produits/conseiller/ore-fermee.webp' },
-      priorities: { kicker: 'Vos priorités', title: 'Qu’attendez-vous de votre protection ?', text: 'Choisissez jusqu’à deux critères : entretien, sécurité, confort, esthétique ou budget.', meta: 'Vous pourrez ensuite comparer toutes les familles.', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
-      pool: { kicker: 'Votre piscine', title: 'Décrivez la forme et les dimensions du bassin.', text: 'Ces informations permettent d’écarter les modèles dont les dimensions ne conviennent pas, sans confirmer la faisabilité de la pose.', meta: 'Des mesures approximatives suffisent pour commencer.', image: 'assets/produits/conseiller/ore-ouverte.webp' },
+      welcome: { kicker: 'Conseil personnalisé', title: 'Comparez avant de choisir.', text: 'Couverture, volet, abri ou terrasse mobile : Diskoov vous aide à les comparer.', meta: 'Votre projet est ensuite confirmé avec un conseiller.', image: 'assets/produits/conseiller/ore-fermee.webp' },
+      priorities: { kicker: 'Vos priorités', title: 'Choisissez ce qui compte le plus.', text: 'Deux priorités maximum pour orienter la comparaison.', meta: 'Vous gardez accès à toutes les protections.', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
+      pool: { kicker: 'Votre piscine', title: 'Décrivez votre piscine.', text: 'La forme et les dimensions servent à écarter les modèles qui ne correspondent pas aux mesures.', meta: 'La pose reste confirmée avec vous.', image: 'assets/produits/conseiller/ore-ouverte.webp' },
       results: { kicker: 'Vos recommandations', title: primary ? prospectFamilyLabel(primary) : 'Plusieurs types de protection à comparer.', text: primary ? productBestFor(primary) : 'Comparez les familles, puis faites confirmer la solution qui vous convient.', meta: 'Le modèle, la pose, les accès et les options sont confirmés avant devis.', image: primary && primary.image ? primary.image : 'assets/produits/conseiller/ore-fermee.webp' },
-      direct: { kicker: 'Les protections Diskoov', title: 'Choisissez un type de protection.', text: 'Comparez le fonctionnement, l’intégration, l’encombrement et les principales contraintes de chaque famille.', meta: 'La faisabilité de chaque modèle est confirmée avant devis.', image: 'assets/produits/conseiller/masterdeck.webp' }
+      direct: { kicker: 'Les protections Diskoov', title: 'Choisissez un type de protection.', text: 'Comparez fonctionnement, présence autour du bassin et contraintes principales.', meta: 'Chaque modèle est confirmé avant devis.', image: 'assets/produits/conseiller/masterdeck.webp' }
     };
     var copy = copies[state.screen] || copies.welcome;
     if (state.screen === 'direct' && state.directFamily) {
@@ -1246,7 +1273,20 @@
     shell.querySelector('[data-visual-text]').textContent = copy.text;
     shell.querySelector('[data-visual-meta]').textContent = copy.meta;
     var visualImage = shell.querySelector('[data-visual-image]');
-    if (visualImage && visualImage.getAttribute('src') !== copy.image) visualImage.setAttribute('src', copy.image);
+    if (visualImage && visualImage.getAttribute('src') !== copy.image) swapVisualImage(visualImage, copy.image);
+  }
+
+  function swapVisualImage(image, src) {
+    image.classList.add('is-changing');
+    function revealImage() {
+      image.onload = null;
+      image.onerror = null;
+      requestAnimationFrame(function () { image.classList.remove('is-changing'); });
+    }
+    image.onload = revealImage;
+    image.onerror = revealImage;
+    image.setAttribute('src', src);
+    if (image.complete) revealImage();
   }
 
   function openConfigurator(productId, source) {
@@ -1291,7 +1331,7 @@
     if (panelBody) {
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          panelBody.scrollTo({ top: 0, behavior: 'smooth' });
+          panelBody.scrollTo({ top: 0, behavior: reducedMotionQuery.matches ? 'auto' : 'smooth' });
           if (guidedSummary) guidedSummary.focus({ preventScroll: true });
         });
       });
@@ -1478,6 +1518,7 @@
 
   function openPreview(src, alt, trigger) {
     if (!src) return;
+    window.clearTimeout(previewCleanupTimer);
     modalLastFocus = trigger || document.activeElement;
     modalImage.src = src;
     modalImage.alt = alt || 'Photo du produit';
@@ -1489,9 +1530,12 @@
   function closePreview() {
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
-    modalImage.removeAttribute('src');
     restoreFocus(modalLastFocus);
     modalLastFocus = null;
+    window.clearTimeout(previewCleanupTimer);
+    previewCleanupTimer = window.setTimeout(function () {
+      if (!modal.classList.contains('is-open')) modalImage.removeAttribute('src');
+    }, reducedMotionQuery.matches ? 0 : 180);
   }
 
   function restoreFocus(node) {
