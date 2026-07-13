@@ -219,9 +219,10 @@ test('le filet local conserve un lead même si la pièce jointe dépasse le quot
 
 test('la vue des solutions garde ses icones centrees et son ordre explicite', function () {
   assert.match(advisor, /class="advisor-result-map-item advisor-prospect--/);
-  assert.match(advisor, /index === 0 \? '<b>À étudier d’abord<\/b>' : ''/);
+  assert.match(advisor, /class="advisor-result-map-rank" aria-hidden="true">0/);
   assert.match(advisorCss, /\.advisor-result-map-icon\s*\{[\s\S]*?display:\s*grid;[\s\S]*?place-items:\s*center/);
   assert.match(advisorCss, /\.advisor-result-map-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/);
+  assert.match(advisorCss, /\.advisor-result-map-item:first-child\s*\{[\s\S]*?box-shadow:\s*inset 3px 0 0 var\(--advisor-brand\)/);
 });
 
 test('la progression expose ses etapes et leur statut aux technologies d assistance', function () {
@@ -341,7 +342,8 @@ test('le visuel principal du configurateur reste optimisé pour le mobile', func
 test('les listes produit aident a choisir avant de demander une etude', function () {
   assert.match(advisor, /Quelle protection choisir pour <span class="advisor-title-accent">votre piscine<\/span> \?/);
   assert.match(advisor, /Quel type de protection recherchez-vous/);
-  assert.match(advisor, /advisor-family-signals/);
+  assert.match(advisor, /<\/div>'\s*\+ '<dl class="advisor-family-signals">/);
+  assert.match(advisor, /class="advisor-family-signal"/);
   assert.match(advisor, /advisor-family-signal-icon/);
   assert.match(advisor, /advisor-family-story-fact-icon/);
   assert.match(advisor, /advisor-model-facts/);

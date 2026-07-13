@@ -645,9 +645,9 @@
       + '<div class="advisor-result-map-head"><strong>Vos solutions</strong><span>Classées selon vos priorités</span></div>'
       + '<div class="advisor-result-map-grid">' + products.map(function (item, index) {
         return '<div class="advisor-result-map-item advisor-prospect--' + safeClass(item.prospectFamily) + '">'
+          + '<span class="advisor-result-map-rank" aria-hidden="true">0' + (index + 1) + '</span>'
           + '<span class="advisor-result-map-icon" aria-hidden="true">' + icon(familyIconName(item)) + '</span>'
           + '<span class="advisor-result-map-copy"><strong>' + escapeHtml(prospectFamilyLabel(item)) + '</strong><small>' + escapeHtml(comparisonOperation(item)) + ' · ' + escapeHtml(comparisonPresence(item)) + '</small></span>'
-          + (index === 0 ? '<b>À étudier d’abord</b>' : '')
           + '</div>';
       }).join('') + '</div></section>';
   }
@@ -1138,7 +1138,8 @@
           ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async">' + familyImageNote(family) + '</div>'
           : '<div class="advisor-family-media advisor-direct-media--fallback" aria-hidden="true">' + icon('shield') + '</div>';
         return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '" style="--advisor-order:' + index + '">' + media
-          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p><dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl></div>'
+          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.bestFor) + '</p></div>'
+          + '<dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl>'
           + '<button type="button" class="advisor-direct-main" data-action="direct-family" data-value="' + family.id + '">' + actionLabel + ' <span aria-hidden="true">→</span></button></article>';
       }).join('')
       + '</div></div>';
@@ -1171,7 +1172,7 @@
   function familySignalTemplate(family, index) {
     var proof = family.proofs[index];
     var signalIcons = familySignalIconNames(family);
-    return '<div><dt><span class="advisor-family-signal-icon" aria-hidden="true">' + icon(signalIcons[index]) + '</span><span>' + escapeHtml(proof[0]) + '</span></dt><dd>' + escapeHtml(proof[1]) + '</dd></div>';
+    return '<div class="advisor-family-signal"><dt><span class="advisor-family-signal-icon" aria-hidden="true">' + icon(signalIcons[index]) + '</span><span>' + escapeHtml(proof[0]) + '</span></dt><dd>' + escapeHtml(proof[1]) + '</dd></div>';
   }
 
   function familySignalIconNames(family) {
