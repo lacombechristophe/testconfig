@@ -148,7 +148,7 @@ test('le conseiller exige un choix explicite avant d’utiliser les dimensions 8
   assert.equal((advisor.match(/length:\s*null/g) || []).length, 2);
   assert.equal((advisor.match(/width:\s*null/g) || []).length, 2);
   assert.match(advisor, /state\.screen === 'pool' && \(!state\.shapeConfirmed \|\| typeof state\.dimensionsKnown !== 'boolean'/);
-  assert.match(advisor, /state\.dimensionsKnown === true && !dimensionsValid\(\)/);
+  assert.match(advisor, /function goNext\(\)[\s\S]*?if \(!dimensionsValid\(\)\) \{[\s\S]*?showDimensionError\(\)/);
   assert.match(advisor, /updateDimensionFeedback\(\);\s*updateFooterOnly\(\);/);
   assert.match(advisor, /firstTabStop = typeof state\.dimensionsKnown !== 'boolean' && value === true/);
   assert.match(advisor, /if \(state\.dimensionsKnown !== true\) return false/);
@@ -191,7 +191,8 @@ test('la forme ovale utilise un libellé non ambigu', function () {
 
 test('le pied de page distingue estimation, informations manquantes et étude personnalisée', function () {
   assert.match(html, /function setPriceContext\(title, subtitle\)/);
-  assert.match(html, /setPriceContext\('Votre estimation', 'Complétez les informations indiquées'\)/);
+  assert.match(html, /function supportsAutomaticEstimate\(product\)/);
+  assert.match(html, /supportsAutomaticEstimate\(product\) \? 'Votre estimation' : 'Votre projet'/);
   assert.match(html, /setP\('À compléter', true\)/);
   assert.match(html, /setPriceContext\('Plage dimensionnelle à vérifier', 'Diskoov étudiera une configuration adaptée'\)/);
   assert.match(html, /setPriceContext\('Étude personnalisée', 'Prix établi après vérification du projet'\)/);
@@ -199,6 +200,17 @@ test('le pied de page distingue estimation, informations manquantes et étude pe
   assert.match(html, /rr\.eligible === false \? 'Hors plage dimensionnelle connue'/);
   assert.doesNotMatch(html, /Étude personnalisée'\s*\+\s*' · compatibilité à vérifier/);
   assert.doesNotMatch(html, /À vérifier — sur devis/);
+});
+
+test('les synchronisations silencieuses ne déclenchent ni toast ni invalidation conseiller', function () {
+  var updateDimensions = html.match(/function updD\(options\)([\s\S]*?)function fixD/);
+  var selectShape = html.match(/function selShape\(v, options\)([\s\S]*?)\/\* ── DIMENSION PRESETS/);
+  assert.ok(updateDimensions);
+  assert.ok(selectShape);
+  assert.match(updateDimensions[1], /updateDimensionAvailability\(options && options\.silent \? \{ toast: false, notify: false \} : undefined\)/);
+  assert.match(selectShape[1], /updateDimensionAvailability\(options && options\.silent \? \{ toast: false, notify: false \} : undefined\)/);
+  assert.match(html, /if \(options\.notify !== false\) notifyAdvisorInvalidation/);
+  assert.doesNotMatch(html, /dimensions au-delà de la matrice tarifaire actuelle/i);
 });
 
 test('l’API ne confirme jamais un lead que l’email interne n’a pas reçu', function () {
@@ -214,7 +226,8 @@ test('le filet local conserve un lead même si la pièce jointe dépasse le quot
   assert.match(html, /queuePendingLead\(payload\)/);
   assert.match(html, /function pendingLeadWithoutAttachment\(payload\)/);
   assert.match(html, /plan_base64:\s*''/);
-  assert.match(html, /lightweightLeads\.map\(pendingLeadWithoutAttachment\)/);
+  assert.match(html, /readPendingLeads\(\)\.map\(pendingLeadWithoutAttachment\)/);
+  assert.match(html, /body:\s*JSON\.stringify\(pendingLeadWithoutAttachment\(lead\)\)/);
 });
 
 test('la vue des solutions garde ses icones centrees et son ordre explicite', function () {
@@ -365,7 +378,8 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /advisor-media-zoom/);
   assert.match(advisor, /function familyImageNote\(family\)/);
   assert.match(advisor, /Exemple : couverture Oré/);
-  assert.match(advisor, /Visuel de gamme · à confirmer/);
+  assert.match(advisor, /Projet sur mesure/);
+  assert.doesNotMatch(advisor, /Visuel de gamme · à confirmer/);
   assert.match(advisorCss, /\.advisor-family-media\s*\{[\s\S]*?position:\s*relative/);
   assert.doesNotMatch(advisor, /advisor-result-rank/);
   assert.match(advisorCss, /\.advisor-direct-media:focus-visible/);
@@ -408,7 +422,7 @@ test('la piscine revele les dimensions apres la forme et reste empilee sur mobil
 });
 
 test('les fiches produit masquent seulement les caracteristiques secondaires', function () {
-  assert.match(advisor, /<details class="advisor-detail-more"><summary>Voir les caractéristiques<\/summary>/);
+  assert.match(advisor, /<details class="advisor-detail-more"><summary>[\s\S]*?Voir les caractéristiques[\s\S]*?Masquer les caractéristiques[\s\S]*?<\/summary>/);
   assert.match(advisor, /advisor-detail-section advisor-detail-section--notice/);
   assert.match(advisorCss, /\.advisor-detail-more summary:focus-visible/);
 });
@@ -421,7 +435,8 @@ test('le passage au configurateur garde un langage prospect', function () {
 
 test('les preuves commerciales restent limitees aux affirmations documentees', function () {
   assert.match(advisor, /Pose incluse lorsque Diskoov fournit et installe la couverture/);
-  assert.match(advisor, /NF P90-308 · garantie 3 ans/);
+  assert.match(advisor, /bab:\s*'Conçue selon la norme NF P90-308'/);
+  assert.doesNotMatch(advisor + html, /garantie (?:de )?3 ans/i);
   assert.match(advisor, /La pose est étudiée et chiffrée selon le chantier/);
   assert.doesNotMatch(advisor, /Coverseal[^\n]{0,180}pose incluse/i);
   assert.doesNotMatch(advisor, /Coverseal[^\n]{0,180}Sécurité/i);

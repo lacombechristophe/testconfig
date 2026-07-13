@@ -1,0 +1,17 @@
+.codex/
+.vs/
+.vercel/
+.env*
+.git*
+node_modules/
+
+conception-v2/
+docs-regles/
+tasks/
+tests/
+validation-xavier/
+
+*.zip
+DESIGN.md
+GUIDE-DISKOOV.html
+README.md

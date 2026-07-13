@@ -1,266 +1,141 @@
-# Configurateur Diskoov v15 — Guide de mise en production
+# Conseiller et configurateur Diskoov
 
-## Checklist avant go-live (obligatoire)
+Application statique avec une fonction Vercel pour :
 
-### 1. Photos produit
+- guider un prospect à partir de ses priorités et de sa piscine ;
+- comparer les familles de protections Diskoov ;
+- ouvrir directement un produit pour un visiteur qui sait déjà ce qu'il cherche ;
+- préparer une demande de devis qualifiée sans afficher les règles internes ;
+- envoyer la demande à Diskoov et une confirmation au prospect.
 
-Les 17 visuels reçus sont intégrés dans `assets/produits` et reliés aux parcours Oré, BAB, abris et volets. Les visuels principaux utilisés sont notamment :
+La branche de travail client est `refonte/conseiller-diskoov-v2`.
 
-| Fichier | Usage |
+## Prérequis
+
+- Node.js 24.x ;
+- npm ;
+- Vercel CLI pour reproduire le build de déploiement.
+
+```powershell
+npm install
+npm test
+npm run typecheck
+npx vercel@latest build --yes
+```
+
+Pour une vérification visuelle statique, servir la racine puis ouvrir :
+
+```text
+http://127.0.0.1:5179/index.html?advisor=1
+```
+
+## Structure utile
+
+| Chemin | Rôle |
 |---|---|
-| `assets/produits/ore/*` | Oré et encombrements techniques |
-| `assets/produits/bab/*` | Bâche à barres et Rolling-Up |
-| `assets/produits/abris/*` | Ultra Bas, Master Bas et Mi-haut |
-| `assets/produits/volets-*/*` | Volets hors-sol et immergés |
+| `index.html` | Configurateur, formulaire et orchestration du lead |
+| `advisor-v2.js` | Parcours guidé, accès direct, comparaison et passage au configurateur |
+| `advisor-v2.css` | Direction visuelle et responsive du conseiller |
+| `advisor-engine.js` | Classement conservateur des solutions |
+| `product-rules.js` | Compatibilités et estimations autorisées par les sources |
+| `api/send-email.ts` | Validation serveur, déduplication et envoi des emails |
+| `assets/produits` | Visuels produit optimisés |
+| `docs-regles` | Consolidation interne des documents métier |
+| `tasks/audit-prelivraison` | Audit, décisions, questions et runbook de lancement |
+| `tests` | Tests métier, UX, sécurité et déploiement |
 
-La cartographie exacte est documentée dans `docs-regles/ASSETS-PRODUITS.md`.
+Le build public est filtré par `.vercelignore`. Les audits, tests, documents métier,
+archives et fichiers d'environnement ne doivent jamais apparaître dans
+`.vercel/output/static`.
 
----
+## Règles commerciales
 
-### 2. Image Open Graph
-Créer un visuel configurateur au format 1200×630 px (screenshot ou mockup produit)  
-et le déposer à : `https://configurateur.diskoov.fr/og-configurateur.jpg`  
-Puis mettre à jour la balise `og:image` dans `<head>`.
+- Oré peut afficher une estimation uniquement lorsque toutes les données nécessaires sont présentes.
+- BAB reste sur devis dès qu'un escalier ne peut pas être chiffré sans ambiguïté.
+- Volets et abris restent sur devis tant que leurs composantes tarifaires ne sont pas validées par écrit.
+- Coverseal, Eden et MasterDeck restent des solutions à étudier lorsque les règles écrites ne permettent pas de conclure.
+- Une information manquante produit un état à préciser ou sur devis, jamais une fausse incompatibilité.
 
----
+La source de vérité et les points encore à faire signer sont documentés dans
+`tasks/audit-prelivraison/01-regles-metier.md` et
+`tasks/audit-prelivraison/QUESTIONS-XAVIER.md`.
 
-### 3. Variables d'environnement Vercel
+## Variables Vercel
 
-Dans **Vercel → Settings → Environment Variables** :
+Créer les valeurs de preview et de production à partir de `.env.example` :
 
-| Variable | Obligatoire | Description |
+| Variable | Statut | Usage |
 |---|---|---|
-| `RESEND_API_KEY` | ✅ | Clé API Resend (resend.com) |
-| `FROM_EMAIL` | ✅ | Expéditeur Resend vérifié, ex. `contact@diskoov.fr` |
-| `INTERNAL_EMAIL` | ✅ | Email interne de réception des leads |
-| `PUBLIC_CONTACT_NAME` | Optionnel | Nom public dans l'email prospect (défaut : `l'équipe Diskoov`) |
-| `PUBLIC_CONTACT_EMAIL` | Optionnel | Email public dans l'email prospect (défaut : `contact@diskoov.fr`) |
-| `CONTACT_PHONE` | Optionnel | Téléphone dans les emails (défaut : `06 20 54 25 04`) |
-| `CONTACT_LOC` | Optionnel | Sous-titre de la carte contact (défaut : `Conseil et étude personnalisée`) |
-| `CONTACT_ADDR` | Optionnel | Adresse siège social dans le footer (défaut : `494, rue Léon Blum 34 000 Montpellier`) |
-| `SITE_URL` | Optionnel | URL du site (défaut : `https://diskoov.fr`) |
-| `LOGO_URL` | Optionnel | URL du logo dans les emails (défaut : `https://configurateur.diskoov.fr/logo-diskoov.png`) |
-| `KV_REST_API_URL` | Recommandé | Fourni automatiquement par Vercel KV |
-| `KV_REST_API_TOKEN` | Recommandé | Fourni automatiquement par Vercel KV |
-| `WEBHOOK_URL` | Optionnel | URL Make.com / Zapier |
+| `RESEND_API_KEY` | Requise | Envoi via Resend |
+| `KEY_DERIVATION_SECRET` | Requise en production | Dérivation HMAC des clés de stockage |
+| `FROM_EMAIL` | Requise | Expéditeur appartenant à un domaine vérifié |
+| `INTERNAL_EMAIL` | Requise | Réception interne des demandes |
+| `PUBLIC_CONTACT_NAME` | Optionnelle | Nom affiché dans l'email prospect |
+| `PUBLIC_CONTACT_EMAIL` | Optionnelle | Contact public |
+| `CONTACT_PHONE` | Optionnelle | Téléphone public |
+| `CONTACT_LOC` | Optionnelle | Libellé de la zone de contact |
+| `CONTACT_ADDR` | Optionnelle | Adresse affichée dans l'email |
+| `SITE_URL` | Optionnelle | Site principal Diskoov |
+| `LOGO_URL` | Optionnelle | Logo absolu utilisé dans les emails |
+| `KV_REST_API_URL` | Recommandée | Stockage partagé pour déduplication et limites |
+| `KV_REST_API_TOKEN` | Recommandée | Accès au stockage partagé |
 
-**Activer Vercel KV** (rate-limiting persistant, 2 min) :  
-Vercel Dashboard → Storage → Create KV Store → lier au projet.  
-Les variables `KV_REST_API_URL` et `KV_REST_API_TOKEN` sont injectées automatiquement.
+Le client ne contient aucun webhook. Toute intégration externe doit rester côté
+serveur et être revue avant ajout.
 
----
+## Sécurité du lead
 
-### 4. Webhook Make.com / Zapier (optionnel)
+- consentement, origine, champs, produit et pièce jointe sont validés côté serveur ;
+- la compatibilité et le prix envoyés par le navigateur ne sont jamais considérés comme fiables ;
+- JPG, PNG, WebP et PDF sont contrôlés par signature et limités à 3 Mio ;
+- le dossier est dédupliqué avec une référence serveur stable ;
+- l'email prospect n'est envoyé qu'après réception interne réussie ;
+- l'outbox locale expire après 48 h et ne conserve pas la pièce jointe en base64 ;
+- les paramètres analytics n'incluent ni coordonnées, ni commentaire, ni contenu du fichier.
 
-**Option A — via la page parente WordPress** (pour masquer l'URL au client) :
+`npm audit --audit-level=high` doit rester à zéro avant livraison.
+
+## Intégration iframe
+
+Le CSP autorise l'intégration depuis `https://diskoov.fr` et ses sous-domaines.
+L'origine finale doit être testée sur une preview avant mise en production.
+
 ```html
-<!-- Coller AVANT l'iframe dans la page WordPress -->
-<script>window.DISKOOV_WEBHOOK = 'https://hook.eu1.make.com/VOTRE_ID';</script>
-```
-
-**Option B — directement dans index.html** (déconseillé, URL visible) :
-```js
-// Ligne ~930 dans index.html
-window.DISKOOV_WEBHOOK = 'https://hook.eu1.make.com/VOTRE_ID';
-```
-
----
-
-### 5. Politique de confidentialité (RGPD — OBLIGATOIRE)
-La page `https://diskoov.fr/privacy-policy/` est référencée dans le formulaire et la bannière cookies.
-Si l'URL change, la modifier dans `config.js` → `DISKOOV_PRIVACY_URL`.
-Contenu minimum requis (CNIL Art. 13) : finalité, base légale, durée 3 ans, DPO contact, droits.
-
-### 6. Fonts Inter (auto-hébergées, RGPD)
-Les polices Inter sont **déjà incluses** dans le dépôt (`/fonts/*.woff2`).
-Aucune requête vers Google Fonts — conforme RGPD.
-
----
-
-## Intégration WordPress (iframe recommandé)
-
-Le configurateur utilise `overflow:hidden` et `100svh` — il ne peut pas être injecté directement dans une page WordPress. L'**iframe** est la seule méthode correcte.
-
-### Option A — Sous-domaine dédié (recommandé)
-
-```
-https://configurateur.diskoov.fr
-```
-
-1. Déployer sur Vercel
-2. Vercel → Settings → Domains → ajouter `configurateur.diskoov.fr`
-3. DNS : CNAME `configurateur` → `cname.vercel-dns.com`
-
-**Code à coller dans l'éditeur WordPress** :
-```html
-<style>
-.diskoov-iframe-wrap{position:relative;width:100%;height:100svh;overflow:hidden}
-.diskoov-iframe-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
-</style>
-<div class="diskoov-iframe-wrap">
+<div style="position:relative;width:100%;height:100svh;overflow:hidden">
   <iframe
-    src="https://configurateur.diskoov.fr"
-    title="Configurateur piscine Diskoov"
-    allow="autoplay; encrypted-media"
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade">
+    src="https://configurateur.diskoov.fr/?advisor=1"
+    title="Conseiller piscine Diskoov"
+    style="position:absolute;inset:0;width:100%;height:100%;border:0"
+    referrerpolicy="strict-origin-when-cross-origin">
   </iframe>
 </div>
 ```
 
-**Masquer header/footer WordPress sur cette page** (dans `functions.php`) :
-```php
-add_action('wp_head', function() {
-  if (is_page('configurateur')) {
-    echo '<style>.site-header,.site-footer,.wpadminbar{display:none!important}
-    body{margin:0!important;padding:0!important}</style>';
-  }
-});
-```
-
-### Option B — Lien direct (le plus simple)
-```html
-<a href="https://configurateur.diskoov.fr" target="_blank" rel="noopener noreferrer">
-  Configurer ma piscine →
-</a>
-```
-
----
-
-## Déploiement Vercel
-
-```bash
-npm install -g vercel
-cd diskoov-configurateur
-npm install
-cp .env.example .env.local   # remplir les valeurs
-vercel --prod
-```
-
----
-
-## Sécurité — ce qui est en place (v6)
-
-| Mesure | Status |
-|---|---|
-| CORS strict (whitelist d'origines) | ✅ |
-| Validation payload complète côté serveur | ✅ |
-| Validation téléphone côté serveur (FR 10 chiffres) | ✅ |
-| Sanitisation et troncature de tous les champs | ✅ |
-| Échappement HTML dans les emails (anti-injection) | ✅ |
-| Rate limiting par email via Vercel KV | ✅ (1 req/min, fallback in-memory) |
-| Rate limiting par IP via Vercel KV | ✅ (10 req/min, fallback in-memory) |
-| Honeypot anti-bot côté client | ✅ |
-| Recalcul de la surface côté serveur (non trusted frontend) | ✅ |
-| HSTS (Strict-Transport-Security) | ✅ |
-| Fonts auto-hébergées (RGPD, pas de Google Fonts) | ✅ |
-| Bannière consentement cookies (CNIL) | ✅ (si GTM activé) |
-| Retry automatique des leads en cas d'échec réseau | ✅ |
-| Sauvegarde localStorage des leads en attente | ✅ |
-
----
-
 ## Analytics
 
-**Important** : le tracking GA4/GTM n'est activé qu'après consentement cookies (CNIL).
-Pour activer, ajouter AVANT l'iframe dans la page WordPress :
-```html
-<script>window.DISKOOV_GTM_ID = 'G-XXXXXXXXXX';</script>
-```
+Le tracking ne s'active qu'après consentement. Les principaux événements sont :
 
-Événements pré-câblés :
-
-| Événement | Déclencheur | Paramètres |
-|---|---|---|
-| `advisor_start` / `advisor_resume` | Démarrage ou reprise du conseil | `mode` ou `screen`, `advisor_version` |
-| `advisor_step_view` / `advisor_step_exit` | Entrée et sortie d'une étape | `screen`, `reason`, `duration_seconds`, `advisor_version` |
-| `advisor_results_view` | Affichage des résultats | `first_product`, `families`, `compatible_count`, `excluded_count` |
-| `advisor_configurator_open` | Passage au configurateur | `product`, `source`, `dimensions_known` |
-| `config_equipment` | Sélection équipement | `equipment` |
-| `config_model` | Sélection modèle | `model`, `category` |
-| `config_qualification_field` | Avancement d'un champ de qualification, sans transmettre sa valeur | `field`, `completed`, `product` |
-| `config_attachment_added` / `config_attachment_failed` | Ajout ou échec d'une photo/plan | `kind`, `optimized`, `size_kb` ou `reason` |
-| `form_start` | Première saisie coordonnées | `entry_field` |
-| `form_validation_error` | Email ou téléphone invalide à la sortie du champ | `field` |
-| `lead_submit_attempt` | Tentative d'envoi | `equipment`, `model`, `timeline`, `has_photo`, `has_budget`, `advisor_mode`, `qualification_complete` |
-| `lead_submitted` | Succès réseau réel, initial ou après retry | `equipment`, `model`, `department`, `timeline`, `priority`, `email_sent`, `retry` |
-| `lead_submit_failed` / `lead_retry_failed` | Échec initial ou échec définitif | `equipment`, `model`, `retry_scheduled` |
-
----
-
-## Modifier la configuration (prix, contact, couleurs, URLs)
-
-Toutes les valeurs modifiables sont dans le fichier **`config.js`** à la racine du projet.
-
-### Comment modifier `config.js` sur GitHub :
-1. Ouvrir le fichier `config.js` dans le dépôt GitHub
-2. Cliquer sur l'icone crayon (modifier)
-3. Changer les valeurs souhaitées
-4. Cliquer sur **Commit changes**
-5. Le site se met à jour automatiquement en quelques secondes
-
-### Ce que contient `config.js` :
-
-| Section | Ce qu'elle contrôle |
+| Événement | Mesure |
 |---|---|
-| `DISKOOV_PHONE_DISPLAY / PHONE_TEL` | Numéro de téléphone affiché |
-| `DISKOOV_CONTACT_NAME` | Nom du conseiller (page confirmation) |
-| `DISKOOV_CONTACT_EMAIL` | Email de contact (mention RGPD) |
-| `DISKOOV_SITE_URL` | Lien retour vers le site principal |
-| `DISKOOV_PRIVACY_URL` | Lien politique de confidentialité |
-| `DISKOOV_PRICES` | Prix de base de chaque produit (TTC) |
-| `DISKOOV_OPTIONS` | Prix des options (rail, motorisation) |
-| `DISKOOV_MEMBRANE_COLORS` | Couleurs membrane + suppléments |
-| `DISKOOV_COPING_COLORS` | Couleurs habillage (margelles) |
-| `DISKOOV_STRUCTURE_COLORS` | Couleurs structure (abri) |
-| `DISKOOV_GTM_ID` | ID Google Tag Manager |
-| `DISKOOV_YT_ID` | ID vidéo YouTube |
-| `DISKOOV_WEBHOOK` | URL webhook Make.com / Zapier |
+| `advisor_start`, `advisor_resume` | Entrée et reprise du parcours |
+| `advisor_step_view`, `advisor_step_exit` | Progression et durée par étape |
+| `advisor_results_view` | Résultats proposés |
+| `advisor_configurator_open` | Passage vers un produit |
+| `config_qualification_field` | Avancement d'un champ, sans sa valeur |
+| `config_attachment_added`, `config_attachment_failed` | Usage de la photo par type et tranche de poids |
+| `lead_submit_attempt`, `lead_submitted`, `lead_submit_failed` | Conversion et échecs réseau |
 
-**Ne modifiez PAS** le fichier `index.html` — toutes les valeurs personnalisables sont dans `config.js`.
+## Conditions de livraison
 
----
+Le code peut être livré en preview lorsque tests, audit npm, build Vercel et QA
+navigateur passent. Un GO production exige en plus :
 
-## Payload webhook (Make.com / Zapier)
+1. validation écrite des règles et promesses encore ouvertes ;
+2. vérification de la note Google le jour de la recette ;
+3. validation juridique du consentement et de la durée de conservation ;
+4. test réel des deux emails avec les variables de production ;
+5. recette sur iPhone Safari et Android Chrome physiques ;
+6. responsable de monitoring et procédure de rollback attribués.
 
-Le payload contient aussi le contexte du conseiller et les informations chantier. Les champs `advisor_*` sont réservés au traitement commercial : ils ne doivent pas être affichés tels quels au prospect. Le budget déclaré reste facultatif et ne modifie jamais le calcul tarifaire.
-
-```json
-{
-  "prenom": "Jean",
-  "nom": "Dupont",
-  "email": "jean@email.com",
-  "tel": "06 12 34 56 78",
-  "code_postal": "34000",
-  "ville": "Montpellier",
-  "statut_projet": "Piscine existante",
-  "acces_chantier": "Accès direct et dégagé",
-  "budget_projet": "10 000 à 15 000 €",
-  "preference_contact": "Téléphone",
-  "categorie": "cov",
-  "produit": "auto",
-  "produit_label": "Coverseal Automatique",
-  "longueur": 10,
-  "largeur": 5,
-  "surface": 50,
-  "emplacement": "Extérieur",
-  "membrane_ral": "RAL 7037",
-  "membrane_label": "Gris poussière",
-  "habillage_ral": "RAL 7037",
-  "habillage_label": "Gris poussière",
-  "option_motorisation_solaire": true,
-  "option_rail_tout_terrain": false,
-  "departement": "34 — Hérault",
-  "delai": "Avant l'été (URGENT)",
-  "advisor_mode": "Conseil guidé",
-  "advisor_priorites": "Sécuriser le bassin · Tout automatiser",
-  "advisor_recommandations": "Coverseal automatique · Volet immergé · Abri Master 18",
-  "advisor_raison_choix": "Cette solution répond directement aux deux attentes exprimées.",
-  "advisor_dimensions_connues": true,
-  "advisor_version": "v3",
-  "source": "Google",
-  "priorite": "URGENT",
-  "timestamp": "2026-03-17T10:30:00.000Z",
-  "email_sent": true
-}
-```
+Voir `tasks/audit-prelivraison/RUNBOOK-LANCEMENT.md` et
+`tasks/audit-prelivraison/CHECKLIST-QA.md` avant toute promotion en production.

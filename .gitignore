@@ -2,6 +2,8 @@ node_modules/
 .vs/
 .env
 .env.*
+!.env.example
 diskoov-v15.zip
 *.log
 validation-xavier/EMAIL-A-XAVIER.md
+.vercel

@@ -125,7 +125,7 @@
   function normalizedDimensions(input) {
     var a = n(input && input.length);
     var b = n(input && input.width);
-    return { length: Math.max(a, b), width: Math.min(a, b), area: money(a * b) };
+    return { length: Math.max(a, b), width: Math.min(a, b), area: a * b };
   }
 
   function nextTier(value, tiers) {
@@ -208,7 +208,11 @@
   }
 
   function nonRectangular(product, input) {
-    if (!input.shape || input.shape === 'rect') return null;
+    var shape = input && input.shape;
+    if (['rect', 'oval', 'libre'].indexOf(shape) === -1) {
+      return incomplete(product, ['forme du bassin'], 'Saisie bassin');
+    }
+    if (shape === 'rect') return null;
     return result(product, {
       eligible: null,
       warnings: ['Forme non rectangulaire : plan coté et validation fabricant nécessaires.'],
@@ -221,9 +225,17 @@
     if (shapeResult) return shapeResult;
     var dims = normalizedDimensions(input);
     if (!dims.length || !dims.width) return invalidDimensions(product);
+    var oreOptions = input.options || {};
     var missing = commonMissing(input, true);
     if (!input.clearance) missing.push('plage côté mécanisme');
+    if (!input.electricity) missing.push('prise électrique disponible');
     if (missing.length) return incomplete(product, missing, 'REGLES-ORE — conditions d’implantation');
+    if (input.electricity !== 'oui') {
+      return manualReview(product, 'Sans prise électrique confirmée, la recharge et l’implantation Oré doivent être étudiées avant chiffrage.', 'REGLES-ORE — prise filaire requise', { electricity: input.electricity });
+    }
+    if ((input.filtration === true || oreOptions.blockCut === true) && !oreOptions.oreBlockCut) {
+      return manualReview(product, 'Filtration hors-bord déclarée sans décision explicite de découpe : étude technique requise avant chiffrage.', 'REGLES-ORE — découpe bloc filtration', { outboardFiltration: true, blockCutConfirmed: false });
+    }
     if (input.support === 'bois' || input.support === 'autre') {
       return manualReview(product, 'Support à valider avant chiffrage Oré : planéité, fixation et portance doivent être confirmées.', 'REGLES-ORE — support final terminé', { support: input.support });
     }
@@ -257,7 +269,6 @@
       });
     }
     var base = table.prices[lTier][table.widths.indexOf(wTier)];
-    var oreOptions = input.options || {};
     var selectedOptions = [];
     var lines = [{ label: 'Base Oré ' + lTier + ' × ' + String(wTier).replace('.', ',') + ' m', amount: money(base) }];
     lines.push({ label: 'Transport', amount: ORE_LINE_ITEMS_HT.transport });
@@ -336,14 +347,21 @@
     if (dims.width > 5) {
       return manualReview('bab', 'Largeur supérieure à la plage standard 12 × 5 m : la faisabilité jusqu’à la limite technique de 5,40 m doit être confirmée.', 'REGLES-BAB — largeur standard et limite transport', { width: dims.width });
     }
-    var surface = money((dims.length + 0.5) * (dims.width + 0.5));
-    var lines = [{ label: 'Secu Classic — ' + String(surface).replace('.', ',') + ' m²', amount: money(surface * 36.04 * 0.65) }];
-    if (opts.antiAbrasion) lines.push({ label: 'Bandes anti-abrasion', amount: money(surface * 3.64 * 0.65) });
-    if (opts.blockCut) lines.push({ label: 'Découpe bloc filtration', amount: money(137.07 * 0.65) });
-    if (opts.stair) lines.push({ label: 'Découpe escalier', amount: money(168.43 * 0.65) });
-    if (opts.rollingUp) lines.push({ label: 'Rolling-Up', amount: money(947.50 * 0.65) });
-    if (surface < 15) lines.push({ label: 'Majoration petite surface (< 15 m²)', amount: money(lines[0].amount * 0.15) });
-    if (opts.cutCorners) lines.push({ label: 'Majoration angles coupés', amount: money(lines[0].amount * 0.15) });
+    if (opts.stair) {
+      return manualReview('bab', 'La formule escalier disponible ne permet pas un forfait fiable : type, dimensions et barre de charge doivent être étudiés avant chiffrage.', 'REGLES-BAB — escalier sur étude', {
+        stairType: opts.stairType || '',
+        stairWidth: n(opts.stairWidth),
+        stairPosition: opts.stairPosition || ''
+      });
+    }
+    var surface = (dims.length + 0.5) * (dims.width + 0.5);
+    var baseAmount = surface * 36.04 * 0.65;
+    var lines = [{ label: 'Secu Classic — ' + String(money(surface)).replace('.', ',') + ' m²', amount: baseAmount }];
+    if (opts.antiAbrasion) lines.push({ label: 'Bandes anti-abrasion', amount: surface * 3.64 * 0.70 });
+    if (opts.blockCut) lines.push({ label: 'Découpe bloc filtration', amount: 137.07 * 0.70 });
+    if (opts.rollingUp) lines.push({ label: 'Rolling-Up', amount: 947.50 * 0.70 });
+    if (surface < 15) lines.push({ label: 'Majoration petite surface (< 15 m²)', amount: baseAmount * 0.15 });
+    if (opts.cutCorners) lines.push({ label: 'Majoration angles coupés', amount: baseAmount * 0.15 });
     lines.push({ label: 'Emballage', amount: 96 }, { label: 'Transport', amount: 132 });
     var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
     return result('bab', {
@@ -351,7 +369,7 @@
       eligible: true,
       total: money(total * VAT),
       breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
-      warnings: ['Estimation TTC indicative selon le tarif BAB 2026, emballage et transport inclus.', input.support === 'bois' ? 'Support bois déclaré : ancrage sur lambourdes/plots béton à valider.' : 'Ancrage sous réserve d’un support compatible.', input.margelles === 'debord' ? 'Margelles avec débord : bandes anti-abrasion et frottements à contrôler.' : 'Validation de la forme, des renforts et des découpes par Diskoov.', input.installation === 'fourniture_pose' ? 'Pose demandée : non incluse dans cette estimation BAB.' : 'Installation client suivant notice fabricant.', 'Garantie : 3 ans.'],
+      warnings: ['Estimation TTC indicative selon le tarif BAB 2026, emballage et transport inclus.', input.support === 'bois' ? 'Support bois déclaré : ancrage sur lambourdes/plots béton à valider.' : 'Ancrage sous réserve d’un support compatible.', input.margelles === 'debord' ? 'Margelles avec débord : bandes anti-abrasion et frottements à contrôler.' : 'Validation de la forme, des renforts et des découpes par Diskoov.', input.installation === 'fourniture_pose' ? 'Pose demandée : non incluse dans cette estimation BAB.' : 'Installation client suivant notice fabricant.'],
       reference: 'REGLES-BAB — grille 2026, remise de vente et frais',
       technical: { billingSurface: surface, maxLength: 12, maxWidth: 5.4, maxRollingUpWidth: 5.3 }
     });
@@ -414,30 +432,27 @@
       });
     }
     var wantsPolycarbonate = !!options.polycarbonate || /^poly_/.test(String(input.productColor || ''));
-    var bladeUnit = wantsPolycarbonate ? tier[2] : tier[1];
     var structureRef = '';
-    var structurePrice = 0;
-    var structureDiscount = kind === 'immerge' ? 0.25 : 0.30;
 
     if (kind === 'immerge') {
       if (input.electricity !== 'oui') {
         return manualReview(product, 'Un volet immergé motorisé nécessite une alimentation validée ; pré-équipement électrique à confirmer.', 'REGLES-VOLETS — moteur 24V', { electricity: input.electricity });
       }
-      if (dims.width <= 4 && dims.area <= 50) { structureRef = 'VRSUB4'; structurePrice = 4663.51; }
-      else if (dims.width <= 5 && dims.area <= 50) { structureRef = 'VRSUB5'; structurePrice = 5288.49; }
-      else { structureRef = 'VRSUB6'; structurePrice = 5522.26; }
+      if (dims.width <= 4 && dims.area <= 50) structureRef = 'VRSUB4';
+      else if (dims.width <= 5 && dims.area <= 50) structureRef = 'VRSUB5';
+      else structureRef = 'VRSUB6';
     } else if (input.electricity === 'non' && dims.width <= 3 && dims.length <= 6) {
-      structureRef = 'VRMANU'; structurePrice = 1480;
+      structureRef = 'VRMANU';
     } else if (input.electricity !== 'oui') {
       return manualReview(product, 'Sans alimentation proche, le volet hors-sol motorisé doit être étudié avec option solaire ou pré-équipement électrique.', 'REGLES-VOLETS — alimentation solaire / Easy Plug', { electricity: input.electricity });
     } else if (dims.width < 3) {
       return manualReview(product, 'Pour un volet hors-sol motorisé de moins de 3 m de largeur, la référence de structure doit être confirmée sur devis.', 'REGLES-VOLETS — structures hors-sol', { width: dims.width });
     } else if (dims.width <= 4 && dims.length <= 8) {
-      structureRef = 'VRSIL80S'; structurePrice = 1945.77;
+      structureRef = 'VRSIL80S';
     } else if (dims.width >= 4 && dims.width <= 5 && dims.length <= 10) {
-      structureRef = 'VRSILC120'; structurePrice = 2237.50;
+      structureRef = 'VRSILC120';
     } else if (dims.width > 4 && dims.width <= 6 && dims.length <= 12) {
-      structureRef = 'VRSIL200S'; structurePrice = 2845.25;
+      structureRef = 'VRSIL200S';
     } else {
       return result(product, {
         eligible: null,
@@ -455,38 +470,29 @@
     }
 
     var shipping = shippingPrice(input.department, kind);
+    var pricingValidationPending = ['livraison/pose', 'régime HT/TTC', 'emballage', 'bornes SUB/C120'];
+    var technical = {
+      structureRef: structureRef,
+      bladeWidthTier: tier[0],
+      material: wantsPolycarbonate ? 'polycarbonate' : 'PVC',
+      installationRequested: input.installation === 'fourniture_pose',
+      pricingValidationPending: pricingValidationPending
+    };
     if (shipping === null) {
+      technical.transportZoneCovered = false;
       return result(product, {
         eligible: true,
-        warnings: ['Département absent de la grille transport (Corse, DOM ou valeur non renseignée) : devis transport requis.'],
-        reference: 'REGLES-VOLETS — transport par département',
-        technical: { structureRef: structureRef, bladeWidthTier: tier[0] }
+        warnings: ['Projet techniquement qualifié, mais la zone de transport doit être étudiée sur devis. Aucun total automatique n’est produit.'],
+        reference: 'REGLES-VOLETS — qualification technique, prix sur devis',
+        technical: technical
       });
     }
-    var structureNet = money(structurePrice * (1 - structureDiscount));
-    var bladesNet = money(dims.length * bladeUnit * 0.60);
-    var packaging = kind === 'immerge' ? 149 : 96;
-    var lines = [
-      { label: 'Structure ' + structureRef, amount: structureNet },
-      { label: 'Tablier ' + (wantsPolycarbonate ? 'polycarbonate' : 'PVC') + ' — palier ' + String(tier[0]).replace('.', ',') + ' m', amount: bladesNet },
-      { label: 'Emballage', amount: packaging },
-      { label: 'Transport département ' + departmentCode(input.department), amount: shipping }
-    ];
-    var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
-    var warnings = ['Estimation TTC indicative : remises et pose à valider sur devis.', 'Livraison et pose intégrées à cette estimation.', 'Paiement documenté : 30 % commande, 40 % lancement/visite technique, 30 % livraison/solde.'];
-    if (structureRef === 'VRMANU') warnings.push('Structure manuelle VRMANU : uniquement pour petits bassins jusqu’à 3 × 6 m, confort d’usage à valider.');
-    if (dims.width < 3 && structureRef !== 'VRMANU') warnings.push('Largeur proche du minimum sécurité : compatibilité structure à valider fabricant.');
-    if (wantsPolycarbonate) warnings.push('Coloris polycarbonate à préciser : certaines teintes sont réservées à l’intérieur ou modifient fortement l’apport thermique.');
-    if (kind === 'immerge') warnings.push('Estimation limitée à structure + tablier + emballage + transport/pose ; mur, poutre, équerres et caillebotis non inclus sauf validation.');
-    if (structureRef === 'VRSUB6' && dims.width > 5) warnings.push('Renfort anti-flexion vivement conseillé au-delà de 5 m ; il n’est pas inclus dans cette estimation.');
+    technical.transportZoneCovered = true;
     return result(product, {
-      status: STATUS.INDICATIVE,
       eligible: true,
-      total: money(total * VAT),
-      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
-      warnings: warnings,
-      reference: 'REGLES-VOLETS — structures, lames, remises et transport',
-      technical: { structureRef: structureRef, bladeWidthTier: tier[0], material: wantsPolycarbonate ? 'polycarbonate' : 'PVC', installationIncluded: input.installation === 'fourniture_pose' }
+      warnings: ['Projet techniquement qualifié. Prix sur devis jusqu’à validation écrite de la livraison/pose, du régime HT/TTC, de l’emballage et des bornes SUB/C120.'],
+      reference: 'REGLES-VOLETS — qualification technique, prix sur devis',
+      technical: technical
     });
   }
 
@@ -524,9 +530,9 @@
     if (product === 'm50' || product === 'mid') {
       return result(product, {
         eligible: true,
-        warnings: ['Ce modèle est compatible avec les dimensions saisies et fera l’objet d’une proposition personnalisée.'],
-        reference: 'REGLES-ABRIS-AQUAMASTER — prix commercial à valider',
-        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules }
+        warnings: ['Projet techniquement qualifié. Prix sur devis jusqu’à validation écrite de la remise, des couleurs et du transport par zone.'],
+        reference: 'REGLES-ABRIS-AQUAMASTER — qualification technique, prix sur devis',
+        technical: { shelterLength: selection.shelterLength, chordCm: selection.chordCm, modules: selection.modules, pricingValidationPending: ['remise', 'couleurs', 'transport par zone'] }
       });
     }
     var data = ABRI_COMMERCIAL[product];
@@ -557,29 +563,18 @@
         technical: { shelterLength: shelterLength, chordCm: chordCm, modules: modules }
       });
     }
-    var excelPublicHT = selected[1];
-    var net = money(excelPublicHT * (1 - data.discount));
-    var transport = 438;
-    var installation = 708.33;
-    var lines = [
-      { label: 'Abri télescopique — ' + modules + ' modules', amount: net },
-      { label: 'Transport', amount: transport },
-      { label: 'Pose de référence', amount: installation }
-    ];
-    var total = lines.reduce(function (sum, line) { return sum + line.amount; }, 0);
     return result(product, {
-      status: STATUS.INDICATIVE,
       eligible: true,
-      total: money(total * VAT),
-      breakdown: lines.map(function (line) { return { label: line.label, amount: money(line.amount * VAT) }; }),
-      warnings: ['Pose de référence 850 € TTC intégrée.', 'Transport de référence intégré ; le transport final dépendra de la zone.', 'Estimation TTC 2026 à confirmer après vérification des options, des accès et du support.', 'Nombre de modules estimé à partir de la largeur maximale par élément du catalogue : validation AquaMaster obligatoire.'],
-      reference: 'REGLES-ABRIS-AQUAMASTER — classeurs Excel Diskoov 2026 + limites catalogue',
-      technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, excelPublicHT: excelPublicHT, installationIncluded: true }
+      warnings: ['Projet techniquement qualifié. Prix sur devis jusqu’à validation écrite de la remise, des couleurs et du transport par zone.'],
+      reference: 'REGLES-ABRIS-AQUAMASTER — qualification technique, prix sur devis',
+        technical: { shelterLength: shelterLength, chordCm: chordCm, selectedChordCm: selected[0], modules: modules, installationRequested: input.installation === 'fourniture_pose', pricingValidationPending: ['remise', 'couleurs', 'transport par zone'] }
     });
   }
 
   function calculate(product, input) {
     input = input || {};
+    var shapeResult = nonRectangular(product, input);
+    if (shapeResult) return shapeResult;
     if (product === 'bab') return calculateBab(input);
     if (product === 'ore_compact' || product === 'ore_essential') return calculateOre(product, input);
     if (product === 'volet_hs') return calculateVolet('hors_sol', input);

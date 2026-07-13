@@ -123,16 +123,27 @@
     return Math.min(max, Math.max(min, n));
   }
 
+  function surfaceArea(shape, length, width) {
+    var poolLength = Number(length);
+    var poolWidth = Number(width);
+    if (shape === 'libre' || !Number.isFinite(poolLength) || !Number.isFinite(poolWidth) || poolLength <= 0 || poolWidth <= 0) return null;
+    if (shape === 'oval') return Math.PI / 4 * poolLength * poolWidth;
+    if (shape === 'rect') return poolLength * poolWidth;
+    return null;
+  }
+
   function recommendationScore(item, input) {
     var score = 40;
-    input.priorities.forEach(function (priority, index) {
+    var rankedPriorities = input.priorities.filter(function (priority) {
+      return priority !== 'unsure' && priority !== 'economy';
+    });
+    rankedPriorities.forEach(function (priority, index) {
       var hit = item.strengths.indexOf(priority) !== -1;
       score += hit ? (index === 0 ? 22 : 16) : -3;
       score += familyPriorityBonus(item, priority, index);
     });
-    if (!input.priorities.length || input.priorities.indexOf('unsure') !== -1) score += balancedBonus(item);
-    score += modelPriorityBonus(item, input.priorities);
-    if (input.budget !== 'unknown') score += budgetScore(item.budget, input.budget);
+    if (!rankedPriorities.length) score += balancedBonus(item);
+    score += modelPriorityBonus(item, rankedPriorities);
     if (input.shape === 'libre') score += item.id === 'eden' ? 26 : -18;
     if (input.delay === 'urg' && (item.id === 'bab' || item.id === 'volet_hs')) score += 7;
     if (input.delay === 'ref' && (item.family === 'shelter' || item.id === 'masterdeck')) score += 3;
@@ -177,13 +188,11 @@
     return Math.min(5, item.strengths.length);
   }
 
-  function budgetScore(productBand, requestedBand) {
-    var order = ['under5', '5_10', '10_15', '15_25', 'over25'];
-    var distance = Math.abs(order.indexOf(productBand) - order.indexOf(requestedBand));
-    return [14, 5, -7, -16, -24][distance] || -24;
-  }
-
   function evaluateCompatibility(item, input, rules) {
+    var studyReason = studyReasonFor(item, input);
+    if (studyReason) {
+      return { compatible: false, certainty: 'study', rule: null, study: true, studyReason: studyReason };
+    }
     if (input.shape !== 'rect' && !customStudyProduct(item)) {
       return { compatible: false, certainty: 'not_available', rule: null };
     }
@@ -220,7 +229,17 @@
   }
 
   function customStudyProduct(item) {
-    return ['eden', 'volet_hs', 'volet_immerge'].indexOf(item && item.id) !== -1;
+    return ['volet_hs', 'volet_immerge'].indexOf(item && item.id) !== -1;
+  }
+
+  function studyReasonFor(item, input) {
+    if (!item) return '';
+    if (item.id === 'auto' || item.id === 'semi') return 'Compatibilité à confirmer après étude du bassin';
+    if (item.id === 'eden') return 'Projet à définir au cas par cas avant toute proposition';
+    if (item.id === 'masterdeck' && input.shape === 'libre' && input.priorities.indexOf('space') !== -1) {
+      return 'Forme libre et fermeture par plancher à étudier sur plan';
+    }
+    return '';
   }
 
   function guidedRecommendationProduct(item) {
@@ -239,6 +258,7 @@
     var reasons = input.priorities.filter(function (p) { return item.strengths.indexOf(p) !== -1 && p !== 'unsure'; })
       .map(function (p) { return PRIORITIES[p]; });
     if (!reasons.length) reasons.push(item.description);
+    if (compatibility.certainty === 'study' && compatibility.studyReason) reasons.push(compatibility.studyReason);
     if (!input.dimensionsKnown) reasons.push('Dimensions du bassin à préciser');
     if (compatibility.certainty === 'dimension_fit') reasons.push('Dimensions dans la plage connue');
     if (compatibility.certainty === 'custom') reasons.push('Étudié sur mesure pour votre bassin');
@@ -247,6 +267,7 @@
   }
 
   function estimateFor(item, compatibility) {
+    if (compatibility.certainty === 'study') return 'Étude personnalisée';
     if (item.id === 'auto' || item.id === 'semi') return 'Étude personnalisée';
     if (compatibility.certainty === 'custom') return 'Étude personnalisée';
     if (item.id === 'm50' || item.id === 'mid' || item.id === 'masterdeck' || item.id === 'eden') return 'Étude personnalisée';
@@ -267,16 +288,20 @@
   function recommend(input, rules) {
     var cleanInput = normalise(input);
     var excluded = [];
+    var studies = [];
     var scored = CANDIDATES.map(function (item) {
       var compatibility = evaluateCompatibility(item, cleanInput, rules);
       var output = Object.assign({}, item, {
         compatible: compatibility.compatible,
         certainty: compatibility.certainty,
-        score: recommendationScore(item, cleanInput),
+        studyOnly: compatibility.study === true,
+        studyReason: compatibility.studyReason || '',
+        score: compatibility.study ? null : recommendationScore(item, cleanInput),
         reasons: reasonsFor(item, cleanInput, compatibility),
         estimate: estimateFor(item, compatibility)
       });
-      if (!compatibility.compatible) excluded.push(output);
+      if (compatibility.study) studies.push(output);
+      else if (!compatibility.compatible) excluded.push(output);
       return output;
     }).filter(function (item) { return item.compatible; })
       .sort(function (a, b) { return b.score - a.score || a.title.localeCompare(b.title, 'fr'); });
@@ -285,6 +310,7 @@
       input: cleanInput,
       recommendations: diversify(scored.filter(guidedRecommendationProduct), 3),
       compatible: scored,
+      studies: studies,
       excluded: excluded
     };
   }
@@ -301,6 +327,7 @@
     recommend: recommend,
     findCandidate: findCandidate,
     prospectFamilyFor: prospectFamilyFor,
-    normalise: normalise
+    normalise: normalise,
+    surfaceArea: surfaceArea
   });
 }));

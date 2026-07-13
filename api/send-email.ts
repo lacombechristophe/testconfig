@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { createHmac } from 'node:crypto';
 import { Resend } from 'resend';
 
 if (!process.env.RESEND_API_KEY) {
@@ -13,9 +14,9 @@ const CONTACT_PHONE = process.env.CONTACT_PHONE || '06 20 54 25 04';
 const CONTACT_LOC = process.env.CONTACT_LOC || 'Conseil et étude personnalisée';
 const CONTACT_ADDR = process.env.CONTACT_ADDR || '494, rue Léon Blum 34 000 Montpellier';
 const SITE_URL = process.env.SITE_URL || 'https://diskoov.fr';
-const LOGO_URL = process.env.LOGO_URL || `${process.env.SITE_URL || 'https://configurateur.diskoov.fr'}/logo-diskoov.png`;
+const LOGO_URL = process.env.LOGO_URL || 'https://configurateur.diskoov.fr/assets/marque/logo-diskoov-bleu-orange.png';
 
-// ─── Origines autorisées (CORS strict) ───────────────────────────────────────
+// ─── Origines autorisées (contrôle navigateur CORS, pas authentification) ────
 // Ajouter ici les domaines de preview Vercel si nécessaire (ex: *.vercel.app)
 const ALLOWED_ORIGINS = [
   'https://configurateur.diskoov.fr',
@@ -31,7 +32,17 @@ function getAllowedOrigin(req: VercelRequest): string | null {
 }
 
 // ─── Payload type ─────────────────────────────────────────────────────────────
+type CategoryId = 'cov' | 'shl' | 'oth';
+type ShapeId = 'rect' | 'oval' | 'libre';
+
+interface ValidatedAttachment {
+  filename: string;
+  content: Buffer;
+  kind: 'photo' | 'plan';
+}
+
 interface LeadPayload {
+  dossier_id: string;
   prenom: string;
   nom: string;
   email: string;
@@ -49,14 +60,14 @@ interface LeadPayload {
   advisor_dimensions_connues?: boolean;
   advisor_version?: string;
   source?: string;
-  forme: 'rect' | 'oval' | 'libre';
-  forme_label?: string;
-  categorie: 'cov' | 'shl' | 'oth';
+  forme: ShapeId;
+  forme_label: string;
+  categorie: CategoryId;
   produit: string;
   produit_label: string;
-  longueur: number;
-  largeur: number;
-  surface: number;
+  longueur: number | null;
+  largeur: number | null;
+  surface: number | null;
   emplacement: string;
   escalier?: boolean;
   escalier_type?: string;
@@ -96,10 +107,8 @@ interface LeadPayload {
   delai: string;
   commentaire?: string;
   description_forme?: string;
-  plan_filename?: string;
-  plan_base64?: string;
-  piece_jointe_type?: string;
-  photo_filename?: string;
+  attachment?: ValidatedAttachment;
+  consentement: true;
   consentement_relances?: boolean;
   priorite: 'URGENT' | 'NORMAL';
   timestamp: string;
@@ -112,16 +121,173 @@ const POSTAL_CODE_RE = /^\d{5}$/;
 const CITY_RE = /^[\p{L}\p{M}\d][\p{L}\p{M}\d .,'’()\/-]*$/u;
 const VALID_CATS = ['cov', 'shl', 'oth'] as const;
 const VALID_PRIO = ['URGENT', 'NORMAL'] as const;
+const CLIENT_DOSSIER_RE = /^DKCLIENT-[A-Za-z0-9_-]{16,80}$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const KEY_DERIVATION_SECRET = process.env.KEY_DERIVATION_SECRET || process.env.RESEND_API_KEY;
+
+const FORM_LABELS: Record<ShapeId, string> = {
+  rect: 'Rectangulaire',
+  oval: 'Ovale / ronde',
+  libre: 'Forme libre',
+};
+
+const PRODUCT_CATALOG: Record<string, { categorie: CategoryId; label: string }> = {
+  auto: { categorie: 'cov', label: 'Coverseal Automatique' },
+  semi: { categorie: 'cov', label: 'Coverseal Semi-Automatique' },
+  ore_compact: { categorie: 'cov', label: 'Oré Compact' },
+  ore_essential: { categorie: 'cov', label: 'Oré Essential' },
+  eden: { categorie: 'cov', label: 'Couverture Eden' },
+  ul: { categorie: 'shl', label: 'Abri Master Ultra Bas 1.2' },
+  m18: { categorie: 'shl', label: 'Abri Master 18' },
+  m30: { categorie: 'shl', label: 'Abri Master 30' },
+  m50: { categorie: 'shl', label: 'Abri Master Bas 5.0' },
+  mid: { categorie: 'shl', label: 'Abri Mi-haut' },
+  bab: { categorie: 'oth', label: 'Bâche à barres Secu Classic' },
+  volet_hs: { categorie: 'oth', label: 'Volet hors-sol' },
+  volet_immerge: { categorie: 'oth', label: 'Volet immergé' },
+  masterdeck: { categorie: 'oth', label: 'Terrasse mobile MasterDeck' },
+};
+
+const MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024;
+const BASE64_RE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+const ATTACHMENT_TYPES: Record<string, { mime: string; kind: 'photo' | 'plan' }> = {
+  jpg: { mime: 'image/jpeg', kind: 'photo' },
+  jpeg: { mime: 'image/jpeg', kind: 'photo' },
+  png: { mime: 'image/png', kind: 'photo' },
+  webp: { mime: 'image/webp', kind: 'photo' },
+  pdf: { mime: 'application/pdf', kind: 'plan' },
+};
+
+function storageKey(scope: string, value: string): string {
+  if (!KEY_DERIVATION_SECRET) {
+    throw new Error('KEY_DERIVATION_SECRET ou RESEND_API_KEY doit être configurée');
+  }
+  const digest = createHmac('sha256', KEY_DERIVATION_SECRET)
+    .update(`${scope}\0${value}`)
+    .digest('hex');
+  return `dk_${scope}:${digest}`;
+}
+
+function hasAttachmentMagic(content: Buffer, extension: string): boolean {
+  if (extension === 'jpg' || extension === 'jpeg') {
+    return content.length >= 3 && content[0] === 0xff && content[1] === 0xd8 && content[2] === 0xff;
+  }
+  if (extension === 'png') {
+    return content.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  }
+  if (extension === 'webp') {
+    return content.length >= 12
+      && content.subarray(0, 4).toString('ascii') === 'RIFF'
+      && content.subarray(8, 12).toString('ascii') === 'WEBP';
+  }
+  return extension === 'pdf' && content.subarray(0, 5).toString('ascii') === '%PDF-';
+}
+
+function validateAttachment(b: Record<string, unknown>):
+  { ok: true; attachment?: ValidatedAttachment } | { ok: false; error: string } {
+  for (const field of ['plan_filename', 'plan_base64', 'piece_jointe_type', 'photo_filename'] as const) {
+    if (b[field] !== undefined && b[field] !== null && typeof b[field] !== 'string') {
+      return { ok: false, error: 'Pièce jointe invalide : métadonnées incorrectes' };
+    }
+  }
+
+  const rawFilename = typeof b.plan_filename === 'string' ? b.plan_filename.trim() : '';
+  const dataUrl = typeof b.plan_base64 === 'string' ? b.plan_base64.trim() : '';
+  const requestedKind = typeof b.piece_jointe_type === 'string' ? b.piece_jointe_type.trim() : '';
+  const photoFilename = typeof b.photo_filename === 'string' ? b.photo_filename.trim() : '';
+  if (!rawFilename && !dataUrl && !requestedKind && !photoFilename) return { ok: true };
+  if (!rawFilename || !dataUrl) {
+    return { ok: false, error: 'Pièce jointe invalide : fichier et contenu sont requis ensemble' };
+  }
+  if (rawFilename.length > 255) {
+    return { ok: false, error: 'Pièce jointe invalide : nom de fichier trop long' };
+  }
+  if (requestedKind && requestedKind !== 'photo' && requestedKind !== 'plan') {
+    return { ok: false, error: 'Pièce jointe invalide : type inconnu' };
+  }
+
+  const extensionMatch = rawFilename.match(/\.([a-z0-9]+)$/i);
+  const extension = extensionMatch?.[1].toLowerCase();
+  const expectedType = extension ? ATTACHMENT_TYPES[extension] : undefined;
+  if (!extension || !expectedType) {
+    return { ok: false, error: 'Pièce jointe invalide : extension non autorisée' };
+  }
+
+  const dataUrlMatch = dataUrl.match(/^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/);
+  if (!dataUrlMatch) {
+    return { ok: false, error: 'Pièce jointe invalide : data URL base64 requise' };
+  }
+  const [, mime, base64Data] = dataUrlMatch;
+  if (mime !== expectedType.mime) {
+    return { ok: false, error: 'Pièce jointe invalide : MIME et extension incohérents' };
+  }
+  if (requestedKind && requestedKind !== expectedType.kind) {
+    return { ok: false, error: 'Pièce jointe invalide : nature du fichier incohérente' };
+  }
+  if (photoFilename && (expectedType.kind !== 'photo' || photoFilename !== rawFilename)) {
+    return { ok: false, error: 'Pièce jointe invalide : nom de photo incohérent' };
+  }
+  if (!BASE64_RE.test(base64Data) || base64Data.length % 4 !== 0) {
+    return { ok: false, error: 'Pièce jointe invalide : base64 incorrect' };
+  }
+  if (base64Data.length > Math.ceil(MAX_ATTACHMENT_BYTES / 3) * 4) {
+    return { ok: false, error: 'Pièce jointe trop volumineuse (maximum 3 Mio)' };
+  }
+
+  const content = Buffer.from(base64Data, 'base64');
+  if (!content.length || content.length > MAX_ATTACHMENT_BYTES) {
+    return { ok: false, error: 'Pièce jointe trop volumineuse ou vide (maximum 3 Mio)' };
+  }
+  if (content.toString('base64') !== base64Data) {
+    return { ok: false, error: 'Pièce jointe invalide : base64 non canonique' };
+  }
+  if (!hasAttachmentMagic(content, extension)) {
+    return { ok: false, error: 'Pièce jointe invalide : signature de fichier incohérente' };
+  }
+
+  const maxStemLength = 99 - extension.length;
+  const safeStem = rawFilename.slice(0, -(extension.length + 1))
+    .replace(/[^\w.-]/g, '_')
+    .slice(0, maxStemLength) || 'piece-jointe';
+  return {
+    ok: true,
+    attachment: {
+      filename: `${safeStem}.${extension}`,
+      content,
+      kind: expectedType.kind,
+    },
+  };
+}
+
+function dimensionIsUnknown(value: unknown): boolean {
+  if (value === undefined || value === null) return true;
+  if (typeof value === 'number') return value === 0;
+  if (typeof value === 'string') return !value.trim() || Number(value) === 0;
+  return false;
+}
 
 function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: false; error: string } {
   if (!p || typeof p !== 'object') return { ok: false, error: 'Payload invalide' };
   const b = p as Record<string, unknown>;
 
+  if (b.website !== undefined && (typeof b.website !== 'string' || b.website.trim())) {
+    return { ok: false, error: 'Payload invalide' };
+  }
+
   // Champs texte obligatoires
-  for (const f of ['prenom', 'nom', 'email', 'tel', 'code_postal', 'ville', 'departement', 'delai', 'produit', 'produit_label', 'emplacement', 'priorite', 'categorie', 'timestamp'] as const) {
+  for (const f of ['dossier_id', 'prenom', 'nom', 'email', 'tel', 'code_postal', 'ville', 'departement', 'delai', 'produit', 'emplacement', 'priorite', 'categorie', 'timestamp'] as const) {
     if (typeof b[f] !== 'string' || !(b[f] as string).trim()) {
       return { ok: false, error: `Champ manquant ou invalide : ${f}` };
     }
+  }
+
+  if (b.consentement !== true) {
+    return { ok: false, error: 'Consentement principal obligatoire' };
+  }
+
+  const dossierId = (b.dossier_id as string).trim();
+  if (!CLIENT_DOSSIER_RE.test(dossierId) && !UUID_RE.test(dossierId)) {
+    return { ok: false, error: 'Identifiant de dossier invalide' };
   }
 
   if (!EMAIL_RE.test(b.email as string)) return { ok: false, error: 'Email invalide' };
@@ -144,13 +310,45 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
     return { ok: false, error: 'Numéro de téléphone invalide' };
   }
 
-  if (!VALID_CATS.includes(b.categorie as 'cov' | 'shl' | 'oth')) return { ok: false, error: 'Catégorie invalide' };
+  if (!VALID_CATS.includes(b.categorie as CategoryId)) return { ok: false, error: 'Catégorie invalide' };
   if (!VALID_PRIO.includes(b.priorite as 'URGENT' | 'NORMAL')) return { ok: false, error: 'Priorité invalide' };
 
-  const lon = Number(b.longueur);
-  const lar = Number(b.largeur);
-  if (isNaN(lon) || lon < 1 || lon > 50) return { ok: false, error: 'Longueur invalide (1–50 m)' };
-  if (isNaN(lar) || lar < 1 || lar > 25) return { ok: false, error: 'Largeur invalide (1–25 m)' };
+  if (typeof b.forme !== 'string' || !Object.prototype.hasOwnProperty.call(FORM_LABELS, b.forme)) {
+    return { ok: false, error: 'Forme invalide' };
+  }
+  const forme = b.forme as ShapeId;
+
+  const produit = (b.produit as string).trim();
+  if (!Object.prototype.hasOwnProperty.call(PRODUCT_CATALOG, produit)) {
+    return { ok: false, error: 'Produit invalide' };
+  }
+  const product = PRODUCT_CATALOG[produit];
+  if (product.categorie !== b.categorie) {
+    return { ok: false, error: 'Produit incompatible avec la catégorie' };
+  }
+
+  const longueurInconnue = dimensionIsUnknown(b.longueur);
+  const largeurInconnue = dimensionIsUnknown(b.largeur);
+  if (forme !== 'libre' && (longueurInconnue || largeurInconnue)) {
+    return { ok: false, error: 'Dimensions obligatoires pour cette forme' };
+  }
+  if (longueurInconnue !== largeurInconnue) {
+    return { ok: false, error: 'Longueur et largeur doivent être renseignées ensemble' };
+  }
+
+  const lon = longueurInconnue ? null : Number(b.longueur);
+  const lar = largeurInconnue ? null : Number(b.largeur);
+  if (lon !== null && (!Number.isFinite(lon) || lon < 1 || lon > 50)) {
+    return { ok: false, error: 'Longueur invalide (1–50 m)' };
+  }
+  if (lar !== null && (!Number.isFinite(lar) || lar < 1 || lar > 25)) {
+    return { ok: false, error: 'Largeur invalide (1–25 m)' };
+  }
+
+  const attachmentValidation = validateAttachment(b);
+  if ('error' in attachmentValidation) {
+    return { ok: false, error: attachmentValidation.error };
+  }
 
   // Champs optionnels : sanitiser les strings
   const sanitizeStr = (v: unknown) => typeof v === 'string' ? v.slice(0, 500) : undefined;
@@ -162,18 +360,17 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
     return value || undefined;
   };
 
-  // Forme
-  const validForms = ['rect', 'oval', 'libre'];
-  const forme = validForms.includes(b.forme as string) ? (b.forme as 'rect' | 'oval' | 'libre') : 'rect';
-
-  // Surface : recalculée côté serveur
-  const surf = forme === 'oval'
-    ? Math.round(Math.PI * (lon / 2) * (lar / 2) * 10) / 10
-    : Math.round(lon * lar * 10) / 10;
+  // Une forme libre n'est jamais assimilée à un rectangle pour calculer sa surface.
+  const surf = lon === null || lar === null || forme === 'libre'
+    ? null
+    : forme === 'oval'
+      ? Math.round(Math.PI * (lon / 2) * (lar / 2) * 10) / 10
+      : Math.round(lon * lar * 10) / 10;
 
   return {
     ok: true,
     data: {
+      dossier_id: dossierId,
       prenom: (b.prenom as string).trim().slice(0, 100),
       nom: (b.nom as string).trim().slice(0, 100),
       email: (b.email as string).trim().toLowerCase().slice(0, 254),
@@ -188,15 +385,15 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
       advisor_priorites: sanitizeOptionalStr(b.advisor_priorites, 2000),
       advisor_recommandations: sanitizeOptionalStr(b.advisor_recommandations, 2000),
       advisor_raison_choix: sanitizeOptionalStr(b.advisor_raison_choix, 2000),
-      advisor_dimensions_connues: sanitizeBool(b.advisor_dimensions_connues),
+      advisor_dimensions_connues: lon !== null && lar !== null,
       advisor_version: sanitizeOptionalStr(b.advisor_version),
       forme,
-      forme_label: sanitizeStr(b.forme_label),
-      categorie: b.categorie as 'cov' | 'shl' | 'oth',
-      produit: (b.produit as string).trim().slice(0, 50),
-      produit_label: (b.produit_label as string).trim().slice(0, 100),
-      longueur: Math.round(lon * 10) / 10,
-      largeur: Math.round(lar * 10) / 10,
+      forme_label: FORM_LABELS[forme],
+      categorie: b.categorie as CategoryId,
+      produit,
+      produit_label: product.label,
+      longueur: lon === null ? null : Math.round(lon * 10) / 10,
+      largeur: lar === null ? null : Math.round(lar * 10) / 10,
       surface: surf,
       emplacement: (b.emplacement as string).trim().slice(0, 20),
       escalier: sanitizeBool(b.escalier),
@@ -214,10 +411,8 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
       source: sanitizeStr(b.source),
       commentaire: sanitizeStr(b.commentaire),
       description_forme: sanitizeStr(b.description_forme),
-      plan_filename: sanitizeStr(b.plan_filename),
-      plan_base64: typeof b.plan_base64 === 'string' ? b.plan_base64.slice(0, 7_000_000) : undefined,
-      piece_jointe_type: sanitizeStr(b.piece_jointe_type),
-      photo_filename: sanitizeStr(b.photo_filename),
+      attachment: attachmentValidation.attachment,
+      consentement: true,
       consentement_relances: sanitizeBool(b.consentement_relances),
       couleur_structure: sanitizeStr(b.couleur_structure),
       membrane_ral: sanitizeStr(b.membrane_ral),
@@ -236,42 +431,55 @@ function validatePayload(p: unknown): { ok: true; data: LeadPayload } | { ok: fa
       couleur_produit: sanitizeStr(b.couleur_produit),
       cote_guidage: sanitizeStr(b.cote_guidage),
       integration_volet: sanitizeStr(b.integration_volet),
-      informations_manquantes: sanitizeLongStr(b.informations_manquantes),
-      qualification_complete: sanitizeStr(b.qualification_complete),
       options_produit: sanitizeLongStr(b.options_produit),
-      prix_estime: typeof b.prix_estime === 'number' && Number.isFinite(b.prix_estime) && b.prix_estime >= 0 && b.prix_estime <= 1_000_000 ? Math.round(b.prix_estime) : undefined,
-      statut_prix: sanitizeStr(b.statut_prix),
-      eligibilite: sanitizeStr(b.eligibilite),
-      reference_tarifaire: sanitizeStr(b.reference_tarifaire),
-      avertissements_tarifaires: sanitizeLongStr(b.avertissements_tarifaires),
-      donnees_techniques: sanitizeLongStr(b.donnees_techniques),
+      // Résultats du moteur navigateur volontairement neutralisés jusqu'à un recalcul serveur.
     },
   };
 }
 
-// ─── Rate limiting robuste avec Vercel KV (si disponible) ────────────────────
-// Fallback in-memory si KV non configuré (acceptable en dev / petit volume)
+// ─── Stockage et rate limiting best-effort ───────────────────────────────────
+// Les séquences get/set KV ne sont pas atomiques. Le fallback est local au
+// processus, non persistant et non atomique ; il limite seulement les abus simples.
 let kv: { get: (k: string) => Promise<unknown>; set: (k: string, v: unknown, opts?: { ex?: number }) => Promise<unknown> } | null = null;
+let kvInitialized = false;
 
 async function initKV() {
-  if (kv) return;
+  if (kvInitialized) return;
+  kvInitialized = true;
   try {
     if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
       const { kv: vercelKv } = await import('@vercel/kv');
       kv = vercelKv;
     } else {
-      console.warn('[Diskoov] KV non configuré — rate limiting en mémoire (non persistant entre redéploiements)');
+      console.warn('[Diskoov] KV non configuré — fallback mémoire local et non atomique');
     }
   } catch {
-    console.warn('[Diskoov] KV indisponible — fallback in-memory');
+    console.warn('[Diskoov] KV indisponible — fallback mémoire local et non atomique');
   }
 }
 
 const inMemoryRateMap = new Map<string, number>();
-const inMemoryLeadSuccessMap = new Map<string, number>();
+const inMemoryIpRateMap = new Map<string, number[]>();
+
+type ProspectStatus = 'fulfilled' | 'rejected';
+
+interface ProcessedLeadRecord {
+  processedAt: number;
+  ref: string;
+  prospect?: ProspectStatus;
+}
+
+interface DossierReferenceRecord {
+  createdAt: number;
+  ref: string;
+}
+
+const LEAD_TTL_SECONDS = 48 * 60 * 60;
+const inMemoryLeadSuccessMap = new Map<string, ProcessedLeadRecord>();
+const inMemoryDossierReferenceMap = new Map<string, DossierReferenceRecord>();
 
 async function isRateLimited(email: string): Promise<boolean> {
-  const key = `dk_rl:${email}`;
+  const key = storageKey('rl_email', email);
   const now = Date.now();
 
   if (kv) {
@@ -285,9 +493,9 @@ async function isRateLimited(email: string): Promise<boolean> {
     }
   }
 
-  const last = inMemoryRateMap.get(email);
+  const last = inMemoryRateMap.get(key);
   if (last && now - last < 15_000) return true;
-  inMemoryRateMap.set(email, now);
+  inMemoryRateMap.set(key, now);
   // Nettoyage périodique pour éviter les fuites mémoire
   if (inMemoryRateMap.size > 1000) {
     for (const [k, v] of inMemoryRateMap.entries()) {
@@ -298,45 +506,98 @@ async function isRateLimited(email: string): Promise<boolean> {
 }
 
 async function clearEmailRateLimit(email: string): Promise<void> {
-  const key = `dk_rl:${email}`;
-  inMemoryRateMap.delete(email);
+  const key = storageKey('rl_email', email);
+  inMemoryRateMap.delete(key);
   if (kv) {
     try { await kv.set(key, 0, { ex: 1 }); } catch { /* Le fallback mémoire suffit pour la nouvelle tentative locale. */ }
   }
 }
 
 function leadSuccessKey(p: LeadPayload): string {
-  return `dk_lead_ok:${p.email}:${p.timestamp}`;
+  return storageKey('lead_ok', p.dossier_id);
+}
+
+function isProcessedLeadRecord(value: unknown): value is ProcessedLeadRecord {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Partial<ProcessedLeadRecord>;
+  return typeof record.processedAt === 'number'
+    && typeof record.ref === 'string'
+    && /^DK-[A-F0-9]{6}-[A-F0-9]{6}$/.test(record.ref);
+}
+
+async function getProcessedLead(key: string): Promise<ProcessedLeadRecord | null> {
+  const inMemory = inMemoryLeadSuccessMap.get(key);
+  if (inMemory && Date.now() - inMemory.processedAt < LEAD_TTL_SECONDS * 1000) return inMemory;
+
+  if (kv) {
+    try {
+      const stored = await kv.get(key);
+      if (isProcessedLeadRecord(stored)) {
+        inMemoryLeadSuccessMap.set(key, stored);
+        return stored;
+      }
+    } catch { /* Fallback mémoire. */ }
+  }
+  return null;
 }
 
 async function wasLeadProcessed(key: string): Promise<boolean> {
-  if (kv) {
-    try {
-      if (await kv.get(key)) return true;
-    } catch { /* Fallback mémoire. */ }
-  }
-  const processedAt = inMemoryLeadSuccessMap.get(key);
-  return Boolean(processedAt && Date.now() - processedAt < 48 * 60 * 60_000);
+  return Boolean(await getProcessedLead(key));
+}
+
+function stageLeadProcessed(key: string, record: ProcessedLeadRecord): void {
+  inMemoryLeadSuccessMap.set(key, record);
 }
 
 async function markLeadProcessed(key: string): Promise<void> {
-  const now = Date.now();
-  inMemoryLeadSuccessMap.set(key, now);
+  const record = inMemoryLeadSuccessMap.get(key);
+  if (!record) throw new Error('Dossier traité sans enregistrement préparé');
   if (inMemoryLeadSuccessMap.size > 1000) {
-    for (const [storedKey, processedAt] of inMemoryLeadSuccessMap.entries()) {
-      if (now - processedAt > 48 * 60 * 60_000) inMemoryLeadSuccessMap.delete(storedKey);
+    for (const [storedKey, storedRecord] of inMemoryLeadSuccessMap.entries()) {
+      if (Date.now() - storedRecord.processedAt > LEAD_TTL_SECONDS * 1000) {
+        inMemoryLeadSuccessMap.delete(storedKey);
+      }
     }
   }
   if (kv) {
-    try { await kv.set(key, now, { ex: 48 * 60 * 60 }); } catch { /* Fallback mémoire. */ }
+    try { await kv.set(key, record, { ex: LEAD_TTL_SECONDS }); } catch { /* Fallback mémoire. */ }
   }
 }
 
-// ─── Rate limiting par IP (10 req/min) ────────────────────────────────────────
-const inMemoryIpRateMap = new Map<string, number[]>();
+async function getDossierReference(dossierId: string): Promise<string> {
+  const key = storageKey('lead_ref', dossierId);
+  const inMemory = inMemoryDossierReferenceMap.get(key);
+  if (inMemory) return inMemory.ref;
+
+  if (kv) {
+    try {
+      const stored = await kv.get(key);
+      if (typeof stored === 'string' && /^DK-[A-F0-9]{6}-[A-F0-9]{6}$/.test(stored)) {
+        inMemoryDossierReferenceMap.set(key, { createdAt: Date.now(), ref: stored });
+        return stored;
+      }
+    } catch { /* Référence HMAC déterministe disponible en fallback. */ }
+  }
+
+  const ref = genRef(dossierId);
+  inMemoryDossierReferenceMap.set(key, { createdAt: Date.now(), ref });
+  if (inMemoryDossierReferenceMap.size > 1000) {
+    for (const [storedKey, record] of inMemoryDossierReferenceMap.entries()) {
+      if (Date.now() - record.createdAt > LEAD_TTL_SECONDS * 1000) {
+        inMemoryDossierReferenceMap.delete(storedKey);
+      }
+    }
+  }
+  if (kv) {
+    try { await kv.set(key, ref, { ex: LEAD_TTL_SECONDS }); } catch { /* Fallback mémoire et HMAC. */ }
+  }
+  return ref;
+}
+
+// ─── Rate limiting par IP (10 req/min, best-effort non atomique) ──────────────
 
 async function isIpRateLimited(ip: string): Promise<boolean> {
-  const key = `dk_rl_ip:${ip}`;
+  const key = storageKey('rl_ip', ip);
   const now = Date.now();
   const windowMs = 60_000;
   const maxRequests = 10;
@@ -354,11 +615,11 @@ async function isIpRateLimited(ip: string): Promise<boolean> {
     }
   }
 
-  const timestamps = inMemoryIpRateMap.get(ip) || [];
+  const timestamps = inMemoryIpRateMap.get(key) || [];
   const recent = timestamps.filter(t => now - t < windowMs);
   if (recent.length >= maxRequests) return true;
   recent.push(now);
-  inMemoryIpRateMap.set(ip, recent);
+  inMemoryIpRateMap.set(key, recent);
   // Nettoyage périodique pour éviter les fuites mémoire
   if (inMemoryIpRateMap.size > 1000) {
     for (const [k, v] of inMemoryIpRateMap.entries()) {
@@ -397,13 +658,10 @@ function esc(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
-// Generate a short reference number from timestamp + random
-function genRef(): string {
-  const d = new Date();
-  const y = String(d.getFullYear()).slice(-2);
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const r = String(Math.floor(Math.random() * 9000) + 1000);
-  return `DK-${y}${m}-${r}`;
+// Référence stable et opaque : même dossier_id + même secret => même référence.
+function genRef(dossierId: string): string {
+  const digest = storageKey('reference', dossierId).split(':')[1].toUpperCase();
+  return `DK-${digest.slice(0, 6)}-${digest.slice(6, 12)}`;
 }
 
 // ─── Prospect email rows (refined style) ─────────────────────────────────────
@@ -437,7 +695,6 @@ function prospectHtml(p: LeadPayload, ref: string): string {
     ? 'vous répondra par email'
     : (p.preference_contact === 'Téléphone' ? 'vous appellera' : 'prendra contact avec vous');
 
-  const FL: Record<string, string> = { rect: 'Rectangulaire', oval: 'Arrondie / Ovale', libre: 'Forme libre' };
   const STL: Record<string, string> = { droit: 'Droit', roman: 'Roman', angle: 'Angle', autre: 'Autre' };
   const CL: Record<string, string> = { hg: 'Haut-gauche', hd: 'Haut-droit', bg: 'Bas-gauche', bd: 'Bas-droit' };
 
@@ -453,8 +710,10 @@ function prospectHtml(p: LeadPayload, ref: string): string {
 
   // Build rows array using pRow (refined prospect style)
   const bassinRows = [
-    pRow('Forme', esc(FL[p.forme] || p.forme_label || 'Rectangulaire')),
-    p.forme !== 'libre' ? pRow('Dimensions', `${p.longueur.toFixed(1).replace('.', ',')} &times; ${p.largeur.toFixed(1).replace('.', ',')} m &mdash; ${p.surface} m²`) : '',
+    pRow('Forme', esc(p.forme_label)),
+    p.forme !== 'libre' && p.longueur !== null && p.largeur !== null && p.surface !== null
+      ? pRow('Dimensions', `${p.longueur.toFixed(1).replace('.', ',')} &times; ${p.largeur.toFixed(1).replace('.', ',')} m &mdash; ${p.surface} m²`)
+      : '',
     pRow('Emplacement', esc(p.emplacement)),
     stairLine ? pRow('Escalier', esc(stairLine)) : '',
     p.filtration_hors_bord ? pRow('Filtration hors-bord', 'Oui') : '',
@@ -639,7 +898,6 @@ function internalHtml(p: LeadPayload, ref: string): string {
   const isCS = isCov && (p.produit === 'auto' || p.produit === 'semi');
   const isShl = p.categorie === 'shl';
 
-  const FL: Record<string, string> = { rect: 'Rectangulaire', oval: 'Arrondie', libre: 'Forme libre' };
   const CL: Record<string, string> = { hg: 'Haut-gauche', hd: 'Haut-droit', bg: 'Bas-gauche', bd: 'Bas-droit' };
 
   const covOpts: string[] = [];
@@ -731,13 +989,13 @@ function internalHtml(p: LeadPayload, ref: string): string {
 
     <p style="margin:0 0 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#c9a96e;border-bottom:1px solid #f0efe8;padding-bottom:8px">Bassin</p>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px">
-      ${iRow('Forme', esc(FL[p.forme] || p.forme_label || 'Rectangulaire'))}
-      ${p.forme !== 'libre' ? iRow('Dimensions', `<strong>${p.longueur.toFixed(1).replace('.', ',')} × ${p.largeur.toFixed(1).replace('.', ',')} m</strong> — ${p.surface} m²`) : ''}
+      ${iRow('Forme', esc(p.forme_label))}
+      ${p.forme !== 'libre' && p.longueur !== null && p.largeur !== null && p.surface !== null ? iRow('Dimensions', `<strong>${p.longueur.toFixed(1).replace('.', ',')} × ${p.largeur.toFixed(1).replace('.', ',')} m</strong> — ${p.surface} m²`) : ''}
       ${iRow('Emplacement', esc(p.emplacement))}
       ${stairDesc ? iRow('Escalier', esc(stairDesc)) : ''}
       ${p.filtration_hors_bord ? iRow('Filtration HB', '✓') : ''}
       ${p.description_forme ? iRow('Forme libre', esc(p.description_forme)) : ''}
-      ${p.plan_filename ? iRow(p.piece_jointe_type === 'photo' ? 'Photo piscine' : 'Plan / fichier', `📎 ${esc(p.plan_filename)}`) : ''}
+      ${p.attachment ? iRow(p.attachment.kind === 'photo' ? 'Photo piscine' : 'Plan / fichier', `📎 ${esc(p.attachment.filename)}`) : ''}
     </table>
 
     ${hasAdvisorContext ? `
@@ -814,7 +1072,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const allowedOrigin = getAllowedOrigin(req);
 
-  // CORS strict : refuser les origines non autorisées (sauf OPTIONS sans origin = appel server-side)
+  // CORS limite les navigateurs ; l'absence d'Origin reste valide pour les appels server-side.
   if (req.method === 'OPTIONS') {
     if (allowedOrigin) {
       res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
@@ -849,41 +1107,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const dedupeKey = leadSuccessKey(p);
 
   if (await wasLeadProcessed(dedupeKey)) {
-    return res.status(200).json({ ok: true, prospect: 'deduplicated', internal: 'fulfilled' });
+    const processedLead = (await getProcessedLead(dedupeKey))!;
+    const prospectRejected = processedLead.prospect !== 'fulfilled';
+    return res.status(200).json({
+      ok: !prospectRejected,
+      status: prospectRejected ? 'partial' : 'deduplicated',
+      prospect: prospectRejected ? 'rejected' : 'deduplicated',
+      internal: 'fulfilled',
+      ref: processedLead.ref,
+    });
   }
+
+  const ref = await getDossierReference(p.dossier_id);
 
   // Rate limiting par IP (10 req/min)
   const forwarded = req.headers['x-forwarded-for'];
   const clientIp = (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : req.socket?.remoteAddress) || 'unknown';
   if (await isIpRateLimited(clientIp)) {
-    return res.status(429).json({ error: 'Trop de demandes — veuillez patienter une minute.' });
+    return res.status(429).json({ ok: false, error: 'Trop de demandes — veuillez patienter une minute.', ref });
   }
 
   // Rate limiting par email (15 s, persistant via KV si disponible)
   if (await isRateLimited(p.email)) {
-    return res.status(429).json({ error: 'Trop de demandes — veuillez patienter une minute.' });
+    return res.status(429).json({ ok: false, error: 'Trop de demandes — veuillez patienter une minute.', ref });
   }
 
   const from = process.env.FROM_EMAIL || PUBLIC_CONTACT_EMAIL;
   const internal = process.env.INTERNAL_EMAIL || 'xavier.dispot@diskoov.fr';
   const prodName = p.produit_label || CAT_LABEL[p.categorie] || 'Projet';
-  const attachmentTag = p.plan_filename ? (p.piece_jointe_type === 'photo' ? ' + PHOTO' : ' + PJ') : '';
-
-  // Préparer la pièce jointe photo / plan si présente
-  const ALLOWED_EXTENSIONS = /\.(jpg|jpeg|png|webp|pdf)$/i;
-  const attachments: Array<{ filename: string; content: Buffer }> = [];
-  if (p.plan_base64 && p.plan_filename && ALLOWED_EXTENSIONS.test(p.plan_filename)) {
-    try {
-      // Format data:image/jpeg;base64,xxxx ou data:application/pdf;base64,xxxx
-      const base64Data = p.plan_base64.includes(',') ? p.plan_base64.split(',')[1] : p.plan_base64;
-      attachments.push({
-        filename: p.plan_filename.replace(/[^\w.\-]/g, '_').slice(0, 100),
-        content: Buffer.from(base64Data, 'base64'),
-      });
-    } catch { /* Pièce jointe invalide — continuer sans */ }
-  }
-
-  const ref = genRef();
+  const attachmentTag = p.attachment ? (p.attachment.kind === 'photo' ? ' + PHOTO' : ' + PJ') : '';
+  const attachments = p.attachment
+    ? [{ filename: p.attachment.filename, content: p.attachment.content }]
+    : [];
 
   let internalResponse;
   try {
@@ -897,17 +1152,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (error) {
     await clearEmailRateLimit(p.email);
     console.error('[Diskoov] Email interne KO:', error);
-    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible' });
+    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible', ref });
   }
   if (internalResponse.error || !internalResponse.data) {
     await clearEmailRateLimit(p.email);
     console.error('[Diskoov] Email interne KO:', internalResponse.error);
-    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible' });
+    return res.status(502).json({ ok: false, error: 'Transmission temporairement indisponible', ref });
   }
 
+  const processedAt = Date.now();
+  stageLeadProcessed(dedupeKey, { processedAt, ref });
   await markLeadProcessed(dedupeKey);
 
-  let prospectStatus = 'fulfilled';
+  let prospectStatus: ProspectStatus = 'fulfilled';
   try {
     const prospectResponse = await resend.emails.send({
       from: `Diskoov <${from}>`,
@@ -924,9 +1181,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('[Diskoov] Email prospect KO:', error);
   }
 
+  stageLeadProcessed(dedupeKey, { processedAt, ref, prospect: prospectStatus });
+  await markLeadProcessed(dedupeKey);
+  const partial = prospectStatus === 'rejected';
+
   return res.status(200).json({
-    ok: true,
+    ok: !partial,
+    status: partial ? 'partial' : 'fulfilled',
     prospect: prospectStatus,
     internal: 'fulfilled',
+    ref,
   });
 }

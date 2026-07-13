@@ -14,24 +14,23 @@
     content="Un parcours guidé pour trouver la protection adaptée à votre piscine et préparer votre devis.">
   <meta property="og:url" content="https://configurateur.diskoov.fr">
   <meta property="og:type" content="website">
-  <!-- ⚠️ Créer un screenshot 1200×630 du configurateur et l'uploader dans /public/ -->
-  <meta property="og:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image" content="https://configurateur.diskoov.fr/assets/produits/conseiller/ore-fermee.webp">
+  <meta property="og:image:width" content="1400">
+  <meta property="og:image:height" content="753">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Conseiller piscine &amp; configurateur — Diskoov">
   <meta name="twitter:description" content="Trouvez la protection adaptée à votre piscine et préparez votre devis.">
-  <meta name="twitter:image" content="https://configurateur.diskoov.fr/og-configurateur.jpg">
+  <meta name="twitter:image" content="https://configurateur.diskoov.fr/assets/produits/conseiller/ore-fermee.webp">
 
   <link rel="canonical" href="https://configurateur.diskoov.fr">
-  <meta name="theme-color" content="#111111">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23c49a52'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%2310251c'%3ED%3C/text%3E%3C/svg%3E">
+  <link rel="preload" as="image" href="assets/produits/conseiller/ore-fermee-800.webp" type="image/webp"
+    imagesrcset="assets/produits/conseiller/ore-fermee-800.webp 800w, assets/produits/conseiller/ore-fermee.webp 1400w"
+    imagesizes="(max-width: 960px) 100vw, 38vw" fetchpriority="high">
+  <meta name="theme-color" content="#1f407c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f407c'/%3E%3Ctext x='32' y='41' text-anchor='middle' font-family='Arial,sans-serif' font-size='30' font-weight='700' fill='%23ffffff'%3ED%3C/text%3E%3Ccircle cx='51' cy='13' r='6' fill='%23f37021'/%3E%3C/svg%3E">
   <!-- Robots : indexer la page mais pas les données de formulaire -->
   <meta name="robots" content="index, follow">
-
-  <!-- Preload image hero (LCP) — ⚠️ mettre à jour src après upload des vraies photos -->
-  <link rel="preload" as="image" href="assets/produits/conseiller/ore-fermee.webp" type="image/webp" id="preload-hero" fetchpriority="high">
 
   <!-- Fonts : Inter auto-hébergé via fontsource (conformité RGPD — aucun transfert vers Google) -->
   <style>
@@ -92,16 +91,24 @@
     }
 
     :root {
-      --ink: #111111;
-      --mid: #666666;
-      --faint: #767676;
-      --line: #e6e6e6;
-      --bg: #f5f5f5;
+      --brand: #1f407c;
+      --brand-deep: #0f264d;
+      --accent: #f37021;
+      --success: #16803c;
+      --danger: #c62828;
+      --ink: #172033;
+      --mid: #526173;
+      --faint: #66758a;
+      --line: #dce2ea;
+      --bg: #f5f7fa;
       --w: #ffffff;
-      --gold: #c9a96e;
       --r: 5px;
+      --z-modal: 80;
+      --z-toast: 90;
+      --z-tooltip: 100;
+      --z-consent: 110;
       /* Focus ring partagé */
-      --focus-ring: 0 0 0 3px rgba(17, 17, 17, .18);
+      --focus-ring: 0 0 0 3px rgba(243, 112, 33, .32);
     }
 
     html {
@@ -157,9 +164,8 @@
       overflow: hidden;
       user-select: none;
       background:
-        linear-gradient(120deg, rgba(8, 20, 12, .45), rgba(8, 20, 12, .08)),
-        url('assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp') center/cover no-repeat,
-        #0e1a0d;
+        linear-gradient(120deg, rgba(15, 38, 77, .96), rgba(31, 64, 124, .86)),
+        var(--brand-deep);
     }
 
     .vi {
@@ -222,7 +228,7 @@
     .visual-lightbox {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: var(--z-modal);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -480,7 +486,7 @@
     .progress-fill {
       width: 100%;
       height: 100%;
-      background: var(--gold);
+      background: var(--accent);
       transform: scaleX(0);
       transform-origin: left center;
       transition: transform .35s cubic-bezier(.22, 1, .36, 1);
@@ -554,7 +560,7 @@
 ─────────────────────────────────────────────────── */
     #dk-tip {
       position: fixed;
-      background: var(--ink);
+      background: var(--brand-deep);
       color: #fff;
       font-size: 12px;
       font-weight: 400;
@@ -566,7 +572,7 @@
       pointer-events: none;
       opacity: 0;
       transition: opacity .15s;
-      z-index: 99999;
+      z-index: var(--z-tooltip);
       white-space: normal;
       font-style: normal;
       letter-spacing: 0;
@@ -656,6 +662,7 @@
     .tb {
       flex: 1;
       min-width: 0;
+      min-height: 40px;
       padding: 11px 6px;
       border: none;
       background: var(--w);
@@ -689,12 +696,12 @@
     }
 
     .tb:hover:not(.on) {
-      color: var(--ink);
-      background: #fafafa
+      color: var(--brand);
+      background: #f2f6fc
     }
 
     .tb.on {
-      background: var(--ink);
+      background: var(--brand);
       color: #fff
     }
 
@@ -729,10 +736,12 @@
       gap: 7px
     }
 
-    /* Boutons +/- autour du champ — 36×36 px (WCAG 2.2 §2.5.8 Target Size : min 24×24 px) */
+    /* Boutons +/- autour du champ */
     .d-btn {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
       border: 1px solid var(--line);
       border-radius: 6px;
       background: var(--bg);
@@ -749,8 +758,9 @@
     }
 
     .d-btn:hover {
-      background: var(--line);
-      color: var(--ink)
+      background: #eaf0f8;
+      border-color: var(--brand);
+      color: var(--brand)
     }
 
     .d-btn:active {
@@ -779,7 +789,7 @@
     }
 
     .di:focus {
-      border-color: var(--ink);
+      border-color: var(--accent);
       box-shadow: var(--focus-ring)
     }
 
@@ -807,6 +817,11 @@
       padding: 13px 14px;
       border: 1.5px solid var(--line);
       border-radius: var(--r);
+      width: 100%;
+      background: var(--w);
+      color: var(--ink);
+      font: inherit;
+      text-align: left;
       cursor: pointer;
       transition: border-color .12s, background .12s, transform .08s;
       /* Keyboard focusable */
@@ -814,7 +829,7 @@
     }
 
     .pc:hover {
-      border-color: #999
+      border-color: var(--brand)
     }
 
     .pc.unavailable,
@@ -869,7 +884,7 @@
 
     .pc:focus-visible {
       box-shadow: var(--focus-ring);
-      border-color: var(--ink)
+      border-color: var(--accent)
     }
 
     .pc:active {
@@ -877,9 +892,9 @@
     }
 
     .pc.on {
-      border-color: var(--ink);
-      box-shadow: inset 0 0 0 0.5px var(--ink);
-      background: var(--bg)
+      border-color: var(--brand);
+      box-shadow: inset 0 0 0 0.5px var(--brand);
+      background: #f2f6fc
     }
 
     .pc-top {
@@ -990,9 +1005,11 @@
     }
 
     .tog {
-      width: 40px;
-      height: 22px;
-      border-radius: 11px;
+      width: 44px;
+      height: 40px;
+      min-width: 44px;
+      min-height: 40px;
+      border-radius: 20px;
       background: var(--line);
       border: none;
       cursor: pointer;
@@ -1002,16 +1019,16 @@
     }
 
     .tog.on {
-      background: var(--ink)
+      background: var(--brand)
     }
 
     .tog::after {
       content: '';
       position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 18px;
-      height: 18px;
+      top: 9px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: var(--w);
       box-shadow: 0 1px 3px rgba(0, 0, 0, .22);
@@ -1019,7 +1036,7 @@
     }
 
     .tog.on::after {
-      transform: translateX(18px)
+      transform: translateX(16px)
     }
 
     .tog:focus-visible {
@@ -1049,12 +1066,12 @@
     }
 
     .hc:hover {
-      border-color: #999
+      border-color: var(--brand)
     }
 
     .hc:focus-visible {
       box-shadow: var(--focus-ring);
-      border-color: var(--ink)
+      border-color: var(--accent)
     }
 
     .hc:active {
@@ -1062,9 +1079,9 @@
     }
 
     .hc.on {
-      border-color: var(--ink);
-      box-shadow: inset 0 0 0 0.5px var(--ink);
-      background: var(--bg)
+      border-color: var(--brand);
+      box-shadow: inset 0 0 0 0.5px var(--brand);
+      background: #f2f6fc
     }
 
     .hbw {
@@ -1083,7 +1100,7 @@
     }
 
     .hc.on .hb {
-      background: var(--ink)
+      background: var(--brand)
     }
 
     .hci {
@@ -1368,7 +1385,7 @@
       padding: 13px;
       border: none;
       border-radius: var(--r);
-      background: var(--ink);
+      background: var(--brand);
       color: #fff;
       font-family: 'Inter', sans-serif;
       font-size: 14px;
@@ -1385,7 +1402,7 @@
     }
 
     .cta:not(:disabled):hover {
-      opacity: .82
+      background: var(--brand-deep)
     }
 
     .cta:not(:disabled):active {
@@ -1400,7 +1417,9 @@
 
     .cta.spin {
       position: relative;
-      color: transparent;
+      background: var(--brand);
+      color: #fff;
+      padding-right: 44px;
       pointer-events: none
     }
 
@@ -1408,8 +1427,9 @@
       content: '';
       position: absolute;
       top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      left: auto;
+      right: 15px;
+      transform: translateY(-50%);
       width: 18px;
       height: 18px;
       border: 2px solid rgba(255, 255, 255, .25);
@@ -1420,8 +1440,46 @@
 
     @keyframes rot {
       to {
-        transform: translate(-50%, -50%) rotate(360deg)
+        transform: translateY(-50%) rotate(360deg)
       }
+    }
+
+    .submit-feedback {
+      margin: 0 0 10px;
+      padding: 9px 11px;
+      border: 1px solid #efb2b2;
+      border-radius: var(--r);
+      background: #fff5f5;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .submit-feedback[hidden],
+    .missing-action[hidden] {
+      display: none;
+    }
+
+    .missing-action {
+      min-height: 40px;
+      margin: 0 0 9px;
+      border: 0;
+      background: transparent;
+      color: var(--brand);
+      font: 700 12px/1.3 Inter, sans-serif;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .missing-action:hover {
+      color: var(--brand-deep);
+    }
+
+    .missing-action:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
     }
 
     @keyframes ppulse {
@@ -1470,7 +1528,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity .25s, transform .25s;
-      z-index: 9999;
+      z-index: var(--z-toast);
       box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
     }
 
@@ -1652,12 +1710,12 @@
     }
 
     .shape-btn:hover {
-      border-color: #999
+      border-color: var(--brand)
     }
 
     .shape-btn:focus-visible {
       box-shadow: var(--focus-ring);
-      border-color: var(--ink)
+      border-color: var(--accent)
     }
 
     .shape-btn:active {
@@ -1665,9 +1723,9 @@
     }
 
     .shape-btn.on {
-      border-color: var(--ink);
-      box-shadow: inset 0 0 0 0.5px var(--ink);
-      background: var(--bg)
+      border-color: var(--brand);
+      box-shadow: inset 0 0 0 0.5px var(--brand);
+      background: #f2f6fc
     }
 
     .shape-btn svg {
@@ -1680,7 +1738,7 @@
     }
 
     .shape-btn.on svg {
-      stroke: var(--ink)
+      stroke: var(--brand)
     }
 
     .shape-btn span {
@@ -1693,7 +1751,7 @@
     }
 
     .shape-btn.on span {
-      color: var(--ink)
+      color: var(--brand)
     }
 
     .shape-hint {
@@ -1715,6 +1773,7 @@
     }
 
     .dim-pre {
+      min-height: 40px;
       padding: 7px 13px;
       border: 1px solid var(--line);
       border-radius: 20px;
@@ -1729,14 +1788,14 @@
     }
 
     .dim-pre:hover {
-      border-color: var(--ink);
-      color: var(--ink)
+      border-color: var(--brand);
+      color: var(--brand)
     }
 
     .dim-pre.on {
-      background: var(--ink);
+      background: var(--brand);
       color: #fff;
-      border-color: var(--ink)
+      border-color: var(--brand)
     }
 
     .dim-pre:focus-visible {
@@ -1750,8 +1809,8 @@
       gap: 4px;
       font-size: 12px;
       font-weight: 500;
-      color: var(--gold);
-      background: rgba(201, 169, 110, .08);
+      color: var(--brand);
+      background: rgba(31, 64, 124, .08);
       padding: 3px 10px;
       border-radius: 12px;
       margin-left: 6px;
@@ -1783,17 +1842,18 @@
     }
 
     .stair-btn:hover {
-      border-color: #999
+      border-color: var(--brand)
     }
 
     .stair-btn.on {
-      border-color: var(--ink);
-      box-shadow: inset 0 0 0 0.5px var(--ink);
-      background: var(--bg)
+      border-color: var(--brand);
+      box-shadow: inset 0 0 0 0.5px var(--brand);
+      background: #f2f6fc
     }
 
     .stair-btn:focus-visible {
-      box-shadow: var(--focus-ring)
+      box-shadow: var(--focus-ring);
+      border-color: var(--accent)
     }
 
     .stair-btn svg {
@@ -1806,7 +1866,7 @@
     }
 
     .stair-btn.on svg {
-      stroke: var(--ink)
+      stroke: var(--brand)
     }
 
     .stair-btn span {
@@ -1816,7 +1876,7 @@
     }
 
     .stair-btn.on span {
-      color: var(--ink)
+      color: var(--brand)
     }
 
     /* Corner selector (angle stairs) */
@@ -1891,18 +1951,18 @@
 
     .file-zone:hover,
     .file-zone.drag {
-      border-color: var(--gold);
-      background: rgba(201, 169, 110, .04)
+      border-color: var(--brand);
+      background: rgba(31, 64, 124, .04)
     }
 
     .file-zone.prospect-photo {
       padding: 17px 16px;
-      background: linear-gradient(180deg, rgba(201, 169, 110, .07), rgba(255, 255, 255, .94));
-      border-color: rgba(201, 169, 110, .55);
+      background: linear-gradient(180deg, rgba(31, 64, 124, .06), rgba(255, 255, 255, .96));
+      border-color: rgba(31, 64, 124, .42);
     }
 
     .file-zone.prospect-photo .file-zone-icon {
-      color: var(--gold);
+      color: var(--brand);
     }
 
     .photo-lead-note {
@@ -2088,14 +2148,14 @@
     }
 
     .product-options .cbr:hover {
-      border-color: #d7c79f;
-      background: #fffdf7;
+      border-color: var(--brand);
+      background: #f7f9fc;
     }
 
     .product-options .cbr:has(input:checked) {
-      border-color: var(--ink);
-      background: #f8f5ec;
-      box-shadow: 0 0 0 1px rgba(17, 17, 17, .04);
+      border-color: var(--brand);
+      background: #f2f6fc;
+      box-shadow: 0 0 0 1px rgba(31, 64, 124, .05);
     }
 
     .product-options .cbr span {
@@ -2116,12 +2176,10 @@
       gap: 9px;
       align-items: flex-start;
       padding: 10px 11px;
-      border: 1px solid rgba(201, 169, 110, .36);
-      border-radius: 12px;
-      background:
-        linear-gradient(180deg, rgba(255, 252, 245, .95), rgba(250, 247, 239, .9)),
-        #fbf8ef;
-      color: #5c4b2d;
+      border: 1px solid rgba(31, 64, 124, .24);
+      border-radius: 8px;
+      background: #f5f8fc;
+      color: var(--mid);
       box-shadow: 0 8px 18px rgba(17, 17, 17, .035);
     }
 
@@ -2129,8 +2187,8 @@
       width: 18px;
       height: 18px;
       border-radius: 999px;
-      background: var(--gold);
-      color: #111;
+      background: var(--brand);
+      color: #fff;
       display: grid;
       place-items: center;
       flex: 0 0 18px;
@@ -2150,12 +2208,13 @@
       display: block;
       font-size: 11.5px;
       line-height: 1.45;
-      color: #746853;
+      color: var(--mid);
     }
 
     .product-media {
       margin-top: 12px;
       position: relative;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
       border-radius: 8px;
       border: 1px solid var(--line);
@@ -2207,7 +2266,7 @@
 
     .product-media img {
       width: 100%;
-      max-height: 205px;
+      height: 100%;
       object-fit: cover;
       display: block;
     }
@@ -2553,10 +2612,62 @@
         display: none !important
       }
 
-      /* Succès : panneau prend toute la hauteur quand le visuel est masqué */
-      .panel:has(#suc.on) {
+      /* Succès : état explicite, sans dépendre de :has(). */
+      .root.success-active .vis {
+        display: none;
+      }
+
+      .root.success-active .panel {
         flex: 1;
-        height: auto;
+        height: 100%;
+        border-top: 0;
+      }
+
+      .tb,
+      .d-btn,
+      .tog,
+      .dim-pre,
+      .shape-btn,
+      .stair-btn,
+      .stair-corner-btn,
+      .missing-action {
+        min-height: 44px;
+      }
+    }
+
+    @media (max-height: 560px) and (orientation: landscape) {
+      @media (max-width: 820px) {
+        .root {
+          --mobile-vis-height: 72px;
+          --mobile-vis-collapsed: 64px;
+          --mobile-vis-peek: 72px;
+        }
+
+        .vis {
+          height: var(--mobile-vis-height);
+          min-height: var(--mobile-vis-height);
+        }
+
+        .panel,
+        .p-bd {
+          min-height: 0;
+        }
+
+        .p-hd {
+          padding-block: 8px;
+        }
+
+        .pfoot {
+          max-height: min(43svh, 210px);
+          overflow-y: auto;
+          padding-block: 7px;
+        }
+
+        .root.mobile-peek .vis,
+        .root.mobile-compact .vis {
+          height: var(--mobile-vis-collapsed);
+          min-height: var(--mobile-vis-collapsed);
+        }
       }
     }
 
@@ -2767,7 +2878,7 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260713-v11-polish14">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260713-v14-release">
 
   <noscript>
     <style>
@@ -2800,21 +2911,14 @@
     Uploader dans /public/ sur Vercel.
   -->
       <!-- Visuels produits chargés depuis assets/produits pour éviter les placeholders génériques en production. -->
-      <img class="vi" id="vi-pool" src="assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp" alt="Piscine équipée par Diskoov"
-        width="1600" height="900" fetchpriority="high" decoding="async">
-      <img class="vi off" id="vi-shl" loading="lazy" src="assets/produits/abris/master-bas-1-8.jpg"
+      <img class="vi" id="vi-pool" data-src="assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp" alt="Piscine équipée par Diskoov"
+        width="1600" height="900" loading="lazy" decoding="async">
+      <img class="vi off" id="vi-shl" loading="lazy" data-src="assets/produits/abris/master-bas-1-8.jpg"
         alt="Abri télescopique Master Diskoov" width="1600" height="900" decoding="async">
-      <img class="vi off" id="vi-product" loading="lazy" src="assets/produits/bab/couverture-a-barres.jpg"
+      <img class="vi off" id="vi-product" loading="lazy" data-src="assets/produits/bab/couverture-a-barres.jpg"
         alt="Produit piscine Diskoov" width="1600" height="900" decoding="async">
 
-      <!--
-    COUVERTURE — Option future : remplacer l'iframe YouTube par une vidéo locale optimisée :
-      <video class="vi off" id="vi-demo" autoplay loop muted playsinline poster="assets/produits/bab/couverture-a-barres.jpg">
-        <source src="assets/videos/couverture-diskoov.mp4" type="video/mp4">
-      </video>
-      Puis dans showDemo() : remplacer le corps par showImg('vi-demo')
-    Option B (actuelle) : YouTube embed ci-dessous.
-  -->
+      <!-- La démonstration distante n'est chargée qu'après une action explicite. -->
       <div class="vi-demo" id="vi-demo">
         <div class="demo-fallback" id="demo-fallback"></div>
         <div id="yt-play" role="button" tabindex="0" aria-label="Lire la vidéo de démonstration" onclick="loadYT()"
@@ -2883,7 +2987,7 @@
         <!-- FORME DE PISCINE -->
         <div class="s" id="s-shape" role="group" aria-labelledby="lbl-shape">
           <div class="sh">
-            <span class="sl" id="lbl-shape">Forme du bassin</span>
+            <h2 class="sl" id="lbl-shape">Forme du bassin</h2>
           </div>
           <div class="shape-grid" role="radiogroup" aria-labelledby="lbl-shape" aria-describedby="shape-hint">
             <button type="button" class="shape-btn" id="sh-rect" role="radio" aria-checked="false" tabindex="0"
@@ -2928,13 +3032,13 @@
         <!-- DIMENSIONS -->
         <div class="s" id="s-dim" role="group" aria-labelledby="lbl-dim">
           <div class="sh">
-            <span class="sl" id="lbl-dim">Dimensions
+            <h2 class="sl" id="lbl-dim">Dimensions
               <span class="tip-wrap">
                 <i class="ic" tabindex="0" role="button" aria-label="Information sur les dimensions">i</i>
                 <span class="tip" role="tooltip">Mesures intérieures nettes du bassin, hors margelles</span>
               </span>
               <span class="surface-tag" id="surface-tag">32 m²</span>
-            </span>
+            </h2>
           </div>
           <div class="dim-presets" role="group" aria-label="Dimensions fréquentes">
             <button type="button" class="dim-pre on" onclick="setPreset(8,4,this)" aria-label="8 mètres par 4 mètres">8
@@ -2975,7 +3079,7 @@
         <!-- FORME LIBRE : descriptions & upload -->
         <div class="s hide" id="s-libre" role="group" aria-labelledby="lbl-libre">
           <div class="sh">
-            <span class="sl" id="lbl-libre">Votre bassin sur mesure</span>
+            <h2 class="sl" id="lbl-libre">Votre bassin sur mesure</h2>
           </div>
           <div class="fl" style="margin-bottom:12px">
             <label for="libre-desc">Décrivez la forme de votre piscine</label>
@@ -2987,7 +3091,7 @@
         <!-- PHOTO / PLAN OPTIONNEL : signal d'intérêt + qualification chantier -->
         <div class="s" id="s-pool-photo" role="group" aria-labelledby="lbl-pool-photo">
           <div class="sh">
-            <span class="sl" id="lbl-pool-photo">Photo de votre piscine</span>
+            <h2 class="sl" id="lbl-pool-photo">Photo de votre piscine</h2>
             <span class="pill">Facultatif</span>
           </div>
           <div class="ntc inf photo-lead-note" role="note">
@@ -3009,7 +3113,7 @@
                 <circle cx="12" cy="13" r="3.4" />
               </svg>
               <div class="file-zone-text">Ajouter une photo ou un plan</div>
-              <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · utile pour préparer l’étude</div>
+              <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · 3 Mio maximum</div>
             </div>
             <div class="file-preview" id="file-preview" style="display:none">
               <div class="file-preview-info">
@@ -3025,7 +3129,7 @@
         <!-- ESCALIER -->
         <div class="s" role="group" aria-labelledby="lbl-stair">
           <div class="sh">
-            <span class="sl" id="lbl-stair">Escalier</span>
+            <h2 class="sl" id="lbl-stair">Escalier</h2>
           </div>
           <div class="tg" role="group" aria-label="Escalier présent" style="margin-bottom:10px">
             <button type="button" class="tb on" aria-pressed="true" id="st-no" onclick="togStair(false)">Sans
@@ -3168,13 +3272,13 @@
         <!-- ÉQUIPEMENT PÉRIPHÉRIQUE -->
         <div class="s" role="group" aria-labelledby="lbl-periph">
           <div class="sh">
-            <span class="sl" id="lbl-periph">Équipement périphérique
+            <h2 class="sl" id="lbl-periph">Équipement périphérique
               <span class="tip-wrap">
                 <i class="ic" tabindex="0" role="button" aria-label="Information sur l'équipement périphérique">i</i>
                 <span class="tip" role="tooltip">Ces informations permettent d'ajuster la découpe de la couverture ou de
                   l'abri à votre bassin</span>
               </span>
-            </span>
+            </h2>
           </div>
           <div class="or">
             <div style="display:flex;align-items:center">
@@ -3197,7 +3301,7 @@
 
         <!-- ÉQUIPEMENT -->
         <div class="s" id="s-equipment" role="group" aria-labelledby="lbl-eq">
-          <div class="sh"><span class="sl" id="lbl-eq">Équipement</span></div>
+          <div class="sh"><h2 class="sl" id="lbl-eq">Équipement</h2></div>
           <div class="pcs" role="radiogroup" aria-labelledby="lbl-eq">
             <div class="pc" id="eq-cov" role="radio" aria-checked="false" tabindex="0" onclick="selEq('cov')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selEq('cov')}">
@@ -3229,13 +3333,13 @@
         <!-- MODÈLE COUVERTURE -->
         <div class="s hide" id="s-cm">
           <div class="sh">
-            <span class="sl">Modèle
+            <h2 class="sl">Modèle
               <span class="tip-wrap">
                 <i class="ic" tabindex="0" role="button" aria-label="Information sur l'installation">i</i>
                 <span class="tip" role="tooltip">Automatique : ouverture motorisée. Semi-auto : manipulation assistée. Oré :
                   couverture mobile déclinée en Compact et Essential.</span>
               </span>
-            </span>
+            </h2>
             <span class="sr" id="cm-p">–</span>
           </div>
           <div class="tg" style="margin-bottom:8px" role="group" aria-label="Type de couverture">
@@ -3249,7 +3353,7 @@
             style="margin-bottom:6px">
             <div class="pc-top">
               <span class="pc-n">Oré Compact</span>
-              <span class="pc-p">Estimation indicative</span>
+              <span class="pc-p">Estimation possible</span>
             </div>
             <div class="pc-s">Jusqu'à 7 × 3,5 m · pose par 2 techniciens incluse · rail sur un côté</div>
           </div>
@@ -3258,7 +3362,7 @@
             style="margin-bottom:6px">
             <div class="pc-top">
               <span class="pc-n">Oré Essential</span>
-              <span class="pc-p">Estimation indicative</span>
+              <span class="pc-p">Estimation possible</span>
             </div>
             <div class="pc-s">Jusqu'à 12 × 5 m · mécanisme 45 cm · rail sur un côté</div>
           </div>
@@ -3274,65 +3378,49 @@
 
         <!-- PRODUITS BÂCHE / VOLET / MASTERDECK -->
         <div class="s hide" id="s-oth">
-          <div class="sh"><span class="sl">Produit</span></div>
+          <div class="sh"><h2 class="sl">Produit</h2></div>
           <div class="product-grid" role="radiogroup" aria-label="Produit de protection piscine">
-            <div class="pc" id="op-bab" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('bab')">
-              <div class="pc-top"><span class="pc-n">Bâche à barres</span><span class="pc-p">Indicatif</span></div>
+            <button type="button" class="pc" id="op-bab" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('bab')">
+              <div class="pc-top"><span class="pc-n">Bâche à barres</span><span class="pc-p">Estimation possible</span></div>
               <div class="pc-s">Secu Classic · jusqu'à 12 × 5 m en standard</div>
-            </div>
-            <div class="pc" id="op-volet_hs" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('volet_hs')">
-              <div class="pc-top"><span class="pc-n">Volet hors-sol</span><span class="pc-p">Indicatif</span></div>
-              <div class="pc-s">Motorisé · jusqu'à 12 × 6 m · pose intégrée</div>
-            </div>
-            <div class="pc" id="op-volet_immerge" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('volet_immerge')">
-              <div class="pc-top"><span class="pc-n">Volet immergé</span><span class="pc-p">Indicatif</span></div>
-              <div class="pc-s">Intégré au bassin · jusqu'à 14 × 6 m · pose intégrée</div>
-            </div>
-            <div class="pc" id="op-masterdeck" role="radio" aria-checked="false" tabindex="0" onclick="selOtherProduct('masterdeck')">
+            </button>
+            <button type="button" class="pc" id="op-volet_hs" role="radio" aria-checked="false" tabindex="-1" onclick="selOtherProduct('volet_hs')">
+              <div class="pc-top"><span class="pc-n">Volet hors-sol</span><span class="pc-p">Sur devis</span></div>
+              <div class="pc-s">Motorisé · jusqu'à 12 × 6 m · pose chiffrée sur devis</div>
+            </button>
+            <button type="button" class="pc" id="op-volet_immerge" role="radio" aria-checked="false" tabindex="-1" onclick="selOtherProduct('volet_immerge')">
+              <div class="pc-top"><span class="pc-n">Volet immergé</span><span class="pc-p">Sur devis</span></div>
+              <div class="pc-s">Intégré au bassin · jusqu'à 14 × 6 m · pose chiffrée sur devis</div>
+            </button>
+            <button type="button" class="pc" id="op-masterdeck" role="radio" aria-checked="false" tabindex="-1" onclick="selOtherProduct('masterdeck')">
               <div class="pc-top"><span class="pc-n">MasterDeck</span><span class="pc-p">Sur devis</span></div>
               <div class="pc-s">Terrasse mobile sur mesure</div>
-            </div>
+            </button>
           </div>
         </div>
 
-        <!-- MEMBRANE -->
+        <!-- Préférence de finition, à confirmer pendant l'étude -->
         <div class="s hide" id="s-mem">
           <div class="sh">
-            <span class="sl">
-              Membrane
-              <span class="tip-wrap">
-                <i class="ic" tabindex="0" role="button" aria-label="Information sur la membrane">i</i>
-                <span class="tip" role="tooltip">Membrane PVC armé — résistance UV et usage extérieur</span>
-              </span>
-              <span class="sl-val" id="mem-ral">RAL 7037</span>
-            </span>
+            <h2 class="sl">Préférence de finition</h2>
             <span class="sr" id="mem-dp">À confirmer</span>
           </div>
-          <div class="swat" id="g-mem" role="radiogroup" aria-label="Couleur de membrane"></div>
-          <div class="sw-lbl" id="mem-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
+          <label class="fl" for="finish-pref">
+            <span>Couleur ou aspect souhaité <span class="field-optional">Facultatif</span></span>
+            <input type="text" id="finish-pref" maxlength="80" placeholder="Votre préférence, à confirmer"
+              oninput="S.mLbl=this.value.trim();S.mRal='';updSummary()">
+          </label>
+          <p class="field-help">Cette préférence ne vaut ni référence RAL, ni disponibilité, ni chiffrage.</p>
         </div>
 
-        <!-- HABILLAGE -->
+        <!-- Conservé comme ancre historique, sans palette non validée. -->
         <div class="s hide" id="s-hab">
-          <div class="sh">
-            <span class="sl">
-              Habillage
-              <span class="tip-wrap">
-                <i class="ic" tabindex="0" role="button" aria-label="Information sur l'habillage">i</i>
-                <span class="tip" role="tooltip">Couleur du caisson en aluminium thermolaqué contenant la couverture
-                  enroulée</span>
-              </span>
-              <span class="sl-val" id="hab-ral">RAL 7037</span>
-            </span>
-          </div>
-          <div class="swat" id="g-hab" role="radiogroup" aria-label="Couleur d'habillage"></div>
-          <div class="sw-lbl" id="hab-lbl" aria-live="polite">Gris poussière — RAL 7037</div>
         </div>
 
         <!-- OPTIONS COUVERTURE -->
         <div class="s hide" id="s-co">
           <div class="sh">
-            <span class="sl">Options</span>
+            <h2 class="sl">Options</h2>
             <span class="sr" id="co-dp">À confirmer</span>
           </div>
           <div class="or">
@@ -3357,7 +3445,7 @@
 
         <!-- HAUTEUR ABRI -->
         <div class="s hide" id="s-sm">
-          <div class="sh"><span class="sl">Hauteur</span></div>
+          <div class="sh"><h2 class="sl">Hauteur</h2></div>
           <div class="hcs" role="radiogroup" aria-label="Hauteur de l'abri">
             <div class="hc" id="h-ul" role="radio" aria-checked="false" tabindex="0" onclick="selSM('ul')"
               onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selSM('ul')}">
@@ -3430,15 +3518,15 @@
               </div>
             </div>
           </div>
-          <div class="ntc wrn" role="note">Les abris dépassant 1,80 m peuvent nécessiter une déclaration préalable de
-            travaux.</div>
+          <div class="ntc wrn" role="note">Les formalités dépendent du bassin, de la hauteur, du PLU et de la zone.
+            Vérifiez votre projet auprès du service urbanisme de votre mairie.</div>
         </div>
 
         <!-- OPTIONS ABRI -->
         <div class="s hide" id="s-so">
           <div class="sh">
-            <span class="sl">Options</span>
-            <span class="sr" id="so-dp">+ 0 €</span>
+            <h2 class="sl">Options</h2>
+            <span class="sr" id="so-dp">À confirmer</span>
           </div>
           <div class="or">
             <div>
@@ -3460,31 +3548,33 @@
           </div>
           <div style="margin-top:14px">
             <div class="sh">
-              <span class="sl">Couleur structure
-                <span class="sl-val" id="struc-ral">RAL 9016</span>
-              </span>
+              <h3 class="sl">Préférence de finition</h3>
             </div>
-            <div class="swat" id="g-struc" role="radiogroup" aria-label="Couleur de structure"></div>
-            <div class="sw-lbl" id="struc-lbl" aria-live="polite">Blanc — RAL 9016</div>
+            <label class="fl" for="structure-color-pref">
+              <span>Couleur ou aspect souhaité <span class="field-optional">Facultatif</span></span>
+              <input type="text" id="structure-color-pref" maxlength="80" placeholder="Votre préférence, à confirmer"
+                oninput="S.strucLbl=this.value.trim();S.strucCol='';updSummary()">
+            </label>
+            <p class="field-help">Préférence à confirmer lors de l'étude, sans référence RAL ni plus-value présélectionnée.</p>
           </div>
         </div>
 
         <!-- CONFIGURATION PRODUIT DYNAMIQUE -->
         <div class="s hide" id="s-product-detail">
-          <div class="sh"><span class="sl" id="product-detail-title">Configuration produit</span></div>
+          <div class="sh"><h2 class="sl" id="product-detail-title">Configuration produit</h2></div>
           <div id="product-questions"></div>
           <div class="product-media" id="product-media" role="button" tabindex="0"
             aria-label="Agrandir l'image du produit" onclick="openProductDetailLightbox(event)"
             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openProductDetailLightbox(event)}"
             style="display:none">
-            <img id="product-detail-image" src="assets/produits/ore/encombrements-60-80-45cm.jpg" alt="Détail technique du produit sélectionné" loading="lazy">
+            <img id="product-detail-image" data-src="assets/produits/ore/encombrements-60-80-45cm.jpg" alt="Détail technique du produit sélectionné" loading="lazy">
           </div>
           <div class="rule-status" id="product-rule-note" role="status" aria-live="polite"></div>
         </div>
 
         <!-- DÉLAI -->
         <div class="s hide" id="s-tl" role="group" aria-labelledby="lbl-tl">
-          <div class="sh"><span class="sl" id="lbl-tl">Délai souhaité</span></div>
+          <div class="sh"><h2 class="sl" id="lbl-tl">Délai souhaité</h2></div>
           <div class="tg g4" role="group" aria-labelledby="lbl-tl">
             <button type="button" class="tb" aria-pressed="false" id="tl-urg" onclick="selTL('urg',this)">Dès que
               possible</button>
@@ -3499,7 +3589,7 @@
 
         <!-- COORDONNÉES -->
         <div class="s hide" id="s-frm">
-          <div class="sh"><span class="sl">Vos coordonnées</span></div>
+          <div class="sh"><h2 class="sl">Vos coordonnées</h2></div>
           <form class="flds" novalidate autocomplete="on" onsubmit="return false">
             <div class="frow">
               <div class="fl">
@@ -3515,20 +3605,20 @@
             </div>
             <div class="fl">
               <label for="em">Email *</label>
-              <input type="email" id="em" name="email" placeholder="jean@email.com" autocomplete="email" maxlength="254"
+              <input type="email" id="em" aria-invalid="false" aria-describedby="em-err" name="email" placeholder="jean@email.com" autocomplete="email" maxlength="254"
                 inputmode="email" oninput="markFormStart('email');S.em=this.value.trim();validateEmail(this);chk()" onblur="trackContactValidation('email')">
               <p class="ferr" id="em-err" role="alert">Adresse email invalide</p>
             </div>
             <div class="fl">
               <label for="ph">Téléphone *</label>
-              <input type="tel" id="ph" name="tel" placeholder="06 XX XX XX XX" autocomplete="tel" maxlength="14"
+              <input type="tel" id="ph" aria-invalid="false" aria-describedby="ph-err" name="tel" placeholder="06 XX XX XX XX" autocomplete="tel" maxlength="14"
                 inputmode="tel" oninput="markFormStart('phone');fmtPhone(this);S.ph=this.value;chk()" onblur="trackContactValidation('phone')">
               <p class="ferr" id="ph-err" role="alert">Numéro invalide (ex : 06 12 34 56 78)</p>
             </div>
             <div class="frow">
               <div class="fl">
                 <label for="postal-code">Code postal *</label>
-                <input type="text" id="postal-code" name="postal-code" placeholder="34000" autocomplete="postal-code"
+                <input type="text" id="postal-code" aria-invalid="false" aria-describedby="postal-code-err" name="postal-code" placeholder="34000" autocomplete="postal-code"
                   maxlength="5" inputmode="numeric"
                   oninput="markFormStart('postal_code');syncDepartmentFromPostal(this);chk()"
                   onblur="trackContactValidation('postal_code')">
@@ -3608,8 +3698,8 @@
                 <path d="M6 5.5v3M6 3.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
               </svg>
               <span>Vos données (nom, email, téléphone et localisation du projet) sont collectées par Diskoov pour traiter votre
-                demande de devis, sur la base de votre consentement. Elles sont conservées 3 ans. Vos coordonnées sont
-                temporairement stockées dans votre navigateur pour faciliter une éventuelle seconde demande. Vous
+                demande de devis, sur la base de votre consentement. La durée de conservation est précisée dans la politique de
+                confidentialité. Vos coordonnées sont temporairement stockées dans votre navigateur pour faciliter une éventuelle seconde demande. Vous
                 disposez d'un
                 droit d'accès, de rectification et d'effacement en écrivant à <a data-dk-link="email"
                   href="mailto:contact@diskoov.fr"
@@ -3632,8 +3722,9 @@
             <polyline class="check-path" points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <div class="st" id="suc-t" tabindex="-1">Merci !</div>
+        <h1 class="st" id="suc-t" tabindex="-1">Merci !</h1>
         <p class="sb" id="suc-b"></p>
+        <p class="ntc wrn" id="suc-warning" role="alert" hidden></p>
 
         <!-- Référence -->
         <div id="suc-ref" style="margin:10px auto 0;font-size:11px;color:var(--faint);letter-spacing:0"></div>
@@ -3645,7 +3736,7 @@
             Prochaines étapes</p>
           <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
             <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--gold);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
+              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
               1</div>
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Échange avec Diskoov</div>
@@ -3655,7 +3746,7 @@
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
             <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--gold);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
+              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
               2</div>
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Vérification technique</div>
@@ -3665,7 +3756,7 @@
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--gold);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
+              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
               3</div>
             <div>
               <div style="font-size:13px;font-weight:700;color:var(--ink)">Devis détaillé</div>
@@ -3762,8 +3853,12 @@
           </div>
         </div>
         <div class="pf-breakdown" id="pf-breakdown" role="region" aria-label="Détail du prix"></div>
+        <div id="submit-feedback" class="submit-feedback" role="alert" aria-live="assertive" tabindex="-1" hidden></div>
+        <button id="missing-action" class="missing-action" type="button" onclick="focusFirstMissing()" hidden>
+          Aller à l’information à compléter
+        </button>
         <div style="display:flex;gap:8px;align-items:center">
-          <button class="cta" id="cta" type="button" disabled onclick="doSubmit()" aria-live="polite" style="flex:1">
+          <button class="cta" id="cta" type="button" disabled onclick="doSubmit()" aria-live="polite" aria-busy="false" style="flex:1">
             Recevoir mon devis personnalisé
           </button>
           <button type="button" class="share-btn" id="share-btn" onclick="shareConfig()"
@@ -3800,23 +3895,23 @@
         <line x1="18" y1="6" x2="6" y2="18" />
       </svg>
     </button>
-    <img class="visual-lightbox-img" id="visual-lightbox-img" src="assets/produits/conseiller/ore-fermee.webp" alt="" decoding="async">
+    <img class="visual-lightbox-img" id="visual-lightbox-img"
+      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" width="1" height="1"
+      decoding="async">
     <div class="visual-lightbox-caption" id="visual-lightbox-caption">
       Cliquez ou touchez hors de l’image, ou appuyez sur Échap pour fermer
     </div>
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260713-v10-brand13"></script>
-  <script src="advisor-engine.js?v=20260713-v10-brand13"></script>
+  <script src="product-rules.js?v=20260713-v14-release"></script>
+  <script src="advisor-engine.js?v=20260713-v14-release"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
       1. Vérifier les visuels assets/produits par gamme et leur poids final
-      2. Créer og-configurateur.jpg (1200×630) et le déposer dans /public/
-      3. Webhook Make.com/Zapier — coller dans WP AVANT l'iframe :
-           window.DISKOOV_WEBHOOK = 'https://hook.eu1.make.com/XXXX';
-      4. GTM / GA4 : ajouter dans <head> pour activer le tracking automatique
+      2. Vérifier le rendu des métadonnées d'aperçu avec l'asset réel déclaré dans <head>
+      3. GTM / GA4 : activer uniquement après consentement explicite
     ───────────────────────────────────────────────────────── */
     /* ── CONFIG (valeurs éditables dans config.js) ───── */
     var PHONE_DISPLAY = window.DISKOOV_PHONE_DISPLAY || '06 20 54 25 04';
@@ -3893,17 +3988,18 @@
       filtration: false,
       planFile: null, planB64: '', planName: '', planDesc: '', planKind: '', planPending: false,
       eq: '', cm: '', sm: '', otherProduct: '',
-      mRal: 'RAL 7037', mLbl: 'Gris poussière',
-      hRal: 'RAL 7037', hLbl: 'Gris poussière',
-      sol: false, rtt: false, shlMotor: false, gr: false, strucCol: 'RAL 9016', strucLbl: 'Blanc',
+      mRal: '', mLbl: '',
+      hRal: '', hLbl: '',
+      sol: false, rtt: false, shlMotor: false, gr: false, strucCol: '', strucLbl: '',
       installation: '', support: '', margellesLevel: '', clearance: '', electricity: '',
       productColor: '', guideSide: '', immergedIntegration: '', projectStatus: '', siteAccess: '', projectBudget: '',
       babAntiAbrasion: false, babBlockCut: false, babRollingUp: false, babCutCorners: false,
-      oreSolar: false, oreBlockCut: false, oreAntiWind: false, oreWinterStrap: false, oreExtraRetreat: false, oreSpecialColor: false,
+      oreSolar: false, oreBlockCut: false, oreBlockDecision: '', oreAntiWind: false, oreWinterStrap: false, oreExtraRetreat: false, oreSpecialColor: false,
       voletPoly: false, voletSolar: false, lastRuleResult: null,
       tl: '', advisorProjectStage: '',
       advisorMode: '', advisorPriorities: '', advisorRecommendations: '', advisorChoiceReason: '', advisorDimensionsKnown: null, advisorVersion: '',
-      fn: '', ln: '', em: '', ph: '', postalCode: '', city: '', dept: '', contactPreference: '', src: '', note: '', ok: false, ok2: false
+      fn: '', ln: '', em: '', ph: '', postalCode: '', city: '', dept: '', contactPreference: '', src: '', note: '', ok: false, ok2: false,
+      dossierId: ''
     };
     var CONFIG_DRAFT_KEY = 'dk_config_draft_v1';
     var CONFIG_DRAFT_TTL = 2 * 60 * 60 * 1000;
@@ -4042,11 +4138,11 @@
       if (!d.length || !d.width) return dimOk();
 
       if (product === 'ore_compact') {
-        if (d.length > 7 || d.width > 3.5) return dimBlocked('Max. 7 × 3,5 m', 'Oré Compact : dimensions au-delà de la matrice tarifaire actuelle.');
+        if (d.length > 7 || d.width > 3.5) return dimBlocked('Max. 7 × 3,5 m', 'Oré Compact : dimensions supérieures aux limites prévues pour ce modèle.');
         return dimOk();
       }
       if (product === 'ore_essential') {
-        if (d.length > 12 || d.width > 5) return dimBlocked('Max. 12 × 5 m', 'Oré Essential : dimensions au-delà de la matrice tarifaire actuelle.');
+        if (d.length > 12 || d.width > 5) return dimBlocked('Max. 12 × 5 m', 'Oré Essential : dimensions supérieures aux limites prévues pour ce modèle.');
         return dimOk();
       }
       if (product === 'bab') {
@@ -4176,7 +4272,7 @@
         showImg('vi-pool');
       }
       if (options.toast !== false) showToast('Modèle désélectionné : ' + av.detail, true);
-      notifyAdvisorInvalidation(active, av.detail);
+      if (options.notify !== false) notifyAdvisorInvalidation(active, av.detail);
       S.lastRuleResult = null;
       updP(); chk();
     }
@@ -4248,6 +4344,8 @@
       if (S.installation === 'fourniture_pose' && !S.siteAccess) gaps.push('accès au bassin');
       if (product === 'ore_compact' || product === 'ore_essential') {
         if (!S.clearance) gaps.push('plage côté mécanisme');
+        if (!S.electricity) gaps.push('alimentation électrique');
+        if (S.filtration && !S.oreBlockDecision) gaps.push('décision pour le bloc de filtration');
       }
       if (product === 'volet_hs' || product === 'volet_immerge') {
         if (!S.electricity) gaps.push('alimentation électrique');
@@ -4267,7 +4365,10 @@
       if (!hasTechnicalQualification(product)) return 0;
       var count = 4;
       if (S.installation === 'fourniture_pose') count += 1;
-      if (product === 'ore_compact' || product === 'ore_essential') count += 1;
+      if (product === 'ore_compact' || product === 'ore_essential') {
+        count += 2;
+        if (S.filtration) count += 1;
+      }
       if (product === 'volet_hs' || product === 'volet_immerge') count += 1;
       if (product === 'volet_immerge') count += 1;
       return count;
@@ -4321,6 +4422,7 @@
     /* ── ANALYTICS ─────────────────────────────────────── */
     function track(event, params) {
       try {
+        if (localStorage.getItem('dk_cookie_consent') !== 'accepted') return;
         if (window.dataLayer) {
           var p = Object.assign({ event: event }, params || {});
           window.dataLayer.push(p);
@@ -4341,13 +4443,9 @@
       if (field === 'email') valid = !S.em || EMAIL_RE.test(S.em);
       if (field === 'phone') valid = !S.ph || PHONE_RE.test(S.ph.replace(/\s/g, ''));
       if (field === 'postal_code') valid = !S.postalCode || /^\d{5}$/.test(S.postalCode);
-      if (field === 'postal_code') {
-        var postalInput = el('postal-code');
-        var postalError = el('postal-code-err');
-        if (postalInput) postalInput.classList.toggle('err', !valid);
-        if (postalInput) postalInput.classList.toggle('ok', valid && !!S.postalCode);
-        if (postalError) postalError.classList.toggle('on', !valid);
-      }
+      var inputId = field === 'email' ? 'em' : (field === 'phone' ? 'ph' : 'postal-code');
+      var input = el(inputId);
+      setContactFieldState(input, valid, !!(input && input.value) && !valid);
       if (!valid) track('form_validation_error', { field: field });
     }
 
@@ -4467,22 +4565,53 @@
       vis.addEventListener('lostpointercapture', endPull);
     }
 
+    var legacyConfiguratorImagesLoaded = false;
+    function ensureLegacyConfiguratorImages() {
+      if (legacyConfiguratorImagesLoaded) return;
+      ['vi-pool', 'vi-shl', 'vi-product'].forEach(function (id) {
+        var image = el(id);
+        if (image && !image.getAttribute('src') && image.dataset.src) image.src = image.dataset.src;
+      });
+      legacyConfiguratorImagesLoaded = true;
+    }
+
+    function syncLegacyProductTabStop(preferred) {
+      var group = document.querySelector('#s-oth [role="radiogroup"]');
+      if (!group) return;
+      var products = Array.from(group.querySelectorAll('[role="radio"]'));
+      var available = products.filter(function (button) { return !button.disabled && button.getAttribute('aria-disabled') !== 'true'; });
+      var selected = preferred || available.find(function (button) { return button.getAttribute('aria-checked') === 'true'; }) || available[0];
+      products.forEach(function (button) { button.tabIndex = button === selected ? 0 : -1; });
+    }
+
+    function setupLegacyProductKeyboard() {
+      var group = document.querySelector('#s-oth [role="radiogroup"]');
+      if (!group) return;
+      syncLegacyProductTabStop();
+      group.addEventListener('keydown', function (event) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].indexOf(event.key) === -1) return;
+        var products = Array.from(group.querySelectorAll('[role="radio"]')).filter(function (button) {
+          return !button.disabled && button.getAttribute('aria-disabled') !== 'true';
+        });
+        if (!products.length) return;
+        event.preventDefault();
+        var current = Math.max(0, products.indexOf(document.activeElement));
+        var next = current;
+        if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = products.length - 1;
+        else next = (current + ((event.key === 'ArrowRight' || event.key === 'ArrowDown') ? 1 : -1) + products.length) % products.length;
+        syncLegacyProductTabStop(products[next]);
+        products[next].focus();
+        products[next].click();
+      });
+    }
+
     /* ── INIT ──────────────────────────────────────────── */
     function init() {
       /* Standalone detection */
       if (window.self === window.top) {
         document.documentElement.classList.add('diskoov-standalone');
         document.body.classList.add('diskoov-standalone');
-      }
-      /* Synchronise le preload hero */
-      var heroImg = el('vi-pool');
-      var preload = document.getElementById('preload-hero');
-      var initParams = new URLSearchParams(window.location.search);
-      var opensAdvisor = initParams.get('advisor') === '1'
-        || (!initParams.has('eq') && !initParams.has('cm') && !initParams.has('sm') && !initParams.has('op'));
-      if (heroImg && preload && !opensAdvisor) {
-        preload.href = heroImg.src;
-        preload.type = 'image/jpeg';
       }
       document.querySelectorAll('img').forEach(function (img) {
         img.addEventListener('error', function () {
@@ -4514,28 +4643,6 @@
         frag.appendChild(o);
       });
       ds.appendChild(frag);
-      /* Color swatches */
-      buildSW('g-mem', MEM, 'm', function (c) {
-        S.mRal = c.r; S.mLbl = c.l;
-        el('mem-ral').textContent = c.r;
-        el('mem-lbl').textContent = c.l + ' — ' + c.r;
-        el('mem-dp').textContent = 'À confirmer';
-        updP();
-      });
-      buildSW('g-hab', HAB, 'h', function (c) {
-        S.hRal = c.r; S.hLbl = c.l;
-        el('hab-ral').textContent = c.r;
-        el('hab-lbl').textContent = c.l + ' — ' + c.r;
-        updP();
-      });
-      buildSW('g-struc', STRUC, 'sc', function (c) {
-        S.strucCol = c.r; S.strucLbl = c.l;
-        el('struc-ral').textContent = c.r;
-        el('struc-lbl').textContent = c.l + ' — ' + c.r;
-      });
-      selSW('g-mem', 'm', 'RAL-7037');
-      selSW('g-hab', 'h', 'RAL-7037');
-      selSW('g-struc', 'sc', 'RAL-9016');
       /* WCAG 2.4.3 Focus Order : s'assurer que les éléments dans les sections masquées
          sont hors du tab-order dès le chargement de la page */
       ['s-cm', 's-mem', 's-hab', 's-co', 's-sm', 's-so', 's-tl', 's-frm', 's-libre'].forEach(function (id) { conceal(id); });
@@ -4549,6 +4656,7 @@
       setupMobileChrome();
       setupMobileVisualPull();
       setupVisualLightbox();
+      setupLegacyProductKeyboard();
       var shapeGrid = document.querySelector('.shape-grid');
       if (shapeGrid) {
         shapeGrid.addEventListener('keydown', function (event) {
@@ -4723,7 +4831,7 @@
       requestAnimationFrame(function () { updProgress(); });
     }
 
-    function updD() {
+    function updD(options) {
       var nextLength = parseFloat(el('d-l').value);
       var nextWidth = parseFloat(el('d-w').value);
       S.len = Number.isFinite(nextLength) ? nextLength : 0;
@@ -4731,7 +4839,7 @@
       /* Clear preset highlight when free-typing */
       document.querySelectorAll('.dim-pre').forEach(function (b) { b.classList.remove('on'); });
       updSurface(); updSummary(); updP();
-      updateDimensionAvailability();
+      updateDimensionAvailability(options && options.silent ? { toast: false, notify: false } : undefined);
       chk();
     }
     function fixD(id, mn, mx) {
@@ -4772,7 +4880,7 @@
       }
       if (!options || !options.silent) track('config_shape', { shape: v });
       updSurface(); updSummary(); updP();
-      updateDimensionAvailability();
+      updateDimensionAvailability(options && options.silent ? { toast: false, notify: false } : undefined);
       chk();
       requestAnimationFrame(function () { updProgress(); });
     }
@@ -4909,6 +5017,8 @@
     }
 
     /* ── FILE UPLOAD ─────────────────────────────────── */
+    var MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024;
+
     function handleFileSelect(input) {
       if (!input.files || !input.files[0]) return;
       processFile(input.files[0]);
@@ -4918,18 +5028,41 @@
         processFile(e.dataTransfer.files[0]);
       }
     }
+
+    function clearPreparedFile() {
+      S.planFile = null;
+      S.planB64 = '';
+      S.planName = '';
+      S.planKind = '';
+      S.planPending = false;
+      var preview = el('file-preview');
+      var zone = el('file-zone');
+      var input = el('plan-file');
+      if (preview) preview.style.display = 'none';
+      if (zone) zone.style.display = '';
+      if (input) input.value = '';
+    }
+
+    function rejectFile(message, reason) {
+      clearPreparedFile();
+      var input = el('plan-file');
+      if (input) input.value = '';
+      track('config_attachment_failed', { reason: reason || 'invalid_file' });
+      showToast(message, true);
+      requestAnimationFrame(function () { updProgress(); });
+    }
+
     function processFile(file) {
+      clearPreparedFile();
       var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
       var isImage = /^image\//.test(file.type) || /\.(jpe?g|png|webp)$/i.test(file.name);
       if (!isPdf && !isImage) {
-        track('config_attachment_failed', { reason: 'unsupported_format' });
-        showToast('Format non supporté (photo JPG, PNG, WebP ou PDF)', true);
+        rejectFile('Format non supporté (photo JPG, PNG, WebP ou PDF)', 'unsupported_format');
         return;
       }
       if (isPdf) {
-        if (file.size > 4 * 1024 * 1024) {
-          track('config_attachment_failed', { reason: 'pdf_too_large' });
-          showToast('PDF trop volumineux (max 4 Mo)', true);
+        if (file.size > MAX_ATTACHMENT_BYTES) {
+          rejectFile('PDF trop volumineux (max 3 Mio)', 'pdf_too_large');
           return;
         }
         S.planPending = true;
@@ -4937,23 +5070,18 @@
         return;
       }
       if (file.size > 12 * 1024 * 1024) {
-        track('config_attachment_failed', { reason: 'image_too_large' });
-        showToast('Photo trop volumineuse (max 12 Mo avant optimisation)', true);
+        rejectFile('Photo trop volumineuse (max 12 Mio avant optimisation)', 'image_too_large');
         return;
       }
       S.planPending = true;
       showToast('Préparation de la photo pour l’envoi…', false);
       prepareImageFile(file, function (prepared, optimized) {
         if (!prepared) {
-          S.planPending = false;
-          track('config_attachment_failed', { reason: 'image_unreadable' });
-          showToast('Photo illisible : utilisez JPG, PNG ou WebP', true);
+          rejectFile('Photo illisible : utilisez JPG, PNG ou WebP', 'image_unreadable');
           return;
         }
-        if (prepared.size > 3 * 1024 * 1024) {
-          S.planPending = false;
-          track('config_attachment_failed', { reason: 'optimized_image_too_large' });
-          showToast('Photo encore trop lourde après optimisation (max 3 Mo)', true);
+        if (prepared.size > MAX_ATTACHMENT_BYTES) {
+          rejectFile('Photo encore trop lourde après optimisation (max 3 Mio)', 'optimized_image_too_large');
           return;
         }
         storePreparedFile(prepared, 'photo', optimized);
@@ -4962,6 +5090,12 @@
     function prepareImageFile(file, done) {
       var img = new Image();
       var url = URL.createObjectURL(file);
+      var released = false;
+      function releaseUrl() {
+        if (released) return;
+        released = true;
+        URL.revokeObjectURL(url);
+      }
       img.onload = function () {
         try {
           var maxSide = 1800;
@@ -4973,24 +5107,29 @@
           var ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
           canvas.toBlob(function (blob) {
-            URL.revokeObjectURL(url);
-            if (!blob) { done(file.size <= 3 * 1024 * 1024 ? file : null, false); return; }
+            releaseUrl();
+            if (!blob) { done(null, false); return; }
             var base = (file.name || 'photo-piscine').replace(/\.[^.]+$/, '').replace(/[^\w\-]+/g, '-').replace(/^-+|-+$/g, '') || 'photo-piscine';
             var out = new File([blob], base + '-piscine.jpg', { type: 'image/jpeg' });
-            done(out.size < file.size ? out : file, out.size < file.size);
+            var prepared = out.size < file.size ? out : file;
+            done(prepared, prepared === out);
           }, 'image/jpeg', .82);
         } catch (err) {
-          URL.revokeObjectURL(url);
-          done(file.size <= 3 * 1024 * 1024 ? file : null, false);
+          releaseUrl();
+          done(null, false);
         }
       };
       img.onerror = function () {
-        URL.revokeObjectURL(url);
-        done(file.size <= 3 * 1024 * 1024 ? file : null, false);
+        releaseUrl();
+        done(null, false);
       };
       img.src = url;
     }
     function storePreparedFile(file, kind, optimized) {
+      if (!file || file.size > MAX_ATTACHMENT_BYTES) {
+        rejectFile('Pièce jointe trop volumineuse (max 3 Mio)', 'prepared_file_too_large');
+        return;
+      }
       S.planFile = file;
       S.planName = file.name;
       S.planKind = kind || 'photo';
@@ -5003,23 +5142,29 @@
       reader.onload = function (e) {
         S.planB64 = e.target.result;
         S.planPending = false;
-        track('config_attachment_added', { kind: S.planKind, optimized: !!optimized, size_kb: Math.round(file.size / 1024) });
+        track('config_attachment_added', {
+          kind: S.planKind,
+          optimized: !!optimized,
+          size_bucket: attachmentSizeBucket(file.size)
+        });
         requestAnimationFrame(function () { updProgress(); });
       };
       reader.onerror = function () {
-        S.planPending = false;
-        S.planB64 = '';
+        clearPreparedFile();
         track('config_attachment_failed', { reason: 'file_read_error' });
         showToast('Impossible de préparer la pièce jointe', true);
       };
       reader.readAsDataURL(file);
     }
+    function attachmentSizeBucket(bytes) {
+      if (bytes < 500 * 1024) return 'under_500_kib';
+      if (bytes < 1024 * 1024) return '500_kib_to_1_mib';
+      if (bytes < 2 * 1024 * 1024) return '1_to_2_mib';
+      return '2_to_3_mib';
+    }
     function removeFile() {
       var removedKind = S.planKind || '';
-      S.planFile = null; S.planB64 = ''; S.planName = ''; S.planKind = ''; S.planPending = false;
-      el('file-preview').style.display = 'none';
-      el('file-zone').style.display = '';
-      var fi = el('plan-file'); if (fi) fi.value = '';
+      clearPreparedFile();
       track('config_attachment_removed', { kind: removedKind });
       requestAnimationFrame(function () { updProgress(); });
     }
@@ -5064,14 +5209,11 @@
       if (S.cm) params.set('cm', S.cm);
       if (S.sm) params.set('sm', S.sm);
       if (S.otherProduct) params.set('op', S.otherProduct);
-      if (S.mRal !== 'RAL 7037') params.set('mr', S.mRal);
-      if (S.hRal !== 'RAL 7037') params.set('hr', S.hRal);
       /* Options */
       if (S.sol) params.set('sol', '1');
       if (S.rtt) params.set('rtt', '1');
       if (S.shlMotor) params.set('sm_o', '1');
       if (S.gr) params.set('gr', '1');
-      if (S.strucCol) params.set('sc', S.strucCol);
       if (S.installation) params.set('ins', S.installation);
       if (S.projectStatus) params.set('pst', S.projectStatus);
       if (S.siteAccess) params.set('acc', S.siteAccess);
@@ -5090,7 +5232,7 @@
       if (S.voletPoly) params.set('vpoly', '1');
       if (S.voletSolar) params.set('vsol', '1');
       if (S.oreSolar) params.set('osol', '1');
-      if (S.oreBlockCut) params.set('obc', '1');
+      if (S.oreBlockDecision) params.set('obd', S.oreBlockDecision);
       if (S.oreAntiWind) params.set('oaw', '1');
       if (S.oreWinterStrap) params.set('ows', '1');
       if (S.oreExtraRetreat) params.set('oer', '1');
@@ -5140,7 +5282,7 @@
 
     function restoreConfigDraft() {
       var current = new URLSearchParams(window.location.search);
-      var explicitFields = ['st', 'stt', 'sts', 'stc', 'stw', 'filt', 'loc', 'mr', 'hr', 'sol', 'rtt', 'sm_o', 'gr', 'sc', 'pst', 'ins', 'acc', 'bud', 'sup', 'mar', 'clr', 'elec', 'pcol', 'rail', 'vint', 'baa', 'bbc', 'bru', 'bcc', 'vpoly', 'vsol', 'osol', 'obc', 'oaw', 'ows', 'oer', 'osc', 'tl'];
+      var explicitFields = ['st', 'stt', 'sts', 'stc', 'stw', 'filt', 'loc', 'sol', 'rtt', 'sm_o', 'gr', 'pst', 'ins', 'acc', 'bud', 'sup', 'mar', 'clr', 'elec', 'pcol', 'rail', 'vint', 'baa', 'bbc', 'bru', 'bcc', 'vpoly', 'vsol', 'osol', 'obd', 'oaw', 'ows', 'oer', 'osc', 'tl'];
       if (explicitFields.some(function (key) { return current.has(key); })) return false;
       var currentProduct = current.get('cm') || current.get('sm') || current.get('op') || '';
       if (!currentProduct) return false;
@@ -5207,49 +5349,14 @@
         S.voletPoly = p.get('vpoly') === '1';
         S.voletSolar = p.get('vsol') === '1';
         S.oreSolar = p.get('osol') === '1';
-        S.oreBlockCut = p.get('obc') === '1';
+        if (/^(cut|study)$/.test(p.get('obd') || '')) S.oreBlockDecision = p.get('obd');
+        else if (p.get('obc') === '1') S.oreBlockDecision = 'cut';
+        S.oreBlockCut = S.oreBlockDecision === 'cut';
         S.oreAntiWind = p.get('oaw') === '1';
         S.oreWinterStrap = p.get('ows') === '1';
         S.oreExtraRetreat = p.get('oer') === '1';
         S.oreSpecialColor = /^(gris_clair_654|chocolat_7534)$/.test(S.productColor);
-        if (p.has('sc')) {
-          var scVal = p.get('sc').slice(0, 30);
-          STRUC.forEach(function (c) {
-            if (c.r === scVal) {
-              S.strucCol = c.r; S.strucLbl = c.l;
-              selSW('g-struc', 'sc', c.r.replace(/ /g, '-'));
-              var srl = el('struc-ral'); if (srl) srl.textContent = c.r;
-              var sll = el('struc-lbl'); if (sll) sll.textContent = c.l + ' — ' + c.r;
-            }
-          });
-        }
         if (p.has('tl')) { var validTl = ['urg', '6m', '1a', 'ref']; var tlVal = p.get('tl'); if (validTl.indexOf(tlVal) !== -1) { var tlBtns = { urg: 'tl-urg', '6m': 'tl-6m', '1a': 'tl-1a', ref: 'tl-ref' }; selTL(tlVal, el(tlBtns[tlVal])); } }
-        /* Restaurer les couleurs membrane et habillage */
-        if (p.has('mr')) {
-          var mral = p.get('mr');
-          var mralKey = mral.replace(/ /g, '-');
-          selSW('g-mem', 'm', mralKey);
-          MEM.forEach(function (c) {
-            if (c.r === mral) {
-              S.mRal = c.r; S.mLbl = c.l;
-              el('mem-ral').textContent = c.r;
-              el('mem-lbl').textContent = c.l + ' — ' + c.r;
-              el('mem-dp').textContent = 'À confirmer';
-            }
-          });
-        }
-        if (p.has('hr')) {
-          var hral = p.get('hr');
-          var hralKey = hral.replace(/ /g, '-');
-          selSW('g-hab', 'h', hralKey);
-          HAB.forEach(function (c) {
-            if (c.r === hral) {
-              S.hRal = c.r; S.hLbl = c.l;
-              el('hab-ral').textContent = c.r;
-              el('hab-lbl').textContent = c.l + ' — ' + c.r;
-            }
-          });
-        }
         var restoredProduct = S.cm || S.sm || S.otherProduct;
         if (restoredProduct) renderProductDetails(restoredProduct);
         updateDimensionAvailability({ toast: false });
@@ -5260,6 +5367,7 @@
     }
 
     function selEq(v) {
+      ensureLegacyConfiguratorImages();
       var eqAv = categoryAvailability(v);
       if (!eqAv.available) {
         updateDimensionAvailability({ toast: false });
@@ -5269,17 +5377,16 @@
       S.eq = v; S.cm = ''; S.sm = ''; S.otherProduct = ''; S.lastRuleResult = null;
       notifyAdvisorSelection('');
       /* Reset toutes les options pour éviter les reports entre catégories */
-      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
+      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = ''; S.strucLbl = '';
       S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
-      S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
+      S.oreSolar = false; S.oreBlockCut = false; S.oreBlockDecision = ''; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
       el('t-sol').classList.remove('on'); el('t-sol').setAttribute('aria-pressed', 'false');
       ['t-rtt', 't-sm', 't-gr'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-pressed', 'false'); });
-      selSW('g-struc', 'sc', 'RAL-9016');
-      var srl = el('struc-ral'); if (srl) srl.textContent = 'RAL 9016';
-      var sll = el('struc-lbl'); if (sll) sll.textContent = 'Blanc — RAL 9016';
+      var structurePreference = el('structure-color-pref'); if (structurePreference) structurePreference.value = '';
+      var finishPreference = el('finish-pref'); if (finishPreference) finishPreference.value = '';
       var codp = el('co-dp'); if (codp) codp.textContent = 'À confirmer';
-      var sodp = el('so-dp'); if (sodp) sodp.textContent = '+ 0 €';
+      var sodp = el('so-dp'); if (sodp) sodp.textContent = 'À confirmer';
       ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
       ['b-ore-compact', 'b-ore-essential', 'b-eden'].forEach(function (id) { el(id).classList.remove('on'); el(id).setAttribute('aria-checked', 'false'); });
       ['ul', 'm18', 'm30', 'm50', 'mid'].forEach(function (k) { el('h-' + k).classList.remove('on'); el('h-' + k).setAttribute('aria-checked', 'false'); });
@@ -5319,8 +5426,8 @@
     function selCM(v) {
       if (!canSelectDimensionChoice(v)) return;
       if (S.cm && S.cm !== v) {
-        S.clearance = ''; S.productColor = ''; S.guideSide = '';
-        S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
+        S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = '';
+        S.oreSolar = false; S.oreBlockCut = false; S.oreBlockDecision = ''; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
       }
       S.cm = v;
       ['auto', 'semi'].forEach(function (k) { el('b-' + k).classList.remove('on'); el('b-' + k).setAttribute('aria-pressed', 'false'); });
@@ -5336,11 +5443,11 @@
       }
       var isCS = (v === 'auto' || v === 'semi');
       var isOre = (v === 'ore_compact' || v === 'ore_essential');
-      if (isCS) { reveal('s-mem'); reveal('s-hab'); reveal('s-co'); renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
+      if (isCS) { reveal('s-mem'); conceal('s-hab'); reveal('s-co'); renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
       else { conceal('s-mem'); conceal('s-hab'); conceal('s-co'); }
       if (isOre) { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
-      else if (v === 'eden') { renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
-      var pm = { auto: 'Sur devis', semi: 'Sur devis', ore_compact: 'Indicatif', ore_essential: 'Indicatif', eden: 'Sur devis' };
+      else if (v === 'eden') { reveal('s-mem'); renderProductDetails(v); reveal('s-product-detail'); showProductImage(v); }
+      var pm = { auto: 'Sur devis', semi: 'Sur devis', ore_compact: 'Estimation possible', ore_essential: 'Estimation possible', eden: 'Sur devis' };
       el('cm-p').textContent = pm[v] || '–';
       track('config_model', { model: v, category: 'cover' });
       notifyAdvisorSelection(v);
@@ -5380,6 +5487,7 @@
         item.classList.toggle('on', k === v);
         item.setAttribute('aria-checked', String(k === v));
       });
+      syncLegacyProductTabStop(el('op-' + v));
       renderProductDetails(v);
       reveal('s-product-detail'); reveal('s-tl'); reveal('s-frm');
       showProductImage(v);
@@ -5413,6 +5521,19 @@
       requestAnimationFrame(updProgress);
     }
 
+    function setOreBlockDecision(value) {
+      S.oreBlockDecision = /^(cut|study)$/.test(value) ? value : '';
+      S.oreBlockCut = S.oreBlockDecision === 'cut';
+      track('config_qualification_field', {
+        field: 'oreBlockDecision',
+        completed: !!S.oreBlockDecision,
+        product: activeProduct()
+      });
+      updP();
+      chk();
+      requestAnimationFrame(updProgress);
+    }
+
     function installationOptionLabels(product) {
       if (product === 'ore_compact') {
         return {
@@ -5422,7 +5543,7 @@
       }
       if (product === 'volet_hs' || product === 'volet_immerge') {
         return {
-          pose: 'Fourniture et pose (intégrée à l’estimation)',
+          pose: 'Fourniture et pose (chiffrée sur devis)',
           supply: 'Fourniture seule (sur devis)'
         };
       }
@@ -5462,15 +5583,15 @@
         },
         bab: {
           title: 'Sécurité documentée',
-          copy: 'La Secu Classic répond à la norme NF P90-308 et bénéficie d’une garantie de 3 ans.'
+          copy: 'La conformité et les conditions applicables à la Secu Classic sont confirmées dans la documentation contractuelle.'
         },
         volet_hs: {
-          title: 'Pose intégrée à l’estimation',
-          copy: 'Pour un volet hors-sol, l’estimation affichée comprend la livraison et l’installation, sous réserve de validation du site.'
+          title: 'Pose chiffrée avec le projet',
+          copy: 'La livraison et l’installation sont précisées sur devis après vérification du bassin et de ses accès.'
         },
         volet_immerge: {
-          title: 'Pose intégrée à l’estimation',
-          copy: 'Pour un volet immergé standard, la livraison et la pose sont intégrées à l’estimation avant validation technique.'
+          title: 'Pose chiffrée avec le projet',
+          copy: 'La livraison et l’installation sont précisées sur devis après vérification de l’intégration dans le bassin.'
         },
         ul: {
           title: 'Pose étudiée avec le projet',
@@ -5532,6 +5653,12 @@
           '<option value="">À définir en visite</option><option value="gauche">Gauche</option><option value="droite">Droite</option><option value="a_confirmer">À confirmer avec Diskoov</option></select></div>' +
           '<div class="fl"><label for="prod-color">Coloris membrane Oré</label><select id="prod-color" onchange="setProductField(\'productColor\',this.value)">' +
           '<option value="">À choisir plus tard</option><option value="gris_7096">Océan de brume / Gris 7096</option><option value="sable_7458">Perle de jour / Sable 7458</option><option value="anthracite_7419">Encre de rêve / Gris anthracite 7419</option><option value="gris_clair_654">Horizon du matin / Gris clair 654 — option</option><option value="chocolat_7534">Brun de mer / Chocolat 7534 — option</option></select></div>';
+        html += '<div class="fl"><label for="prod-electricity">Information électrique *</label><select id="prod-electricity" onchange="setProductField(\'electricity\',this.value)">' +
+          '<option value="">À préciser</option><option value="oui">Prise à portée du câble fourni de 10 m</option><option value="non">Pas de prise</option><option value="inconnu">Je ne sais pas</option></select></div>';
+        if (S.filtration) {
+          html += '<div class="fl"><label for="prod-ore-block">Bloc de filtration hors-bord *</label><select id="prod-ore-block" onchange="setOreBlockDecision(this.value)">' +
+            '<option value="">Décision à préciser</option><option value="cut">Découpe du bloc à prévoir</option><option value="study">À étudier avec Diskoov</option></select></div>';
+        }
       }
       if (product === 'volet_hs' || product === 'volet_immerge') {
         html += '<div class="fl"><label for="prod-electricity">Alimentation électrique proche *</label><select id="prod-electricity" onchange="setProductField(\'electricity\',this.value)">' +
@@ -5551,7 +5678,6 @@
       if (product === 'ore_compact' || product === 'ore_essential') {
         html += '<div class="product-options">' +
           '<label class="cbr"><input id="prod-osol" type="checkbox" onchange="setProductOption(\'oreSolar\',this.checked)"><span>Panneau solaire d’appoint</span></label>' +
-          '<label class="cbr"><input id="prod-obc" type="checkbox" onchange="setProductOption(\'oreBlockCut\',this.checked)"><span>Découpe pour bloc filtration</span></label>' +
           '<label class="cbr"><input id="prod-oaw" type="checkbox" onchange="setProductOption(\'oreAntiWind\',this.checked)"><span>Sangle anti-vent</span></label>' +
           '<label class="cbr"><input id="prod-ows" type="checkbox" onchange="setProductOption(\'oreWinterStrap\',this.checked)"><span>Sangle d’hivernage longitudinale</span></label>' +
           '<label class="cbr"><input id="prod-oer" type="checkbox" onchange="setProductOption(\'oreExtraRetreat\',this.checked)"><span>Recul supplémentaire d’un mètre</span></label>' +
@@ -5568,11 +5694,11 @@
           '<label class="cbr"><input id="prod-vsol" type="checkbox" onchange="setProductOption(\'voletSolar\',this.checked)"><span>Alimentation solaire / pré-équipement à chiffrer</span></label></div>';
       }
       el('product-questions').innerHTML = html;
-      var values = { 'prod-project-status': S.projectStatus, 'prod-install': S.installation, 'prod-access': S.siteAccess, 'prod-support': S.support, 'prod-margelles': S.margellesLevel, 'prod-budget': S.projectBudget, 'prod-clearance': S.clearance, 'prod-electricity': S.electricity, 'prod-color': S.productColor, 'prod-guide': S.guideSide, 'prod-immerged': S.immergedIntegration };
+      var values = { 'prod-project-status': S.projectStatus, 'prod-install': S.installation, 'prod-access': S.siteAccess, 'prod-support': S.support, 'prod-margelles': S.margellesLevel, 'prod-budget': S.projectBudget, 'prod-clearance': S.clearance, 'prod-electricity': S.electricity, 'prod-color': S.productColor, 'prod-guide': S.guideSide, 'prod-immerged': S.immergedIntegration, 'prod-ore-block': S.oreBlockDecision };
       Object.keys(values).forEach(function (id) { if (el(id)) el(id).value = values[id] || ''; });
       var checks = {
         'prod-baa': S.babAntiAbrasion, 'prod-bbc': S.babBlockCut, 'prod-bru': S.babRollingUp, 'prod-bcc': S.babCutCorners, 'prod-vpoly': S.voletPoly, 'prod-vsol': S.voletSolar,
-        'prod-osol': S.oreSolar, 'prod-obc': S.oreBlockCut, 'prod-oaw': S.oreAntiWind, 'prod-ows': S.oreWinterStrap, 'prod-oer': S.oreExtraRetreat
+        'prod-osol': S.oreSolar, 'prod-oaw': S.oreAntiWind, 'prod-ows': S.oreWinterStrap, 'prod-oer': S.oreExtraRetreat
       };
       Object.keys(checks).forEach(function (id) { if (el(id)) el(id).checked = checks[id]; });
       var detailImages = {
@@ -5609,11 +5735,21 @@
       else if (k === 'rtt') { S.rtt = !S.rtt; btn.classList.toggle('on', S.rtt); }
       else if (k === 'sm') { S.shlMotor = !S.shlMotor; btn.classList.toggle('on', S.shlMotor); }
       else if (k === 'gr') { S.gr = !S.gr; btn.classList.toggle('on', S.gr); }
-      else if (k === 'filt') { S.filtration = !S.filtration; btn.classList.toggle('on', S.filtration); }
+      else if (k === 'filt') {
+        S.filtration = !S.filtration;
+        btn.classList.toggle('on', S.filtration);
+        if (!S.filtration) {
+          S.oreBlockDecision = '';
+          S.oreBlockCut = false;
+        }
+        if (S.cm === 'ore_compact' || S.cm === 'ore_essential') renderProductDetails(S.cm);
+      }
       btn.setAttribute('aria-pressed', String(btn.classList.contains('on')));
       var codp = el('co-dp'); if (codp) codp.textContent = S.rtt ? 'À chiffrer' : 'À confirmer';
-      var sodp = el('so-dp'); if (sodp) sodp.textContent = (S.shlMotor || S.gr) ? 'Sur devis' : '+ 0 €';
+      var sodp = el('so-dp'); if (sodp) sodp.textContent = (S.shlMotor || S.gr) ? 'Sur devis' : 'À confirmer';
       updP();
+      chk();
+      requestAnimationFrame(updProgress);
     }
 
     /* ── PRICE ──────────────────────────────────────────── */
@@ -5679,6 +5815,10 @@
       el('share-btn').style.display = 'inline-flex';
     }
 
+    function supportsAutomaticEstimate(product) {
+      return ['ore_compact', 'ore_essential', 'bab'].indexOf(product) !== -1;
+    }
+
     function applyRulePrice(product) {
       if (!window.DISKOOV_RULES) {
         setPriceContext('Étude personnalisée', 'Prix établi après vérification du projet');
@@ -5690,6 +5830,7 @@
         length: S.len,
         width: S.wid,
         shape: S.shape,
+        filtration: S.filtration,
         clearance: S.clearance,
         electricity: S.electricity,
         installation: S.installation,
@@ -5701,7 +5842,7 @@
         department: S.dept,
         options: {
           antiAbrasion: S.babAntiAbrasion,
-          blockCut: S.babBlockCut || S.filtration,
+          blockCut: product === 'bab' && (S.babBlockCut || S.filtration),
           stair: S.stair,
           stairType: S.stairType,
           stairWidth: S.stairWidth,
@@ -5720,13 +5861,22 @@
           groundRail: S.gr
         }
       });
+      if ((product === 'ore_compact' || product === 'ore_essential') && S.filtration && S.oreBlockDecision === 'study') {
+        rr = Object.assign({}, rr, {
+          status: 'quote',
+          total: null,
+          breakdown: [],
+          warnings: (rr.warnings || []).concat(['Bloc filtration Oré : étude nécessaire.']),
+          reference: 'Étude du bloc de filtration Oré'
+        });
+      }
       S.lastRuleResult = rr;
       updateRuleStatus(rr);
       var missingRuleInputs = rr.technical && Array.isArray(rr.technical.missingInputs) && rr.technical.missingInputs.length > 0;
       var missingDimensions = !S.len || !S.wid;
       if (rr.status === 'quote' || rr.total === null) {
         if (missingDimensions || missingRuleInputs) {
-          setPriceContext('Votre estimation', 'Complétez les informations indiquées');
+          setPriceContext(supportsAutomaticEstimate(product) ? 'Votre estimation' : 'Votre projet', 'Complétez les informations indiquées');
           setP('À compléter', true);
         } else if (rr.eligible === false) {
           setPriceContext('Plage dimensionnelle à vérifier', 'Diskoov étudiera une configuration adaptée');
@@ -5786,7 +5936,7 @@
       box.classList.toggle('blocked', gaps.length > 0 || rr.status === 'quote');
       box.classList.toggle('ok', gaps.length === 0 && rr.eligible === true && rr.status !== 'quote');
       var statusLabel = gaps.length ? 'Informations à compléter' : (rr.eligible === false ? 'Hors plage dimensionnelle connue' : (rr.status === 'indicative' ? 'Première estimation' : (rr.status === 'exact' ? 'Estimation calculée' : 'Étude personnalisée')));
-      var statusKicker = gaps.length || rr.eligible === false ? 'Votre projet' : 'Votre estimation';
+      var statusKicker = gaps.length || rr.eligible === false || rr.status === 'quote' ? 'Votre projet' : 'Votre estimation';
       var seenWarnings = {};
       var warnings = (rr.warnings || []).map(function (w) {
         return publicRuleWarning(w, product);
@@ -5868,6 +6018,7 @@
     function updCTA() {
       var btn = el('cta');
       if (!btn) return;
+      if (btn.getAttribute('aria-busy') === 'true') return;
       var lbl = '';
       var phoneDigits = (S.ph || '').replace(/\s/g, '');
       var phoneOk = !S.ph || (phoneDigits.length === 10 && PHONE_RE.test(S.ph));
@@ -5887,6 +6038,45 @@
       btn.textContent = lbl;
     }
 
+    function firstMissingControl() {
+      var product = activeProduct();
+      if (!S.shapeConfirmed) return el('sh-rect');
+      if (S.shape !== 'libre' && !(S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12)) return el('d-l');
+      if (S.shape === 'libre' && !String(S.planDesc || '').trim() && !S.planB64) return el('libre-desc') || el('plan-file');
+      if (!S.eq) return el('eq-cov');
+      if (S.eq === 'cov' && !S.cm) return el('b-auto');
+      if (S.eq === 'shl' && !S.sm) return el('h-ul');
+      if (S.eq === 'oth' && !S.otherProduct) return el('op-bab');
+      if (!S.projectStatus) return el('prod-project-status');
+      if (!S.installation) return el('prod-install');
+      if (!S.support) return el('prod-support');
+      if (!S.margellesLevel) return el('prod-margelles');
+      if (S.installation === 'fourniture_pose' && !S.siteAccess) return el('prod-access');
+      if ((product === 'ore_compact' || product === 'ore_essential') && !S.clearance) return el('prod-clearance');
+      if ((product === 'ore_compact' || product === 'ore_essential' || product === 'volet_hs' || product === 'volet_immerge') && !S.electricity) return el('prod-electricity');
+      if ((product === 'ore_compact' || product === 'ore_essential') && S.filtration && !S.oreBlockDecision) return el('prod-ore-block');
+      if (product === 'volet_immerge' && !S.immergedIntegration) return el('prod-immerged');
+      if (!S.tl) return el('tl-urg');
+      if (!S.fn) return el('fn');
+      if (!S.ln) return el('ln');
+      if (!S.em || !EMAIL_RE.test(S.em)) return el('em');
+      var phoneDigits = String(S.ph || '').replace(/\s/g, '');
+      if (!S.ph || phoneDigits.length !== 10 || !PHONE_RE.test(phoneDigits)) return el('ph');
+      if (!/^\d{5}$/.test(S.postalCode || '')) return el('postal-code');
+      if (!S.city) return el('city');
+      if (!S.dept) return el('dept');
+      if (!S.ok) return el('ok');
+      return null;
+    }
+
+    function focusFirstMissing() {
+      var target = firstMissingControl();
+      if (!target) return;
+      if (['em', 'ph', 'postal-code'].indexOf(target.id) !== -1) validateContactFields(true, false);
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(function () { target.focus(); }, 180);
+    }
+
     /* ── VALIDATION ─────────────────────────────────────── */
     function chk() {
       var emailOk = !S.em || EMAIL_RE.test(S.em);
@@ -5900,7 +6090,10 @@
       if (S.eq === 'oth' && !S.otherProduct) eqOk = false;
       var dimensionsOk = S.shapeConfirmed && (S.shape === 'libre' || (S.len >= 3 && S.len <= 20 && S.wid >= 2 && S.wid <= 12));
       var ok = !!(eqOk && dimensionsOk && !getAllQualificationGaps().length && S.fn && S.ln && S.em && emailOk && S.ph && phoneOk && postalOk && S.city && S.dept && S.ok && S.tl);
-      el('cta').disabled = !ok;
+      var cta = el('cta');
+      if (cta.getAttribute('aria-busy') !== 'true') cta.disabled = !ok;
+      var missingAction = el('missing-action');
+      if (missingAction) missingAction.hidden = ok;
       updCTA();
       updProgress();
       saveConfigDraft();
@@ -5915,15 +6108,36 @@
       return value.slice(0, 2);
     }
 
+    function setContactFieldState(input, valid, showError) {
+      if (!input) return;
+      var error = el(input.id + '-err');
+      input.classList.toggle('err', showError && !valid);
+      input.classList.toggle('ok', valid && !!input.value.trim());
+      input.setAttribute('aria-invalid', String(showError && !valid));
+      if (error) error.classList.toggle('on', showError && !valid);
+    }
+
+    function validateContactFields(showErrors, focusInvalid) {
+      var fields = [
+        { input: el('em'), valid: !!S.em && EMAIL_RE.test(S.em) },
+        { input: el('ph'), valid: !!S.ph && String(S.ph).replace(/\s/g, '').length === 10 && PHONE_RE.test(String(S.ph).replace(/\s/g, '')) },
+        { input: el('postal-code'), valid: /^\d{5}$/.test(S.postalCode || '') }
+      ];
+      var firstInvalid = null;
+      fields.forEach(function (field) {
+        setContactFieldState(field.input, field.valid, !!showErrors || !!(field.input && field.input.value));
+        if (!field.valid && !firstInvalid) firstInvalid = field.input;
+      });
+      if (firstInvalid && showErrors && focusInvalid !== false) firstInvalid.focus();
+      return !firstInvalid;
+    }
+
     function syncDepartmentFromPostal(input) {
       var value = String(input.value || '').replace(/\D/g, '').slice(0, 5);
       input.value = value;
       S.postalCode = value;
       var valid = /^\d{5}$/.test(value);
-      input.classList.toggle('ok', valid);
-      input.classList.remove('err');
-      var error = el('postal-code-err');
-      if (error) error.classList.remove('on');
+      setContactFieldState(input, valid, false);
 
       var code = departmentCodeFromPostal(value);
       var department = code ? DEPTS.filter(function (item) { return item.indexOf(code + ' ') === 0; })[0] : '';
@@ -5951,10 +6165,7 @@
     function validateEmail(inp) {
       var v = inp.value.trim();
       var valid = !v || EMAIL_RE.test(v);
-      inp.classList.toggle('err', !!v && !valid);
-      inp.classList.toggle('ok', !!v && valid);
-      var errEl = el('em-err');
-      if (errEl) errEl.classList.toggle('on', !!v && !valid);
+      setContactFieldState(inp, valid, !!v && !valid);
     }
 
     function fmtPhone(inp) {
@@ -5976,14 +6187,9 @@
       var digits = inp.value.replace(/\s/g, '');
       if (digits.length === 10) {
         var valid = PHONE_RE.test(digits);
-        inp.classList.toggle('err', !valid);
-        inp.classList.toggle('ok', valid);
-        var errEl = el('ph-err');
-        if (errEl) errEl.classList.toggle('on', !valid);
+        setContactFieldState(inp, valid, !valid);
       } else {
-        inp.classList.remove('err', 'ok');
-        var errEl2 = el('ph-err');
-        if (errEl2) errEl2.classList.remove('on');
+        setContactFieldState(inp, false, false);
       }
     }
 
@@ -6125,17 +6331,95 @@
     }
 
     /* ── SUBMIT ─────────────────────────────────────────── */
+    function createDossierId() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+      return 'dossier-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function ensureDossierId() {
+      if (!S.dossierId) S.dossierId = createDossierId();
+      return S.dossierId;
+    }
+
+    function setSubmitLoading(loading) {
+      var button = el('cta');
+      if (!button) return;
+      button.setAttribute('aria-busy', String(loading));
+      button.classList.toggle('spin', loading);
+      button.disabled = loading;
+      button.textContent = loading ? 'Envoi en cours…' : 'Recevoir mon devis personnalisé';
+      if (!loading) chk();
+    }
+
+    function clearSubmitError() {
+      var feedback = el('submit-feedback');
+      if (!feedback) return;
+      feedback.hidden = true;
+      feedback.textContent = '';
+    }
+
+    function showSubmitError(message) {
+      var feedback = el('submit-feedback');
+      if (!feedback) return;
+      feedback.textContent = message;
+      feedback.hidden = false;
+      requestAnimationFrame(function () { feedback.focus(); });
+    }
+
+    function saveLastLeadSummary(payload, reference) {
+      var summary = {
+        reference: String(reference || ''),
+        dossier_id: String(payload.dossier_id || ''),
+        prenom: String(payload.prenom || ''),
+        nom: String(payload.nom || ''),
+        email: String(payload.email || ''),
+        tel: String(payload.tel || ''),
+        code_postal: String(payload.code_postal || ''),
+        ville: String(payload.ville || ''),
+        departement: String(payload.departement || '')
+      };
+      try { sessionStorage.setItem('dk_last_lead', JSON.stringify(summary)); } catch (e) { }
+    }
+
+    function fetchLeadWithTimeout(url, lead, timeoutMs, retryWithoutAttachment) {
+      var controller = new AbortController();
+      var timer = window.setTimeout(function () { controller.abort(); }, timeoutMs || 12000);
+      var retryOptions = { body: JSON.stringify(pendingLeadWithoutAttachment(lead)) };
+      var body = retryWithoutAttachment ? retryOptions.body : JSON.stringify(lead);
+      return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body,
+        signal: controller.signal
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (serverData) {
+          return { response: response, serverData: serverData || {} };
+        });
+      }).finally(function () {
+        window.clearTimeout(timer);
+      });
+    }
+
+    function isAcceptedLeadResponse(serverData) {
+      return !!(serverData && serverData.internal === 'fulfilled' &&
+        /^(fulfilled|deduplicated|partial)$/.test(String(serverData.status || '')) &&
+        /^DK-[A-F0-9]{6}-[A-F0-9]{6}$/.test(String(serverData.ref || '')));
+    }
+
     function doSubmit() {
       var hp = el('hp');
-      if (hp && hp.value) { showSuccess('votre projet'); return; }
+      if (hp && hp.value) return;
       if (S.planPending) {
-        showToast('Photo en cours de préparation, patientez quelques secondes…', true);
+        showSubmitError('Photo en cours de préparation, patientez quelques secondes.');
         return;
       }
-
-      var btn = el('cta');
-      btn.disabled = true;
-      btn.classList.add('spin');
+      clearSubmitError();
+      if (!validateContactFields(true) || firstMissingControl()) {
+        showSubmitError('Certaines informations requises sont manquantes ou invalides.');
+        focusFirstMissing();
+        return;
+      }
+      setSubmitLoading(true);
 
       var TLS = { urg: "Dès que possible", '6m': 'Dans les 6 mois', '1a': "Dans l'année", ref: 'En réflexion' };
       var SHAPES_LABEL = { rect: 'Rectangulaire', oval: 'Ovale / ronde', libre: 'Forme libre' };
@@ -6150,12 +6434,14 @@
       if (S.voletSolar) productOptions.push('Alimentation solaire / pré-équipement volet');
       if (S.oreSolar) productOptions.push('Panneau solaire d’appoint');
       if (S.oreBlockCut) productOptions.push('Découpe bloc filtration Oré');
+      if (S.oreBlockDecision === 'study') productOptions.push('Bloc filtration Oré : étude nécessaire');
       if (S.oreAntiWind) productOptions.push('Sangle anti-vent');
       if (S.oreWinterStrap) productOptions.push('Sangle longitudinale hivernage');
       if (S.oreExtraRetreat) productOptions.push('Recul supplémentaire 1 m');
       if (S.oreSpecialColor) productOptions.push('Couleur hors standard');
       var rr = S.lastRuleResult;
       var payload = {
+        dossier_id: ensureDossierId(),
         prenom: S.fn.trim(), nom: S.ln.trim(),
         email: S.em.trim().toLowerCase(), tel: S.ph,
         forme: S.shape,
@@ -6181,7 +6467,7 @@
         option_rail_tout_terrain: !!S.rtt,
         option_motorisation_abri: !!S.shlMotor,
         option_rail_sol: !!S.gr,
-        couleur_structure: S.strucCol ? (S.strucLbl + ' — ' + S.strucCol) : '',
+        couleur_structure: S.strucLbl || '',
         prestation_souhaitee: S.installation || '',
         support_bassin: S.support || '',
         margelles: S.margellesLevel || '',
@@ -6222,12 +6508,11 @@
         photo_filename: S.planKind === 'photo' ? (S.planName || '') : '',
         source: S.src || '',
         priorite: S.tl === 'urg' ? 'URGENT' : 'NORMAL',
+        consentement: true,
         consentement_relances: !!S.ok2,
         timestamp: new Date().toISOString()
       };
 
-      /* Sauvegarde locale avant tout envoi réseau */
-      try { sessionStorage.setItem('dk_last_lead', JSON.stringify(payload)); } catch (e) { }
       track('lead_submit_attempt', {
         equipment: S.eq,
         model: selectedProduct,
@@ -6237,111 +6522,96 @@
         advisor_mode: S.advisorMode === 'Conseil guidé' ? 'guided' : 'direct',
         qualification_complete: getAllQualificationGaps().length === 0
       });
-
-      var withTimeout = function (p, ms) {
-        return Promise.race([p, new Promise(function (_, r) {
-          setTimeout(function () { r(new Error('timeout')); }, ms || 10000);
-        })]);
-      };
-
-      var tasks = [
-        withTimeout(fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }))
-      ];
-      if (window.DISKOOV_WEBHOOK) {
-        tasks.push(withTimeout(fetch(window.DISKOOV_WEBHOOK, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })));
-      }
-
-      Promise.allSettled(tasks).then(function (results) {
-        /* Vérifier le statut HTTP réel (fetch fulfilled ne signifie pas 2xx) */
-        var emailResult = results[0];
-        var emailOk = emailResult.status === 'fulfilled' && emailResult.value && emailResult.value.ok;
-        var webhookOk = results.length > 1 && results[1].status === 'fulfilled' && results[1].value && results[1].value.ok;
-        var anyOk = emailOk || webhookOk;
-
-        results.forEach(function (r, i) {
-          if (r.status === 'rejected') console.error('[Diskoov] Send error #' + i, r.reason);
-          else if (r.value && !r.value.ok) console.error('[Diskoov] HTTP error #' + i, r.value.status, r.value.statusText);
-        });
-
-        var pname = PNMS[selectedProduct] || 'votre projet';
-
-        if (!anyOk) {
-          track('lead_submit_failed', { equipment: S.eq, model: selectedProduct, retry_scheduled: true });
-          /* Aucun canal n'a fonctionné — sauvegarder en localStorage comme filet de sécurité. */
-          queuePendingLead(payload);
-          /* Retenter une fois après 3 secondes */
-          setTimeout(function () {
-            fetch('/api/send-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }).then(function (r) {
-              if (!r.ok) throw new Error('HTTP ' + r.status);
-              try {
-                var pending = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-                pending = pending.filter(function (p) { return p.timestamp !== payload.timestamp; });
-                localStorage.setItem('dk_pending_leads', JSON.stringify(pending));
-              } catch (e2) { }
-              track('lead_submitted', {
-                equipment: S.eq, model: selectedProduct,
-                department: S.dept, timeline: S.tl,
-                priority: payload.priorite, email_sent: true, retry: true
-              });
-              showSuccess(pname);
-            }).catch(function (error) {
-              console.error('[Diskoov] Retry failed', error);
-              track('lead_retry_failed', { equipment: S.eq, model: selectedProduct });
-              btn.classList.remove('spin');
-              chk();
-              showToast('L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.', true);
-            });
-          }, 3000);
-          showToast('Connexion instable : nouvelle tentative en cours…', true);
-        } else {
-          track('lead_submitted', {
-            equipment: S.eq, model: selectedProduct,
-            department: S.dept, timeline: S.tl,
-            priority: payload.priorite, email_sent: emailOk, retry: false
-          });
-          showSuccess(pname);
-          if (!emailOk) {
-            showToast('Votre demande est bien sauvegardée. L’équipe Diskoov reprendra contact avec vous.', true);
-          }
+      var pname = PNMS[selectedProduct] || 'votre projet';
+      fetchLeadWithTimeout('/api/send-email', payload, 12000, false).then(function (result) {
+        var serverData = result.serverData || {};
+        if (!result.response.ok) {
+          var responseError = new Error(serverData.error || 'La demande n’a pas pu être transmise.');
+          responseError.retryable = result.response.status === 408 || result.response.status === 429 || result.response.status >= 500;
+          responseError.autoRetry = result.response.status === 408 || result.response.status >= 500;
+          throw responseError;
         }
+        if (!isAcceptedLeadResponse(serverData)) {
+          var invalidResponseError = new Error('La réponse de confirmation est incomplète.');
+          invalidResponseError.retryable = true;
+          invalidResponseError.autoRetry = true;
+          throw invalidResponseError;
+        }
+        removePendingLeadAfterSuccess(payload.dossier_id);
+        saveLastLeadSummary(payload, serverData.ref);
+        track('lead_submitted', {
+          equipment: S.eq, model: selectedProduct,
+          timeline: S.tl,
+          priority: payload.priorite, email_sent: true, retry: false
+        });
+        setSubmitLoading(false);
+        showSuccess(pname, serverData.ref, serverData.prospect === 'rejected');
+      }).catch(function (error) {
+        console.error('[Diskoov] Send error', error);
+        if (error && error.retryable === false) {
+          setSubmitLoading(false);
+          showSubmitError(error.message || 'La demande n’a pas pu être transmise. Vérifiez les informations saisies.');
+          return;
+        }
+        queuePendingLead(payload);
+        track('lead_submit_failed', { equipment: S.eq, model: selectedProduct, retry_scheduled: true });
+        setSubmitLoading(false);
+        showSubmitError('L’envoi n’a pas abouti. Votre demande est conservée sans pièce jointe pour une nouvelle tentative.');
+        if (error && error.autoRetry === false) return;
+        window.setTimeout(function () {
+          retryPendingLead(payload).then(function (serverData) {
+            if (!serverData) return;
+            clearSubmitError();
+            track('lead_submitted', {
+              equipment: S.eq, model: selectedProduct,
+              timeline: S.tl,
+              priority: payload.priorite, email_sent: true, retry: true
+            });
+            showSuccess(pname, serverData.ref, serverData.prospect === 'rejected');
+          });
+        }, 3000);
       });
     }
 
-    function queuePendingLead(payload) {
+    var PENDING_LEADS_KEY = 'dk_pending_leads';
+    var PENDING_LEAD_TTL = 48 * 60 * 60 * 1000;
+
+    function readPendingLeads() {
       try {
-        var pendingLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-        if (!Array.isArray(pendingLeads)) pendingLeads = [];
-        pendingLeads.push(payload);
-        localStorage.setItem('dk_pending_leads', JSON.stringify(pendingLeads));
+        var leads = JSON.parse(localStorage.getItem(PENDING_LEADS_KEY) || '[]');
+        return Array.isArray(leads) ? leads : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writePendingLeads(leads) {
+      try {
+        if (leads.length) localStorage.setItem(PENDING_LEADS_KEY, JSON.stringify(leads));
+        else localStorage.removeItem(PENDING_LEADS_KEY);
         return true;
       } catch (error) {
-        try {
-          var lightweightLeads = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-          if (!Array.isArray(lightweightLeads)) lightweightLeads = [];
-          lightweightLeads = lightweightLeads.map(pendingLeadWithoutAttachment);
-          lightweightLeads.push(pendingLeadWithoutAttachment(payload));
-          localStorage.setItem('dk_pending_leads', JSON.stringify(lightweightLeads));
-          return true;
-        } catch (fallbackError) {
-          return false;
-        }
+        return false;
       }
+    }
+
+    function pendingLeadKey(lead) {
+      return String((lead && lead.dossier_id) || '');
+    }
+
+    function queuePendingLead(payload) {
+      var lightweight = pendingLeadWithoutAttachment(payload);
+      var key = pendingLeadKey(lightweight);
+      var pending = readPendingLeads().map(pendingLeadWithoutAttachment).filter(function (lead) {
+        return !key || pendingLeadKey(lead) !== key;
+      });
+      pending.push(lightweight);
+      return writePendingLeads(pending);
     }
 
     function pendingLeadWithoutAttachment(payload) {
       return Object.assign({}, payload, {
+        dossier_id: String(payload.dossier_id || ''),
         plan_base64: '',
         plan_filename: '',
         photo_filename: '',
@@ -6349,29 +6619,54 @@
       });
     }
 
-    function showSuccess(pname) {
+    function removePendingLeadAfterSuccess(dossierId) {
+      var key = String(dossierId || '');
+      if (!key) return;
+      var current = readPendingLeads();
+      writePendingLeads(current.filter(function (lead) { return pendingLeadKey(lead) !== key; }));
+    }
+
+    function retryPendingLead(lead) {
+      return fetchLeadWithTimeout('/api/send-email', lead, 12000, true).then(function (result) {
+        if (!result.response.ok) {
+          if (result.response.status >= 400 && result.response.status < 500 && result.response.status !== 408 && result.response.status !== 429) {
+            removePendingLeadAfterSuccess(pendingLeadKey(lead));
+          }
+          return false;
+        }
+        if (!isAcceptedLeadResponse(result.serverData)) return false;
+        removePendingLeadAfterSuccess(pendingLeadKey(lead));
+        saveLastLeadSummary(lead, result.serverData.ref);
+        return result.serverData;
+      }).catch(function () {
+        return false;
+      });
+    }
+
+    function showSuccess(pname, serverReference, prospectRejected) {
       try { sessionStorage.removeItem(CONFIG_DRAFT_KEY); } catch (e) { }
       buildSucRecap();
       el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
       var contactLabel = CONTACT_NAME === 'l’équipe Diskoov' ? 'l’équipe Diskoov' : CONTACT_NAME;
-      var contactMessage = S.contactPreference === 'email'
+      var contactMessage = prospectRejected
+        ? esc(contactLabel) + ' reprendra contact avec vous par téléphone ou par email.'
+        : (S.contactPreference === 'email'
         ? 'La réponse vous sera envoyée à l’adresse <strong>' + esc(S.em) + '</strong>.'
         : (S.contactPreference === 'telephone'
           ? 'Vous serez rappelé au <strong>' + esc(S.ph) + '</strong>.'
-          : esc(contactLabel) + ' vous contactera par téléphone ou par email.');
+          : esc(contactLabel) + ' vous contactera par téléphone ou par email.'));
       el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise à ' + esc(contactLabel) + '.<br>' + contactMessage;
-      /* Numéro de référence unique (timestamp lisible) */
       var refEl = el('suc-ref');
       if (refEl) {
-        var now = new Date();
-        var rnd = Math.random().toString(36).slice(2, 5).toUpperCase();
-        var ref = 'DK-' + now.getFullYear().toString().slice(2) +
-          ('0' + (now.getMonth() + 1)).slice(-2) +
-          ('0' + now.getDate()).slice(-2) + '-' +
-          ('0' + now.getHours()).slice(-2) +
-          ('0' + now.getMinutes()).slice(-2) +
-          ('0' + now.getSeconds()).slice(-2) + '-' + rnd;
-        refEl.textContent = 'Réf. ' + ref;
+        refEl.textContent = serverReference ? 'Réf. ' + String(serverReference) : '';
+        refEl.hidden = !serverReference;
+      }
+      var warning = el('suc-warning');
+      if (warning) {
+        warning.hidden = !prospectRejected;
+        warning.textContent = prospectRejected
+          ? 'Votre demande a bien été reçue, mais la confirmation par email n’a pas pu être envoyée. L’équipe Diskoov vous recontactera sans renvoyer votre demande.'
+          : '';
       }
       /* Phone link */
       var ph = el('suc-phone');
@@ -6379,12 +6674,7 @@
       el('pbdy').style.display = 'none';
       el('pfoot').style.display = 'none';
       el('suc').classList.add('on');
-      /* Mobile : réduire le visuel pour laisser plus de place à l'écran succès */
-      var vis = document.querySelector('.vis');
-      if (vis && window.innerWidth <= 820) {
-        vis.style.height = '0';
-        vis.style.minHeight = '0';
-      }
+      el('app').classList.add('success-active');
       /* Mettre le focus sur le titre pour les lecteurs d'écran */
       requestAnimationFrame(function () { var t = el('suc-t'); if (t) t.focus(); });
     }
@@ -6476,19 +6766,20 @@
       } catch (e) { }
 
       S.eq = ''; S.cm = ''; S.sm = ''; S.otherProduct = ''; S.lastRuleResult = null;
-      S.shape = 'rect'; S.stair = false; S.stairType = ''; S.stairSide = ''; S.stairCorner = ''; S.stairWidth = 1.5; S.stairPos = 'interieur'; S.stairDesc = '';
+      S.shape = 'rect'; S.shapeConfirmed = false; S.stair = false; S.stairType = ''; S.stairSide = ''; S.stairCorner = ''; S.stairWidth = 1.5; S.stairPos = 'interieur'; S.stairDesc = '';
       S.filtration = false;
       S.planFile = null; S.planB64 = ''; S.planName = ''; S.planDesc = ''; S.planKind = ''; S.planPending = false;
-      S.mRal = 'RAL 7037'; S.mLbl = 'Gris poussière';
-      S.hRal = 'RAL 7037'; S.hLbl = 'Gris poussière';
-      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = 'RAL 9016'; S.strucLbl = 'Blanc';
+      S.mRal = ''; S.mLbl = '';
+      S.hRal = ''; S.hLbl = '';
+      S.sol = false; S.rtt = false; S.shlMotor = false; S.gr = false; S.strucCol = ''; S.strucLbl = '';
       S.installation = ''; S.support = ''; S.margellesLevel = ''; S.clearance = ''; S.electricity = ''; S.productColor = ''; S.guideSide = ''; S.immergedIntegration = '';
       S.projectStatus = ''; S.siteAccess = ''; S.projectBudget = '';
       S.babAntiAbrasion = false; S.babBlockCut = false; S.babRollingUp = false; S.babCutCorners = false; S.voletPoly = false; S.voletSolar = false;
-      S.oreSolar = false; S.oreBlockCut = false; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
+      S.oreSolar = false; S.oreBlockCut = false; S.oreBlockDecision = ''; S.oreAntiWind = false; S.oreWinterStrap = false; S.oreExtraRetreat = false; S.oreSpecialColor = false;
       S.tl = ''; S.advisorProjectStage = '';
       S.advisorMode = ''; S.advisorPriorities = ''; S.advisorRecommendations = ''; S.advisorChoiceReason = ''; S.advisorDimensionsKnown = null; S.advisorVersion = '';
       S.fn = ''; S.ln = ''; S.em = ''; S.ph = ''; S.postalCode = ''; S.city = ''; S.dept = ''; S.contactPreference = ''; S.src = ''; S.note = ''; S.ok = false; S.ok2 = false;
+      S.dossierId = '';
 
       /* Reset shape */
       ['rect', 'oval', 'libre'].forEach(function (k) { el('sh-' + k).classList.toggle('on', k === 'rect'); el('sh-' + k).setAttribute('aria-checked', String(k === 'rect')); });
@@ -6593,15 +6884,13 @@
       var postalInp = el('postal-code'); if (postalInp) { postalInp.classList.remove('err', 'ok'); }
       var postalErr = el('postal-code-err'); if (postalErr) { postalErr.classList.remove('on'); }
       var deptHint = el('dept-hint'); if (deptHint) { deptHint.textContent = 'Déduit automatiquement du code postal lorsque c’est possible.'; deptHint.classList.remove('is-confirmed'); }
+      ['em', 'ph', 'postal-code'].forEach(function (id) { var input = el(id); if (input) input.setAttribute('aria-invalid', 'false'); });
       el('note').value = '';
-      selSW('g-struc', 'sc', 'RAL-9016');
-      var srl = el('struc-ral'); if (srl) srl.textContent = 'RAL 9016';
-      var sll = el('struc-lbl'); if (sll) sll.textContent = 'Blanc — RAL 9016';
+      var structurePreference = el('structure-color-pref'); if (structurePreference) structurePreference.value = '';
+      var finishPreference = el('finish-pref'); if (finishPreference) finishPreference.value = '';
       el('ok').checked = false;
       var ok2el = el('ok2'); if (ok2el) ok2el.checked = false;
       var nc = el('note-count'); if (nc) nc.textContent = '800 caractères restants';
-      selSW('g-mem', 'm', 'RAL-7037');
-      selSW('g-hab', 'h', 'RAL-7037');
       el('t-sol').classList.remove('on');
       el('t-sol').setAttribute('aria-pressed', 'false');
       ['t-rtt', 't-sm', 't-gr'].forEach(function (id) {
@@ -6621,8 +6910,12 @@
       el('pf-subtitle').textContent = 'Estimation selon la configuration saisie';
       updBreakdown(0, null);
       el('suc').classList.remove('on');
+      el('app').classList.remove('success-active');
+      var successWarning = el('suc-warning'); if (successWarning) { successWarning.hidden = true; successWarning.textContent = ''; }
       el('pbdy').style.display = '';
       el('pfoot').style.display = '';
+      clearSubmitError();
+      setSubmitLoading(false);
       chk();
       el('pbdy').scrollTop = 0;
       updateMobileChrome();
@@ -6748,9 +7041,9 @@
         + '<a href="' + PRIVACY_URL + '" target="_blank" rel="noopener noreferrer" style="color:#111;text-decoration:underline">En savoir plus</a></p>'
         + '<div style="display:flex;gap:8px;flex-shrink:0">'
         + '<button id="dk-ck-no" style="padding:8px 16px;border:1px solid #ddd;border-radius:5px;background:#fff;font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#666;cursor:pointer">Refuser</button>'
-        + '<button id="dk-ck-ok" style="padding:8px 16px;border:none;border-radius:5px;background:#111;font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#fff;cursor:pointer">Accepter</button>'
+        + '<button id="dk-ck-ok" style="min-height:40px;padding:8px 16px;border:none;border-radius:5px;background:#1f407c;font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#fff;cursor:pointer">Accepter</button>'
         + '</div></div>';
-      banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6e6;padding:14px 20px;z-index:99998;box-shadow:0 -2px 12px rgba(0,0,0,.08);';
+      banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6e6e6;padding:14px 20px;z-index:var(--z-consent);box-shadow:0 -2px 12px rgba(0,0,0,.08);';
       document.body.appendChild(banner);
       document.getElementById('dk-ck-ok').onclick = function () {
         localStorage.setItem('dk_cookie_consent', 'accepted');
@@ -6763,6 +7056,11 @@
       };
     }
     function loadAnalytics() {
+      try {
+        if (localStorage.getItem('dk_cookie_consent') !== 'accepted') return;
+      } catch (error) {
+        return;
+      }
       if (window.DISKOOV_GTM_ID && !document.querySelector('script[src*="googletagmanager"]')) {
         var s = document.createElement('script');
         s.async = true;
@@ -6780,38 +7078,22 @@
        Au chargement, retenter les leads en attente (sauvés
        en localStorage si le réseau avait échoué).
     ─────────────────────────────────────────────────── */
+    var pendingLeadRetryInFlight = false;
     function retryPendingLeads() {
-      try {
-        var pending = JSON.parse(localStorage.getItem('dk_pending_leads') || '[]');
-        if (!pending.length) return;
-        /* TTL : expirer les leads de plus de 48h (ne plus retenter) */
-        var TTL = 48 * 60 * 60 * 1000;
-        var now = Date.now();
-        pending = pending.filter(function (lead) {
-          if (!lead.timestamp) return false;
-          return (now - new Date(lead.timestamp).getTime()) < TTL;
-        });
-        if (!pending.length) { localStorage.removeItem('dk_pending_leads'); return; }
-        /* Vider immédiatement pour éviter les doubles retries */
-        localStorage.removeItem('dk_pending_leads');
-        var promises = pending.map(function (lead) {
-          return fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(lead)
-          }).then(function (r) {
-            return r.ok ? null : lead;
-          }).catch(function () {
-            return lead;
-          });
-        });
-        Promise.all(promises).then(function (results) {
-          var remaining = results.filter(function (r) { return r !== null; });
-          if (remaining.length) {
-            localStorage.setItem('dk_pending_leads', JSON.stringify(remaining));
-          }
-        });
-      } catch (e) { }
+      if (pendingLeadRetryInFlight) return Promise.resolve(false);
+      var now = Date.now();
+      var pending = readPendingLeads().map(pendingLeadWithoutAttachment).filter(function (lead) {
+        var createdAt = new Date(lead.timestamp || '').getTime();
+        return Number.isFinite(createdAt) && now - createdAt < PENDING_LEAD_TTL;
+      });
+      writePendingLeads(pending);
+      if (!pending.length) return Promise.resolve(false);
+      pendingLeadRetryInFlight = true;
+      return Promise.all(pending.map(function (lead) {
+        return retryPendingLead(lead);
+      })).finally(function () {
+        pendingLeadRetryInFlight = false;
+      });
     }
 
     /* ── START ────────────────────────────────────────── */
@@ -6821,7 +7103,7 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260713-v11-polish14"></script>
+  <script src="advisor-v2.js?v=20260713-v14-release"></script>
 </body>
 
 </html>

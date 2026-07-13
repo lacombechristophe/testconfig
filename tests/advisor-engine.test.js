@@ -36,7 +36,9 @@ test('une forme libre ne recommande que les familles documentées pour une étud
   var result = advisor.recommend({ priorities: ['aesthetics', 'space'], shape: 'libre', length: 8, width: 4 }, rules);
   assert.ok(['volet_hs', 'volet_immerge'].indexOf(result.recommendations[0].id) !== -1);
   assert.equal(result.recommendations.some(function (item) { return ['auto', 'semi', 'eden', 'masterdeck'].indexOf(item.id) !== -1; }), false);
-  assert.equal(result.compatible.some(function (item) { return item.id === 'eden'; }), true);
+  assert.equal(result.compatible.some(function (item) { return ['auto', 'semi', 'eden', 'masterdeck'].indexOf(item.id) !== -1; }), false);
+  assert.ok(result.studies.some(function (item) { return item.id === 'eden'; }));
+  assert.ok(result.studies.some(function (item) { return item.id === 'masterdeck'; }));
   assert.equal(result.compatible.some(function (item) { return item.id === 'auto' || item.id === 'ore_essential'; }), false);
 });
 
@@ -70,12 +72,29 @@ test('la priorité sécurité ne valorise que les produits documentés sur ce po
   assert.equal(advisor.findCandidate('volet_immerge').strengths.indexOf('safety'), -1);
 });
 
-test('Coverseal et Eden restent explorables sans entrer dans le classement guidé', function () {
+test('Coverseal et Eden restent des études non classées et non compatibles', function () {
   var result = advisor.recommend({ priorities: ['clean', 'aesthetics'], shape: 'rect', length: 8, width: 4 }, rules);
   ['auto', 'semi', 'eden'].forEach(function (id) {
     assert.equal(result.recommendations.some(function (item) { return item.id === id; }), false, id);
-    assert.equal(result.compatible.some(function (item) { return item.id === id; }), true, id);
+    assert.equal(result.compatible.some(function (item) { return item.id === id; }), false, id);
+    assert.equal(result.studies.some(function (item) { return item.id === id && item.studyOnly && item.score === null; }), true, id);
   });
+});
+
+test('une forme libre avec priorité plancher conserve MasterDeck comme étude sur plan', function () {
+  var result = advisor.recommend({ priorities: ['space'], shape: 'libre', length: 8, width: 4 }, rules);
+  var masterdeck = result.studies.find(function (item) { return item.id === 'masterdeck'; });
+  assert.ok(masterdeck);
+  assert.equal(masterdeck.compatible, false);
+  assert.equal(masterdeck.certainty, 'study');
+  assert.match(masterdeck.studyReason, /étudier sur plan/);
+  assert.equal(result.excluded.some(function (item) { return item.id === 'masterdeck'; }), false);
+});
+
+test('sans priorité plancher, une forme libre ne transforme pas MasterDeck en piste', function () {
+  var result = advisor.recommend({ priorities: ['aesthetics'], shape: 'libre', length: 8, width: 4 }, rules);
+  assert.equal(result.studies.some(function (item) { return item.id === 'masterdeck'; }), false);
+  assert.equal(result.excluded.some(function (item) { return item.id === 'masterdeck'; }), true);
 });
 
 test('les priorités structurantes orientent la première famille sans casser la diversité', function () {
@@ -98,11 +117,19 @@ test('le moteur ne complète jamais un résultat contraint avec un doublon de fa
   assert.ok(result.recommendations.length >= 1 && result.recommendations.length <= 3);
 });
 
-test('le budget reste facultatif et ne supprime jamais les solutions compatibles', function () {
+test('le budget est conservé mais reste neutre tant que les bandes ne sont pas sourcées', function () {
   var unknown = advisor.recommend({ priorities: ['safety'], budget: 'unknown' }, rules);
   var constrained = advisor.recommend({ priorities: ['safety'], budget: 'under5' }, rules);
   assert.equal(unknown.compatible.length, constrained.compatible.length);
-  assert.equal(constrained.recommendations[0].id, 'bab');
+  assert.equal(constrained.input.budget, 'under5');
+  assert.deepEqual(constrained.recommendations.map(function (item) { return [item.id, item.score]; }), unknown.recommendations.map(function (item) { return [item.id, item.score]; }));
+});
+
+test('la surface respecte la forme sans inventer celle d’un bassin libre', function () {
+  assert.equal(advisor.surfaceArea('rect', 8, 4), 32);
+  assert.ok(Math.abs(advisor.surfaceArea('oval', 8, 4) - Math.PI / 4 * 8 * 4) < 1e-10);
+  assert.equal(advisor.surfaceArea('libre', 8, 4), null);
+  assert.equal(advisor.surfaceArea('oval', null, 4), null);
 });
 
 test('les paramètres sont bornés et les priorités limitées à deux', function () {
