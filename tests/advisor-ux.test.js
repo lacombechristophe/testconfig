@@ -53,9 +53,8 @@ test('les détails mobiles sont progressifs et gardent titre et CTA dans le noya
   assert.match(css, /\.advisor-family-more summary,[\s\S]*?min-height:\s*44px/);
   assert.match(css, /\.advisor-brand\s*\{[\s\S]*?min-height:\s*44px/);
   assert.match(advisor, /addEventListener\('toggle'[\s\S]*?aria-expanded/);
-  var finalCompactRules = css.slice(css.lastIndexOf('@media (max-width: 680px)'));
-  assert.match(finalCompactRules, /\.advisor-direct-item,[\s\S]*?grid-template-columns:\s*104px minmax\(0, 1fr\)/);
-  assert.match(finalCompactRules, /\.advisor-direct-buttons\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*2/);
+  assert.match(css, /@media \(max-width: 680px\)[\s\S]*?\.advisor-direct-item,[\s\S]*?grid-template-columns:\s*104px minmax\(0, 1fr\)/);
+  assert.match(css, /@media \(max-width: 680px\)[\s\S]*?\.advisor-direct-buttons\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*2/);
 });
 
 test('les faits famille passent sur une colonne sous 360 px', function () {

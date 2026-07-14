@@ -2878,7 +2878,9 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260713-v14-release">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260714-v18-final-redesign">
+  <link rel="stylesheet" href="advisor-workflow-v7.css?v=20260714-v18-final-redesign">
+  <link rel="stylesheet" href="configurator-workflow-v2.css?v=20260714-v18-final-redesign">
 
   <noscript>
     <style>
@@ -2900,10 +2902,10 @@
 </head>
 
 <body>
-  <main class="root diskoov-root" id="app" role="main">
+  <main class="root diskoov-root configurator-v2" id="app" role="main" data-config-step="basin">
 
     <!-- ══ VISUAL (left — immovable) ══════════════════════════ -->
-    <div class="vis" role="img" aria-label="Visualisation du produit sélectionné">
+    <aside class="vis" aria-label="Présentation du produit sélectionné">
 
       <!--
     ⚠️ PHOTOS OBLIGATOIRES AVANT MISE EN PROD
@@ -2962,7 +2964,26 @@
         <img src="assets/marque/logo-diskoov-bleu-orange.png" alt="" width="273" height="75" class="vi-logo-img">
       </a>
 
-    </div><!-- /vis -->
+      <div class="config-visual-copy" aria-hidden="true">
+        <span id="config-visual-kicker">Votre protection</span>
+        <strong id="config-visual-title">Votre projet piscine</strong>
+        <span id="config-visual-subtitle">Décrivez votre bassin pour vérifier la solution choisie.</span>
+      </div>
+
+      <div class="config-visual-trust" aria-hidden="true">
+        <span><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg><b>Compatibilité<small>vérifiée avant devis</small></b></span>
+        <span><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/></svg><b>Pose<small>étudiée avec vous</small></b></span>
+        <span><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3v-7a4 4 0 0 1-1-2.6V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v8Z"/></svg><b>Accompagnement<small>par un conseiller</small></b></span>
+      </div>
+
+      <div class="config-success-visual" aria-hidden="true">
+        <span class="config-success-check">✓</span>
+        <small>Demande transmise</small>
+        <strong>Votre projet est entre de bonnes mains.</strong>
+        <p>Vos réponses ont bien été envoyées à Diskoov.</p>
+      </div>
+
+    </aside><!-- /vis -->
 
     <!-- ══ PANEL (right — independent scroll) ════════════════ -->
     <div class="panel" role="form" aria-label="Configurateur de piscine Diskoov">
@@ -2981,8 +3002,20 @@
         <div class="progress-fill" id="prog-fill"></div>
       </div>
 
+      <nav class="configurator-stepper" aria-label="Étapes de la configuration">
+        <button type="button" class="configurator-step is-active" data-config-target="basin" aria-current="step"><span>1</span><b>Bassin</b></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="configurator-step" data-config-target="installation"><span>2</span><b>Installation</b></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="configurator-step" data-config-target="options"><span>3</span><b>Options</b></button>
+        <i aria-hidden="true">→</i>
+        <button type="button" class="configurator-step" data-config-target="contact"><span>4</span><b>Coordonnées</b></button>
+      </nav>
+
       <!-- ── SCROLLABLE SECTIONS ────────────────────── -->
       <div class="p-bd" id="pbdy">
+
+        <h1 class="config-stage-title" id="config-stage-title" tabindex="-1">Votre bassin</h1>
 
         <!-- FORME DE PISCINE -->
         <div class="s" id="s-shape" role="group" aria-labelledby="lbl-shape">
@@ -3127,7 +3160,7 @@
         </div>
 
         <!-- ESCALIER -->
-        <div class="s" role="group" aria-labelledby="lbl-stair">
+        <div class="s" id="s-stair" role="group" aria-labelledby="lbl-stair">
           <div class="sh">
             <h2 class="sl" id="lbl-stair">Escalier</h2>
           </div>
@@ -3270,7 +3303,7 @@
         </div>
 
         <!-- ÉQUIPEMENT PÉRIPHÉRIQUE -->
-        <div class="s" role="group" aria-labelledby="lbl-periph">
+        <div class="s" id="s-periph" role="group" aria-labelledby="lbl-periph">
           <div class="sh">
             <h2 class="sl" id="lbl-periph">Équipement périphérique
               <span class="tip-wrap">
@@ -3716,126 +3749,45 @@
 
       <!-- SUCCESS (remplace p-bd) -->
       <div id="suc" role="status" aria-live="polite">
-        <div class="sico">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline class="check-path" points="20 6 9 17 4 12" />
-          </svg>
-        </div>
-        <h1 class="st" id="suc-t" tabindex="-1">Merci !</h1>
-        <p class="sb" id="suc-b"></p>
-        <p class="ntc wrn" id="suc-warning" role="alert" hidden></p>
+        <div class="success-main">
+          <div class="sico" aria-hidden="true">✓</div>
+          <h1 class="st" id="suc-t" tabindex="-1">Merci, votre projet est bien transmis.</h1>
+          <p class="sb" id="suc-b"></p>
+          <p class="ntc wrn" id="suc-warning" role="alert" hidden></p>
+          <div id="suc-ref"></div>
 
-        <!-- Référence -->
-        <div id="suc-ref" style="margin:10px auto 0;font-size:11px;color:var(--faint);letter-spacing:0"></div>
-
-        <!-- Prochaines étapes -->
-        <div style="margin:20px auto;max-width:300px;width:100%;text-align:left">
-          <p
-            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0;color:var(--faint);margin:0 0 14px">
-            Prochaines étapes</p>
-          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
-            <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
-              1</div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--ink)">Échange avec Diskoov</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Un conseiller reprend vos réponses avec vous
-                et précise les points utiles</div>
-            </div>
+          <div class="success-process" aria-label="Prochaines étapes">
+            <div><span>1</span><svg viewBox="0 0 24 24"><path d="M4 15a4 4 0 0 0 4 4h4l4 3v-5h1a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v8Z"/></svg><strong>Échange avec Diskoov</strong><small>Vos besoins et vos réponses sont repris avec vous.</small></div>
+            <div><span>2</span><svg viewBox="0 0 24 24"><path d="m5 17 12-12 2 2L7 19l-2-2Z"/><path d="m10 12 2 2M13 9l2 2M7 15l2 2"/></svg><strong>Vérification technique</strong><small>Faisabilité, pose, accès et options sont confirmés.</small></div>
+            <div><span>3</span><svg viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 11h6M9 15h6M9 19h4"/></svg><strong>Devis détaillé</strong><small>La proposition est préparée après vérification du projet.</small></div>
           </div>
-          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
-            <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
-              2</div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--ink)">Vérification technique</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Prise de mesures et étude de faisabilité
-                selon les besoins du projet</div>
-            </div>
+
+          <div class="success-details">
+            <aside class="success-advisor-card">
+              <img src="assets/marque/xavier-dispot-diskoov.jpg" alt="Conseiller Diskoov" width="300" height="300">
+              <strong>Un conseiller Diskoov vous recontacte selon votre préférence.</strong>
+              <div class="success-contact"><a id="suc-phone" class="sph"></a><span id="suc-contact"></span></div>
+            </aside>
+            <details class="success-recap-card" open>
+              <summary>Récapitulatif de votre configuration</summary>
+              <div id="suc-recap"><div id="suc-recap-rows"></div></div>
+            </details>
           </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <div
-              style="width:28px;height:28px;border-radius:50%;background:var(--brand);display:grid;place-items:center;flex-shrink:0;font-size:12px;font-weight:800;color:#fff">
-              3</div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--ink)">Devis détaillé</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">Proposition détaillée après vérification du
-                bassin, des options et des accès</div>
-            </div>
+
+          <div class="success-actions">
+            <a href="https://diskoov.fr" rel="noopener noreferrer" class="success-primary" data-dk-link="site">Retour sur diskoov.fr <span aria-hidden="true">→</span></a>
+            <button type="button" onclick="resetForm()" class="success-secondary">Nouvelle configuration</button>
           </div>
-        </div>
-
-        <!-- Récapitulatif configuration -->
-        <div id="suc-recap"
-          style="border:1px solid var(--line);border-radius:7px;padding:16px 18px;margin:0 auto 16px;max-width:300px;width:100%;text-align:left;display:none">
-          <p
-            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0;color:var(--faint);margin:0 0 10px;display:flex;align-items:center;gap:6px">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-            Votre configuration
-          </p>
-          <div id="suc-recap-rows"></div>
-        </div>
-
-        <!-- Contact urgent -->
-        <div
-          style="border:1px solid var(--line);border-radius:7px;padding:14px 22px;margin:0 auto 18px;max-width:300px;width:100%;text-align:center">
-          <div style="font-size:11.5px;color:var(--faint)">Une question urgente ?</div>
-          <a id="suc-phone" class="sph"
-            style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:0;margin-top:4px;display:block;text-decoration:none"></a>
-          <div id="suc-contact" style="font-size:11px;color:var(--faint);margin-top:3px"></div>
-        </div>
-
-        <!-- Trust badges avec icônes -->
-        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 auto 20px;max-width:320px">
-          <span
-            style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:#f0f9f0;color:#166534;display:inline-flex;align-items:center;gap:4px">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            Conseil personnalisé
-          </span>
-          <span
-            style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:#f8f8f6;color:#555;display:inline-flex;align-items:center;gap:4px">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            Pose étudiée avec vous
-          </span>
-          <span
-            style="font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;background:#f8f8f6;color:#555;display:inline-flex;align-items:center;gap:4px">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            Projet transmis
-          </span>
-        </div>
-
-        <!-- Actions -->
-        <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap">
-          <a href="https://diskoov.fr" rel="noopener noreferrer" class="slnk" data-dk-link="site">← diskoov.fr</a>
-          <button type="button" onclick="resetForm()" class="slnk"
-            style="font-family:'Inter',sans-serif;cursor:pointer">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
-            </svg>
-            Nouvelle config
-          </button>
         </div>
       </div>
 
       <!-- PRICE FOOTER -->
       <div class="pfoot" id="pfoot">
+        <div class="config-stage-actions">
+          <button type="button" id="config-back" class="config-stage-back">← Retour</button>
+          <span id="config-step-feedback">Les mesures approximatives suffisent pour commencer.</span>
+          <button type="button" id="config-next" class="config-stage-next">Continuer <span aria-hidden="true">→</span></button>
+        </div>
         <div class="pf-row">
           <div>
             <div class="pfl" id="pf-title">Votre estimation</div>
@@ -3904,8 +3856,8 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260713-v14-release"></script>
-  <script src="advisor-engine.js?v=20260713-v14-release"></script>
+  <script src="product-rules.js?v=20260714-v18-final-redesign"></script>
+  <script src="advisor-engine.js?v=20260714-v18-final-redesign"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -6073,8 +6025,12 @@
       var target = firstMissingControl();
       if (!target) return;
       if (['em', 'ph', 'postal-code'].indexOf(target.id) !== -1) validateContactFields(true, false);
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      window.setTimeout(function () { target.focus(); }, 180);
+      var targetStage = typeof window.configuratorStageForElement === 'function' ? window.configuratorStageForElement(target) : '';
+      if (targetStage && typeof window.setConfiguratorStage === 'function') window.setConfiguratorStage(targetStage, { focus: false });
+      window.setTimeout(function () {
+        target.scrollIntoView({ behavior: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+        window.setTimeout(function () { target.focus(); }, 180);
+      }, 0);
     }
 
     /* ── VALIDATION ─────────────────────────────────────── */
@@ -6646,7 +6602,7 @@
     function showSuccess(pname, serverReference, prospectRejected) {
       try { sessionStorage.removeItem(CONFIG_DRAFT_KEY); } catch (e) { }
       buildSucRecap();
-      el('suc-t').textContent = 'Merci\u00a0' + S.fn + '\u00a0!';
+      el('suc-t').textContent = 'Merci, votre projet est bien transmis.';
       var contactLabel = CONTACT_NAME === 'l’équipe Diskoov' ? 'l’équipe Diskoov' : CONTACT_NAME;
       var contactMessage = prospectRejected
         ? esc(contactLabel) + ' reprendra contact avec vous par téléphone ou par email.'
@@ -6654,8 +6610,10 @@
         ? 'La réponse vous sera envoyée à l’adresse <strong>' + esc(S.em) + '</strong>.'
         : (S.contactPreference === 'telephone'
           ? 'Vous serez rappelé au <strong>' + esc(S.ph) + '</strong>.'
-          : esc(contactLabel) + ' vous contactera par téléphone ou par email.'));
-      el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise à ' + esc(contactLabel) + '.<br>' + contactMessage;
+          : (contactLabel === 'l’équipe Diskoov'
+            ? 'Un conseiller Diskoov vous contactera par téléphone ou par email.'
+            : esc(contactLabel) + ' vous contactera par téléphone ou par email.')));
+      el('suc-b').innerHTML = 'Votre configuration <strong>' + esc(pname) + '</strong> a bien été transmise.<br>' + contactMessage;
       var refEl = el('suc-ref');
       if (refEl) {
         refEl.textContent = serverReference ? 'Réf. ' + String(serverReference) : '';
@@ -6675,6 +6633,7 @@
       el('pfoot').style.display = 'none';
       el('suc').classList.add('on');
       el('app').classList.add('success-active');
+      if (el('ph-sum')) el('ph-sum').textContent = 'Conseiller Diskoov';
       /* Mettre le focus sur le titre pour les lecteurs d'écran */
       requestAnimationFrame(function () { var t = el('suc-t'); if (t) t.focus(); });
     }
@@ -6745,7 +6704,7 @@
       container.innerHTML = rows.map(function (r, i) {
         return '<div style="display:flex;justify-content:space-between;padding:5px 0;' +
           (i > 0 ? 'border-top:1px solid #eee;' : '') +
-          'font-size:13px;gap:10px"><span style="color:#999">' + esc(r[0]) + '</span>' +
+          'font-size:13px;gap:10px"><span style="color:#50647f">' + esc(r[0]) + '</span>' +
           '<span style="font-weight:600;color:#111;text-align:right">' + esc(r[1]) + '</span></div>';
       }).join('');
       div.style.display = 'block';
@@ -6921,6 +6880,7 @@
       updateMobileChrome();
       requestAnimationFrame(function () { updProgress(); });
       requestAnimationFrame(function () { var h = el('pbdy'); if (h) h.focus(); });
+      if (typeof window.setConfiguratorStage === 'function') window.setConfiguratorStage('basin', { focus: false, reset: true });
     }
 
     /* ── TOOLTIPS — PORTAL UNIQUE ─────────────────────────
@@ -7103,7 +7063,8 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="advisor-v2.js?v=20260713-v14-release"></script>
+  <script src="configurator-workflow-v2.js?v=20260714-v18-final-redesign"></script>
+  <script src="advisor-v2.js?v=20260714-v18-final-redesign"></script>
 </body>
 
 </html>

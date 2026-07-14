@@ -10,6 +10,7 @@ var root = path.resolve(__dirname, '..');
 var html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 var advisor = fs.readFileSync(path.join(root, 'advisor-v2.js'), 'utf8');
 var advisorCss = fs.readFileSync(path.join(root, 'advisor-v2.css'), 'utf8');
+var configuratorWorkflow = fs.readFileSync(path.join(root, 'configurator-workflow-v2.js'), 'utf8');
 var api = fs.readFileSync(path.join(root, 'api', 'send-email.ts'), 'utf8');
 
 test('tous les scripts intégrés à la page restent syntaxiquement valides', function () {
@@ -20,6 +21,12 @@ test('tous les scripts intégrés à la page restent syntaxiquement valides', fu
       new vm.Script(match[1], { filename: 'index-inline-' + (index + 1) + '.js' });
     });
   });
+});
+
+test('un nouveau projet reverrouille les étapes du configurateur', function () {
+  assert.match(configuratorWorkflow, /if \(options\.reset\) maxReached = index/);
+  assert.match(advisor, /setConfiguratorStage\('basin', \{ focus: false, reset: true \}\)/);
+  assert.match(html, /setConfiguratorStage\('basin', \{ focus: false, reset: true \}\)/);
 });
 
 test('le contexte du conseiller suit le prospect jusqu’au payload', function () {
@@ -158,7 +165,7 @@ test('le conseiller ne remplace jamais une priorité silencieusement', function 
   assert.doesNotMatch(advisor, /priorities\.shift\(/);
   assert.match(advisor, /if \(state\.priorities\.length >= 2\) return;/);
   assert.match(advisor, /button\.disabled = limitReached && !selected/);
-  assert.match(advisor, /Vos priorités sont prêtes/);
+  assert.match(advisor, /Deux priorités sélectionnées/);
   assert.match(advisor, /class="advisor-hint-count">' \+ state\.priorities\.length \+ '\/2/);
   assert.match(advisorCss, /\.advisor-choice:disabled\s*\{/);
 });
@@ -286,48 +293,67 @@ test('l accueil garde un seul acces direct visible', function () {
 });
 
 test('la reassurance d accueil reste visuelle et factuelle', function () {
-  assert.match(advisor, /class="advisor-title-accent">votre piscine<\/span>/);
-  assert.match(advisor, /Diskoov compare les protections selon vos priorités et votre piscine/);
-  assert.match(advisor, /Obtenir mes recommandations/);
+  assert.match(advisor, /Quelle protection choisir pour votre piscine&nbsp;\?/);
+  assert.match(advisor, /Quelques questions simples suffisent pour comparer les solutions adaptées à votre bassin/);
+  assert.match(advisor, /Trouver ma protection/);
   assert.match(advisor, /class="advisor-welcome-reassurance"/);
   assert.match(advisor, /Mesures approximatives/);
-  assert.match(advisor, /Sans coordonnées à cette étape/);
-  assert.match(advisor, /Conseiller avant devis/);
-  assert.match(advisor, /class="advisor-visual-proof"/);
-  assert.match(advisor, /Comparez les protections selon vos priorités/);
+  assert.match(advisor, /Sans coordonnées[\s\S]*pour commencer/);
+  assert.match(advisor, /Projet confirmé[\s\S]*avec un conseiller/);
+  assert.match(advisor, /class="advisor-visual-families"/);
+  assert.match(advisor, /4 familles de protections pour votre piscine/);
   assert.match(advisor, /class="advisor-welcome-assurance"/);
   assert.match(advisor, /Un conseiller Diskoov confirme votre projet/);
   assert.match(advisor, /Faisabilité, pose, accès et options avant devis/);
   assert.match(advisor, /class="advisor-button-icon"[\s\S]*?icon\('arrow-right'\)/);
-  assert.match(advisorCss, /\.advisor-welcome-path\s*\{[\s\S]*?border:\s*1px solid var\(--advisor-line\)/);
-  assert.match(advisorCss, /\.advisor-welcome-proof-grid\s*\{/);
-  assert.match(advisorCss, /\.advisor-welcome-assurance\s*\{[\s\S]*?background:\s*var\(--advisor-brand-soft\)/);
-  assert.match(advisorCss, /\.advisor-google-proof\s*\{[\s\S]*?background:\s*#fff/);
+  assert.match(advisor, /advisor-welcome-path-index[\s\S]*?>1<[\s\S]*?>2<[\s\S]*?>3</);
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-welcome-path\s*\{[\s\S]*?border-color:\s*#d7e0ea/);
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-welcome-proof-grid\s*\{/);
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-welcome-assurance,[\s\S]*?\.advisor-shell\[data-screen='welcome'\] \.advisor-google-proof\s*\{[\s\S]*?background:\s*transparent/);
   assert.match(advisorCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-visual-proof\s*\{\s*display:\s*none/);
   assert.doesNotMatch(advisor + html, /4,8\/5|150\+\s*avis|15\s*ans|Marc D\.|indépendant et objectif|SAV réactif|guide gratuit|réduisez vos coûts/i);
 });
 
 test('l accueil expose des preuves verifiables sans promesse universelle', function () {
   assert.match(advisor, /class="advisor-visual-trust"/);
-  assert.match(advisor, /13 ans[\s\S]*d’expérience terrain/);
-  assert.match(advisor, /3 fabricants[\s\S]*partenaires premium/);
+  assert.match(advisor, /Plus de 13 ans[\s\S]*d’expérience piscine/);
+  assert.match(advisor, /3 fabricants[\s\S]*partenaires/);
   assert.match(advisor, /Suivi du projet[\s\S]*avec un conseiller/);
-  assert.match(advisor, /Un conseiller pour votre projet/);
+  assert.match(advisor, /Un conseiller Diskoov confirme votre projet/);
   assert.match(advisor, /Merci pour vos précieux conseils et votre excellent accompagnement/);
   assert.match(advisor, /quoteAuthor: 'Dagmar S\.'/);
   assert.match(advisor, /· Avis Google/);
   assert.match(advisor, /class="advisor-google-proof"/);
   assert.match(advisor, /class="advisor-google-score"/);
+  assert.match(advisor, /class="advisor-google-volume"/);
   assert.match(advisor, /class="advisor-google-quote"/);
   assert.match(advisor, /class="advisor-google-link"/);
+  assert.match(advisor, /class="advisor-welcome-products"/);
+  assert.match(advisor, /data-action="welcome-family" data-value="covers"/);
+  assert.match(advisor, /data-action="welcome-family" data-value="shutters"/);
+  assert.match(advisor, /data-action="welcome-family" data-value="shelters"/);
   assert.doesNotMatch(advisor + advisorCss + html, /Guide Diskoov|advisor-welcome-guide|advisor_guide_open|guideUrl|les-erreurs-a-eviter/i);
   assert.doesNotMatch(advisor, /pose incluse pour tous|comparatif indépendant|solutions testées et sélectionnées/i);
+});
+
+test('l accueil utilise le portrait officiel et des pictogrammes propres aux familles', function () {
+  var portraitPath = 'assets/marque/xavier-dispot-diskoov.jpg';
+  assert.equal(fs.existsSync(path.join(root, portraitPath)), true);
+  assert.ok(fs.statSync(path.join(root, portraitPath)).size < 50 * 1024, 'le portrait doit rester léger');
+  assert.match(advisor, new RegExp(portraitPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(advisor, /cover: '<path d="M5 5\.5h14l3 5\.5H2l3-5\.5Z"/);
+  assert.match(advisor, /shutter: '<rect x="2" y="3\.5" width="20" height="16"/);
+  assert.match(advisor, /shelter: '<path d="M2\.5 19v-6\.5a6\.5 6\.5/);
+  assert.match(advisor, /deck: '<path d="m12 2 11 5\.5L12 13 1 7\.5 12 2Z"/);
+  assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-footer\s*\{\s*display:\s*none/);
+  assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-path > div,[\s\S]*?grid-template-columns:\s*34px minmax\(0, 1fr\)/);
+  assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-proof-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
 });
 
 test('la note Google est sourcee, datee et facile a actualiser', function () {
   assert.match(advisor, /rating: '4,9\/5'/);
   assert.match(advisor, /volume: 'Plus de 30 avis clients'/);
-  assert.match(advisor, /checkedAt: '2026-07-12'/);
+  assert.match(advisor, /checkedAt: '2026-07-14'/);
   assert.match(advisor, /https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=Diskoov/);
   assert.match(advisor, /data-action="google-reviews"/);
   assert.match(advisor, /advisor_google_reviews_open/);
@@ -353,8 +379,9 @@ test('le visuel principal du configurateur reste optimisé pour le mobile', func
 });
 
 test('les listes produit aident a choisir avant de demander une etude', function () {
-  assert.match(advisor, /Quelle protection choisir pour <span class="advisor-title-accent">votre piscine<\/span> \?/);
-  assert.match(advisor, /Quel type de protection recherchez-vous/);
+  assert.match(advisor, /Quelle protection choisir pour votre piscine&nbsp;\?/);
+  assert.match(advisor, /Explorez les protections Diskoov/);
+  assert.match(advisor, /Comparez selon vos priorités/);
   assert.match(advisor, /<\/div>'\s*\+ '<dl class="advisor-family-signals">/);
   assert.match(advisor, /class="advisor-family-signal"/);
   assert.match(advisor, /advisor-family-signal-icon/);
@@ -371,13 +398,14 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /Un seul rail de guidage, positionné du côté choisi avec vous/);
   assert.match(advisor, /Enroulement par manivelle et déroulement par sangle de rappel/);
   assert.match(advisor, /Choisir ce modèle/);
+  assert.match(advisor, /function modelPositioning\(item\)/);
+  assert.match(advisor, /Pour les bassins compacts · Motorisée/);
   assert.match(advisor, /Dimensions à étudier/);
   assert.match(advisor, /Cette forme demande une étude sur mesure/);
   assert.match(advisor, /function directUnavailableCopy\(item\)/);
   assert.doesNotMatch(advisor, /Hors plage (?:actuelle|connue)/);
   assert.match(advisor, /advisor-media-zoom/);
-  assert.match(advisor, /function familyImageNote\(family\)/);
-  assert.match(advisor, /Exemple : couverture Oré/);
+  assert.doesNotMatch(advisor, /familyImageNote\(family\) \+ '<\/div>'/);
   assert.match(advisor, /Projet sur mesure/);
   assert.doesNotMatch(advisor, /Visuel de gamme · à confirmer/);
   assert.match(advisorCss, /\.advisor-family-media\s*\{[\s\S]*?position:\s*relative/);
@@ -394,10 +422,10 @@ test('les listes produit aident a choisir avant de demander une etude', function
 
 test('les textes du conseiller restent directs et adaptes au prospect', function () {
   assert.match(advisor, /var STAGES = \['Vos priorités', 'Votre piscine', 'Vos recommandations'\]/);
-  assert.match(advisor, /Qu’attendez-vous de votre protection de piscine/);
-  assert.match(advisor, /Quelle est la forme et la taille de votre piscine/);
-  assert.match(advisor, /Trois protections à comparer/);
-  assert.match(advisor, /Comparer les solutions point par point/);
+  assert.match(advisor, /Qu’est-ce qui compte le plus pour vous/);
+  assert.match(advisor, /Parlez-nous de votre piscine/);
+  assert.match(advisor, /Trois solutions adaptées à vos priorités/);
+  assert.match(advisor, /Comparez selon vos priorités/);
   assert.doesNotMatch(advisor, /Choisissez par l’usage, pas par le jargon|Partez de vos usages, pas des noms de produits|Première sélection en ligne|vérification humaine|simplifiera vraiment|ce qui change vraiment|approches cohérentes|piste prioritaire|sélection équilibrée|fausses pistes/i);
 });
 
@@ -423,7 +451,9 @@ test('la piscine revele les dimensions apres la forme et reste empilee sur mobil
 
 test('les fiches produit masquent seulement les caracteristiques secondaires', function () {
   assert.match(advisor, /<details class="advisor-detail-more"><summary>[\s\S]*?Voir les caractéristiques[\s\S]*?Masquer les caractéristiques[\s\S]*?<\/summary>/);
-  assert.match(advisor, /advisor-detail-section advisor-detail-section--notice/);
+  assert.match(advisor, /advisor-detail-benefits/);
+  assert.match(advisor, /advisor-detail-selling--confirm/);
+  assert.match(advisor, /advisor-detail-process/);
   assert.match(advisorCss, /\.advisor-detail-more summary:focus-visible/);
 });
 
