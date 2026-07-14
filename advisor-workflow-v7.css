@@ -1420,7 +1420,7 @@
   min-height: 106px;
   display: grid;
   grid-template-columns: minmax(190px, 1fr) minmax(180px, auto) minmax(260px, 1fr);
-  align-items: center;
+  align-items: start;
   gap: 18px;
   margin: 0;
   padding: 14px 42px max(14px, env(safe-area-inset-bottom));
@@ -1429,10 +1429,11 @@
 }
 
 .advisor-detail-footer > .advisor-info-button {
-  min-height: 52px;
+  min-height: 54px;
 }
 
 .advisor-detail-offer {
+  align-self: center;
   text-align: center;
 }
 

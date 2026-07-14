@@ -10,6 +10,7 @@ var root = path.resolve(__dirname, '..');
 var html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 var advisor = fs.readFileSync(path.join(root, 'advisor-v2.js'), 'utf8');
 var advisorCss = fs.readFileSync(path.join(root, 'advisor-v2.css'), 'utf8');
+var advisorWorkflowCss = fs.readFileSync(path.join(root, 'advisor-workflow-v7.css'), 'utf8');
 var configuratorWorkflow = fs.readFileSync(path.join(root, 'configurator-workflow-v2.js'), 'utf8');
 var api = fs.readFileSync(path.join(root, 'api', 'send-email.ts'), 'utf8');
 
@@ -98,6 +99,12 @@ test('la famille couverture n’affiche aucun prix statique contradictoire', fun
 test('le CTA recommandé reste visible dans le footer des résultats desktop', function () {
   assert.match(advisor, /recommended \? '<button type="button" class="advisor-button" data-action="choose"/);
   assert.doesNotMatch(advisorCss, /min-width:\s*901px[\s\S]{0,220}data-action='choose'[\s\S]{0,80}display:\s*none/);
+});
+
+test('les actions du détail produit restent parfaitement alignées', function () {
+  assert.match(advisorWorkflowCss, /\.advisor-detail-footer\s*\{[^}]*align-items:\s*start;/);
+  assert.match(advisorWorkflowCss, /\.advisor-detail-footer\s*>\s*\.advisor-info-button\s*\{[^}]*min-height:\s*54px;/);
+  assert.match(advisorWorkflowCss, /\.advisor-detail-offer\s*\{[^}]*align-self:\s*center;/);
 });
 
 test('la vue des solutions précède le produit principal et le comparatif reste facultatif', function () {
