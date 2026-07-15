@@ -358,6 +358,10 @@ test('l accueil utilise le portrait officiel et des pictogrammes propres aux fam
   assert.match(icons, /shutter:\s*\{ viewBox: '0 0 64 48'/);
   assert.match(icons, /shelter:\s*\{ viewBox: '0 0 64 48'/);
   assert.match(icons, /deck:\s*\{ viewBox: '0 0 64 48'/);
+  assert.match(icons, /cover:[\s\S]*?M14 21l5-14/);
+  assert.match(icons, /shutter:[\s\S]*?M12 11h40M12 16\.5h40/);
+  assert.match(icons, /shelter:[\s\S]*?M5 28h48M5 34h48/);
+  assert.match(icons, /deck:[\s\S]*?M13 18\.5 32 11l19 7\.5/);
   assert.match(icons, /automatic:\s*\{ body: '<path d="M8 3\.5v17/);
   assert.match(icons, /economy:\s*\{ body: '<path d="M17\.8 7\.2A6\.8 6\.8/);
   assert.match(icons, /compass:\s*\{ body: '<circle cx="12" cy="12" r="9"/);
@@ -528,7 +532,7 @@ test('les pictogrammes métier utilisent des proportions dédiées et des contou
   assert.match(icons, /'basin-rect':\s*\{ viewBox: '0 0 64 44'/);
   assert.equal((html.match(/data-diskoov-icon="basin-/g) || []).length, 3);
   assert.doesNotMatch(advisorWorkflowCss, /advisor-icon--deck \* \{[^}]*stroke-width:/);
-  assert.match(icons, /shelter:[\s\S]*?M3 39h57/);
+  assert.match(icons, /shelter:[\s\S]*?M3 39h58/);
   assert.match(advisor, /window\.DiskoovIcons\.render/);
   assert.match(advisorCss, /\.advisor-compare-family-icon svg\s*\{[^}]*width:\s*20px[^}]*stroke-width:\s*1\.3/);
 });
