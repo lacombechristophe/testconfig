@@ -12,6 +12,29 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.configurator-v2 .config-basin-icon,
+.configurator-v2 .config-trust-icon,
+.configurator-v2 .config-note-icon,
+.configurator-v2 .success-process-icon,
+.configurator-v2 .file-zone-icon,
+.configurator-v2 .periph-icon,
+.configurator-v2 .visual-zoom-icon {
+  display: block;
+  flex: 0 0 auto;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+
+.configurator-v2 .config-basin-icon *,
+.configurator-v2 .config-trust-icon *,
+.configurator-v2 .config-note-icon *,
+.configurator-v2 .success-process-icon *,
+.configurator-v2 .file-zone-icon *,
+.configurator-v2 .periph-icon *,
+.configurator-v2 .visual-zoom-icon * {
+  vector-effect: non-scaling-stroke;
+}
+
 .configurator-v2 .vis {
   flex: 0 0 46.6vw;
   background: #0b2d55;
@@ -1591,6 +1614,8 @@
 
   .configurator-v2 .shape-btn svg {
     width: 46px;
+    height: 34px;
+    stroke-width: 1.6;
   }
 
   .configurator-v2 .guided-summary {

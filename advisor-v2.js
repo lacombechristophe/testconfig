@@ -1090,8 +1090,12 @@
     var proof = productSalesProof(item);
     var reasons = Array.isArray(item.reasons) ? item.reasons.map(function (reason) { return publicReasonText(reason, item); }) : [];
     var gallery = productGalleryImages(item);
+    var thumbnailImages = gallery.slice(1);
+    var thumbnails = thumbnailImages.length
+      ? '<div class="advisor-detail-thumbnails" aria-label="Autres photos du produit">' + thumbnailImages.map(function (image, index) { return '<button type="button" data-action="detail-image" data-image="' + escapeHtml(image) + '" aria-label="Afficher la photo ' + (index + 2) + ' de ' + gallery.length + '" aria-pressed="false"><img src="' + escapeHtml(image) + '" alt="" width="180" height="120" loading="lazy" decoding="async"></button>'; }).join('') + '</div>'
+      : '';
     var media = gallery.length
-      ? '<div class="advisor-detail-gallery"><button type="button" class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(gallery[0]) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img data-detail-main-image src="' + escapeHtml(gallery[0]) + '" alt="' + escapeHtml(item.title) + '" width="1200" height="800" decoding="async">' + productImageNote(item) + '<span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button><div class="advisor-detail-thumbnails" aria-label="Photos du produit">' + gallery.map(function (image, index) { return '<button type="button" data-action="detail-image" data-image="' + escapeHtml(image) + '" aria-label="Afficher la photo ' + (index + 1) + ' de ' + gallery.length + '" aria-pressed="' + (index === 0) + '"><img src="' + escapeHtml(image) + '" alt="" width="180" height="120" loading="lazy" decoding="async"></button>'; }).join('') + '</div>' + detailFamilyCatalogTemplate(item) + '</div>'
+      ? '<div class="advisor-detail-gallery' + (gallery.length < 2 ? ' advisor-detail-gallery--single' : '') + '"><button type="button" class="advisor-detail-media advisor-product-media--' + safeClass(item.id) + '" data-action="preview" data-image="' + escapeHtml(gallery[0]) + '" data-alt="' + escapeHtml(item.title) + '" aria-label="Agrandir la photo : ' + escapeHtml(item.title) + '"><img data-detail-main-image src="' + escapeHtml(gallery[0]) + '" alt="' + escapeHtml(item.title) + '" width="1200" height="800" decoding="async">' + productImageNote(item) + '<span class="advisor-media-zoom" aria-hidden="true">' + icon('zoom') + '</span></button>' + thumbnails + detailFamilyCatalogTemplate(item) + '</div>'
       : '<div class="advisor-detail-media advisor-detail-media--fallback" aria-hidden="true">' + icon(item.family === 'shelter' ? 'season' : item.family === 'mobile-deck' ? 'space' : 'shield') + '</div>';
     var studyOnly = detailSource !== 'direct' && item.studyOnly === true;
     var directBlocked = !studyOnly && detailSource === 'direct' && !directSelectionAllowed(item);
@@ -1174,20 +1178,40 @@
   }
 
   function productGalleryImages(item) {
-    var extras = {
-      ore_compact: ['assets/produits/conseiller/ore-ouverte.webp', 'assets/produits/conseiller/ore-encombrements.webp'],
-      ore_essential: ['assets/produits/ore/ore-ouverte.jpg', 'assets/produits/ore/ore-fermee.jpg', 'assets/produits/ore/decoupe-bloc-filtration.jpg'],
-      bab: ['assets/produits/bab/couverture-a-barres.jpg', 'assets/produits/bab/rolling-up.jpg'],
-      volet_hs: ['assets/produits/volets-hors-sol/enroulement-hors-sol.jpg', 'assets/produits/volets-hors-sol/tablier-hors-sol.jpg', 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg'],
-      volet_immerge: ['assets/produits/volets-immerges/volet-immerge-ouvert.jpg', 'assets/produits/volets-immerges/volet-immerge-gris.jpg', 'assets/produits/volets-immerges/fond-bassin-caillebotis-1.jpg'],
-      ul: ['assets/produits/abris/master-ultra-bas-1-2.jpg'],
-      m18: ['assets/produits/abris/master-bas-1-8.jpg'],
-      mid: ['assets/produits/abris/master-mi-haut.jpg']
+    var curated = {
+      ore_compact: ['assets/produits/conseiller/ore-fermee.webp', 'assets/produits/conseiller/ore-ouverte.webp', 'assets/produits/conseiller/ore-encombrements.webp'],
+      ore_essential: ['assets/produits/conseiller/ore-ouverte.webp', 'assets/produits/ore/ore-fermee.jpg', 'assets/produits/ore/decoupe-bloc-filtration.jpg'],
+      bab: ['assets/produits/conseiller/bab.webp', 'assets/produits/bab/couverture-a-barres.jpg'],
+      volet_hs: ['assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp', 'assets/produits/conseiller/volet-hors-sol.webp'],
+      volet_immerge: ['assets/produits/conseiller/volet-immerge.webp', 'assets/produits/volets-immerges/volet-immerge-blanc.jpg'],
+      ul: ['assets/produits/conseiller/abri-ultra-bas.webp'],
+      m18: ['assets/produits/conseiller/abri-bas.webp', 'assets/produits/abris/master-bas-1-8.jpg'],
+      m30: ['assets/produits/conseiller/abri-bas.webp', 'assets/produits/abris/master-bas-1-8.jpg'],
+      m50: ['assets/produits/conseiller/abri-bas.webp', 'assets/produits/abris/master-bas-1-8.jpg'],
+      mid: ['assets/produits/conseiller/abri-mi-haut.webp']
+    };
+    var lowResolution = {
+      'assets/produits/volets-hors-sol/enroulement-hors-sol.jpg': true,
+      'assets/produits/volets-hors-sol/tablier-hors-sol.jpg': true,
+      'assets/produits/volets-immerges/fond-bassin-caillebotis-1.jpg': true,
+      'assets/produits/volets-immerges/fond-bassin-caillebotis-2.jpg': true,
+      'assets/produits/volets-immerges/volet-immerge-ouvert.jpg': true,
+      'assets/produits/bab/rolling-up.jpg': true
+    };
+    var visualDuplicates = {
+      'assets/produits/ore/ore-ouverte.jpg': 'assets/produits/conseiller/ore-ouverte.webp',
+      'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg': 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.webp',
+      'assets/produits/abris/master-ultra-bas-1-2.jpg': 'assets/produits/conseiller/abri-ultra-bas.webp',
+      'assets/produits/abris/master-mi-haut.jpg': 'assets/produits/conseiller/abri-mi-haut.webp'
     };
     var images = [];
-    if (item && item.image) images.push(item.image);
-    (extras[item && item.id] || []).forEach(function (image) {
-      if (images.indexOf(image) === -1) images.push(image);
+    (curated[item && item.id] || [item && item.image]).forEach(function (image) {
+      if (!image || lowResolution[image]) return;
+      var key = visualDuplicates[image] || image;
+      var exists = images.some(function (entry) {
+        return (visualDuplicates[entry] || entry) === key;
+      });
+      if (!exists) images.push(image);
     });
     return images.slice(0, 3);
   }
@@ -2106,63 +2130,15 @@
   }
 
   function icon(name) {
-    var paths = {
-      clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-      shield: '<path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/>',
-      user: '<circle cx="12" cy="8" r="3"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/>',
-      clean: '<path d="M7 3v7M3.5 6.5h7M17 4v4M15 6h4"/><path d="M4 15c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1M4 19c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1"/>',
-      safety: '<path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/>',
-      season: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-      aesthetics: '<path d="M5 19c6 0 11-5 14-14-9 3-14 8-14 14Z"/><path d="M5 19c3-4 6-7 10-10"/>',
-      automatic: '<path d="M8 4v16M5 7l3-3 3 3M16 20V4M13 17l3 3 3-3"/>',
-      space: '<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/>',
-      economy: '<path d="M17 7.5A6 6 0 1 0 17 16.5M5.5 10h8M5.5 14h8"/>',
-      gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
-      comfort: '<path d="M7 13V7a3 3 0 0 1 6 0v6M4 13h13a3 3 0 0 1 3 3v1H8a4 4 0 0 1-4-4Z"/><path d="M7 17v4M18 17v4"/>',
-      compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
-      motor: '<rect x="5" y="7" width="14" height="11" rx="2"/><path d="M9 7V4h6v3M8 10h8M8 13h8M8 16h5M3 9H1v7h2M21 9h2v7h-2"/>',
-      'low-protection': '<path d="M12 3 6 5.7v4.4c0 3.7 2.2 6.6 6 8.6 3.8-2 6-4.9 6-8.6V5.7L12 3Z"/><path d="M4 20c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1"/>',
-      snowflake: '<path d="M12 2v20M4 6l16 12M20 6 4 18M9 4l3 3 3-3M9 20l3-3 3 3M4 10l4 1-1-4M20 14l-4-1 1 4M17 7l-1 4 4-1M7 17l1-4-4 1"/>',
-      touch: '<path d="M8 11V6a2 2 0 0 1 4 0v5M12 10V7a2 2 0 0 1 4 0v4M16 10V9a2 2 0 0 1 4 0v5c0 5-3 8-8 8h-1c-3 0-5-1-7-4l-2-3a2 2 0 0 1 3-2l3 2"/>',
-      eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>',
-      'eye-off': '<path d="M3 3l18 18M10.6 6.2A11 11 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.7M6.3 6.3C3.5 8.1 2 12 2 12s3.5 6 10 6c1 0 2-.2 2.8-.4M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
-      tape: '<circle cx="9" cy="11" r="6"/><circle cx="9" cy="11" r="2"/><path d="M9 17h10v4H9M13 17v2M17 17v2"/>',
-      bolt: '<path d="M13 2 5 14h6l-1 8 9-13h-6V2Z"/>',
-      access: '<path d="M4 22c2-5 5-7 8-7s6-2 8-7"/><path d="M6 15V8M3 10c0-2 1-4 3-4s3 2 3 4c0 2-1 3-3 3s-3-1-3-3ZM18 10V4M15 6c0-2 1-4 3-4s3 2 3 4c0 2-1 3-3 3s-3-1-3-3Z"/>',
-      check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3 4.8-5"/>',
-      measure: '<path d="m5 17 12-12 2 2L7 19l-2-2Z"/><path d="m10 12 2 2M13 9l2 2M7 15l2 2"/>',
-      pool: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 10c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0M6 14c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0"/>',
-      install: '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/>',
-      mechanism: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1"/><path d="M12 12h8M17 9v6"/>',
-      power: '<path d="M9 3v6M15 3v6M7 8h10v2a5 5 0 0 1-5 5v6M9 21h6"/>',
-      manual: '<path d="M18 11V6a2 2 0 0 0-4 0v4M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M6 14v-2a2 2 0 0 0-4 0v4a6 6 0 0 0 6 6h4a8 8 0 0 0 8-8v-3a2 2 0 0 0-4 0v1"/>',
-      move: '<path d="m18 8 4 4-4 4M6 8l-4 4 4 4M2 12h20"/>',
-      cover: '<path d="M12 7h40l8 16H4L12 7Z"/><path d="M4 33c4 0 4 4 8 4s4-4 8-4 4 4 8 4 4-4 8-4 4 4 8 4 4-4 8-4 4 4 8 4"/>',
-      bars: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 8h16M4 12h16M4 16h16"/>',
-      shutter: '<rect x="6" y="5" width="52" height="31" rx="2.5"/><path d="M11 11h42M11 17h42M11 23h42M11 29h42"/><path d="M6 41c3.25 0 3.25-3 6.5-3s3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3"/>',
-      shelter: '<path d="M5 39V24C5 14 13 6 23 6s18 8 18 18v15"/><path d="M23 39V21c0-8 7-15 15-15s15 7 15 15v18"/><path d="M3 39h55"/>',
-      deck: '<path d="m32 7 29 11-29 10L3 18 32 7Z"/><path d="M3 25l29 10 29-10"/><path d="M3 32l29 9 29-9"/>',
-      lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>',
-      verified: '<path fill="currentColor" stroke="none" d="m12 2.2 2.1 1.2 2.4-.2 1.2 2.1 2.1 1.2-.2 2.4 1.2 2.1-1.2 2.1.2 2.4-2.1 1.2-1.2 2.1-2.4-.2-2.1 1.2-2.1-1.2-2.4.2-1.2-2.1-2.1-1.2.2-2.4L3.2 12l1.2-2.1-.2-2.4 2.1-1.2 1.2-2.1 2.4.2L12 2.2Z"/><path stroke="#fff" stroke-width="1.8" d="m8.6 12 2.1 2.1 4.7-4.7"/>',
-      certified: '<path d="M12 3 5 6v5c0 4.4 2.7 7.7 7 10 4.3-2.3 7-5.6 7-10V6l-7-3Z"/><path d="m8.7 12 2.1 2.1 4.7-4.7"/>',
-      route: '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 5h4a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8"/><path d="m15 15 2 2-2 2"/>',
-      users: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8"/>',
-      message: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3v-7a4 4 0 0 1-1-2.6V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v8Z"/>',
-      target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
-      compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
-      balance: '<path d="M12 3v18M4 6h16M8 21h8"/><path d="m7 6-4 8h8L7 6Zm10 0-4 8h8l-4-8Z"/><path d="M3 14c.7 2 2 3 4 3s3.3-1 4-3M13 14c.7 2 2 3 4 3s3.3-1 4-3"/>',
-      'arrow-right': '<path d="M5 12h14M13 6l6 6-6 6"/>',
-      star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
-      'shape-rect': '<rect x="7" y="5" width="110" height="58" rx="3"/>',
-      'shape-oval': '<ellipse cx="62" cy="34" rx="49" ry="30"/>',
-      'shape-free': '<path d="M21 21C27 7 45 3 62 9c12 4 16 9 29 8 13-1 20 10 16 24-5 16-19 23-42 20-23 3-43-4-47-17-2-8-1-16 3-23Z"/>',
-      zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4M10.5 7.5v6M7.5 10.5h6"/>',
-      document: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 11h6M9 15h6M9 19h4"/>',
-      unsure: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/>'
-    };
-    var isPoolShape = name.indexOf('shape-') === 0;
-    var isProtectionFamily = ['cover', 'shutter', 'shelter', 'deck'].indexOf(name) !== -1;
-    var viewBox = isPoolShape ? '0 0 124 68' : isProtectionFamily ? '0 0 64 48' : '0 0 24 24';
-    return '<svg class="advisor-icon advisor-icon--' + safeClass(name) + '" viewBox="' + viewBox + '" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.unsure) + '</svg>';
+    var className = 'advisor-icon advisor-icon--' + safeClass(name);
+    if (window.DiskoovIcons && typeof window.DiskoovIcons.render === 'function') {
+      return window.DiskoovIcons.render(name, {
+        className: className,
+        width: 22,
+        height: 22,
+        strokeWidth: 1.7
+      });
+    }
+    return '<svg class="' + className + '" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/></svg>';
   }
 }());

@@ -2878,9 +2878,10 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260715-v22-shape-cards">
-  <link rel="stylesheet" href="advisor-workflow-v7.css?v=20260715-v22-shape-cards">
-  <link rel="stylesheet" href="configurator-workflow-v2.css?v=20260715-v22-shape-cards">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260715-v24-gallery-icons">
+  <link rel="stylesheet" href="advisor-workflow-v7.css?v=20260715-v24-gallery-icons">
+  <link rel="stylesheet" href="configurator-workflow-v2.css?v=20260715-v24-gallery-icons">
+  <script src="diskoov-icons.js?v=20260715-v24-gallery-icons"></script>
 
   <noscript>
     <style>
@@ -2943,13 +2944,8 @@
 
       <button type="button" class="vis-open-btn" id="vis-open-btn" onclick="openVisualLightbox(event)"
         aria-label="Agrandir la photo du produit">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="16.5" y1="16.5" x2="21" y2="21" />
-          <line x1="11" y1="8" x2="11" y2="14" />
-          <line x1="8" y1="11" x2="14" y2="11" />
-        </svg>
+        <i data-diskoov-icon="zoom" data-icon-class="visual-zoom-icon" data-icon-width="14"
+          data-icon-height="14" data-icon-stroke="2"></i>
         <span>Agrandir</span>
       </button>
 
@@ -2971,9 +2967,9 @@
       </div>
 
       <div class="config-visual-trust" aria-hidden="true">
-        <span><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg><b>Sécurité<small>adaptée au bassin</small></b></span>
-        <span><svg viewBox="0 0 24 24"><path d="m4 20 8.5-8.5M14 4l6 6M16.5 2.5l5 5-3 3-5-5 3-3Z"/><path d="M5 5.5 8.5 9 5 12.5 1.5 9 5 5.5Z"/></svg><b>Esthétique<small>finitions choisies avec vous</small></b></span>
-        <span><svg viewBox="0 0 24 24"><path d="M9.4 3.5 10 1h4l.6 2.5 2 .8 2.2-1.3 2.2 2.2-1.3 2.2.8 2L23 10v4l-2.5.6-.8 2 1.3 2.2-2.2 2.2-2.2-1.3-2 .8L14 23h-4l-.6-2.5-2-.8L5.2 21 3 18.8l1.3-2.2-.8-2L1 14v-4l2.5-.6.8-2L3 5.2 5.2 3l2.2 1.3 2-.8Z"/><circle cx="12" cy="12" r="3.2"/></svg><b>Faisabilité<small>validée avant devis</small></b></span>
+        <span><i data-diskoov-icon="shield" data-icon-class="config-trust-icon"></i><b>Sécurité<small>adaptée au bassin</small></b></span>
+        <span><i data-diskoov-icon="tools" data-icon-class="config-trust-icon"></i><b>Esthétique<small>finitions choisies avec vous</small></b></span>
+        <span><i data-diskoov-icon="gear" data-icon-class="config-trust-icon"></i><b>Faisabilité<small>validée avant devis</small></b></span>
       </div>
 
       <div class="config-success-visual" aria-hidden="true">
@@ -3025,30 +3021,17 @@
           <div class="shape-grid" role="radiogroup" aria-labelledby="lbl-shape" aria-describedby="shape-hint">
             <button type="button" class="shape-btn" id="sh-rect" role="radio" aria-checked="false" tabindex="0"
               onclick="selShape('rect')">
-              <svg viewBox="0 0 64 44">
-                <rect x="13" y="9" width="38" height="26" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M18 16h28M18 21h28M18 26h28" fill="none" stroke="currentColor" stroke-width="1"
-                  opacity=".28" stroke-linecap="round" />
-              </svg>
+              <i data-diskoov-icon="basin-rect" data-icon-class="config-basin-icon" data-icon-stroke="1.8"></i>
               <span>Rectangle</span>
             </button>
             <button type="button" class="shape-btn" id="sh-oval" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('oval')">
-              <svg viewBox="0 0 64 44">
-                <ellipse cx="32" cy="22" rx="20" ry="13" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <ellipse cx="32" cy="22" rx="16" ry="9" fill="none" stroke="currentColor" stroke-width="1"
-                  opacity=".28" />
-              </svg>
+              <i data-diskoov-icon="basin-oval" data-icon-class="config-basin-icon" data-icon-stroke="1.8"></i>
               <span>Ovale / ronde</span>
             </button>
             <button type="button" class="shape-btn" id="sh-libre" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('libre')">
-              <svg viewBox="0 0 64 44">
-                <path d="M13 29C10 20 15 10 24 9c7-1 10 4 16 4 8 0 12 6 9 13-3 8-13 10-22 8-7-1-11-2-14-5Z"
-                  fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M18 27c-2-6 2-12 8-13 5-1 8 3 13 3 5 0 8 4 6 8-2 5-9 7-16 5-5-1-8-1-11-3Z"
-                  fill="none" stroke="currentColor" stroke-width="1" opacity=".28" />
-              </svg>
+              <i data-diskoov-icon="basin-free" data-icon-class="config-basin-icon" data-icon-stroke="1.8"></i>
               <span>Forme libre</span>
             </button>
           </div>
@@ -3139,11 +3122,8 @@
               ondrop="event.preventDefault();this.classList.remove('drag');handleFileDrop(event)">
               <input type="file" id="plan-file" accept="image/*,.pdf" onchange="handleFileSelect(this)"
                 aria-label="Joindre une photo ou un plan de piscine">
-              <svg class="file-zone-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 8a2 2 0 012-2h2l1.4-1.8A2 2 0 0111 3.5h2a2 2 0 011.6.7L16 6h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2z" />
-                <circle cx="12" cy="13" r="3.4" />
-              </svg>
+              <i data-diskoov-icon="camera" data-icon-class="file-zone-icon" data-icon-width="30"
+                data-icon-height="30" data-icon-stroke="1.6"></i>
               <div class="file-zone-text">Ajouter une photo ou un plan</div>
               <div class="file-zone-hint">Photo JPG, PNG ou WebP recommandée · PDF accepté · 3 Mio maximum</div>
             </div>
@@ -3295,10 +3275,7 @@
         </div>
 
         <div class="config-basin-note" id="config-basin-note" role="note">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M12 10v6M12 7h.01"></path>
-          </svg>
+          <i data-diskoov-icon="info" data-icon-class="config-note-icon"></i>
           <span>Vos mesures peuvent être approximatives. Diskoov les confirme avant devis.</span>
         </div>
 
@@ -3315,12 +3292,7 @@
           </div>
           <div class="or">
             <div style="display:flex;align-items:center">
-              <svg class="periph-icon" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round"
-                stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="5" />
-                <path
-                  d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-              </svg>
+              <i data-diskoov-icon="season" data-icon-class="periph-icon" data-icon-stroke="1.5"></i>
               <div>
                 <span class="ol">Filtration hors-bord</span>
                 <div style="font-size:11.5px;color:var(--faint);margin-top:2px">Bloc de filtration installé hors du
@@ -3757,9 +3729,9 @@
           <div id="suc-ref"></div>
 
           <div class="success-process" aria-label="Prochaines étapes">
-            <div><span>1</span><svg viewBox="0 0 24 24"><path d="M4 15a4 4 0 0 0 4 4h4l4 3v-5h1a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v8Z"/></svg><strong>Échange avec Diskoov</strong><small>Vos besoins et vos réponses sont repris avec vous.</small></div>
-            <div><span>2</span><svg viewBox="0 0 24 24"><path d="m5 17 12-12 2 2L7 19l-2-2Z"/><path d="m10 12 2 2M13 9l2 2M7 15l2 2"/></svg><strong>Vérification technique</strong><small>Faisabilité, pose, accès et options sont confirmés.</small></div>
-            <div><span>3</span><svg viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 11h6M9 15h6M9 19h4"/></svg><strong>Devis détaillé</strong><small>La proposition est préparée après vérification du projet.</small></div>
+            <div><span>1</span><i data-diskoov-icon="message" data-icon-class="success-process-icon"></i><strong>Échange avec Diskoov</strong><small>Vos besoins et vos réponses sont repris avec vous.</small></div>
+            <div><span>2</span><i data-diskoov-icon="measure" data-icon-class="success-process-icon"></i><strong>Vérification technique</strong><small>Faisabilité, pose, accès et options sont confirmés.</small></div>
+            <div><span>3</span><i data-diskoov-icon="document" data-icon-class="success-process-icon"></i><strong>Devis détaillé</strong><small>La proposition est préparée après vérification du projet.</small></div>
           </div>
 
           <div class="success-details">
@@ -3855,9 +3827,12 @@
     </div>
   </div>
 
+  <script>
+    if (window.DiskoovIcons) window.DiskoovIcons.hydrate(document);
+  </script>
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260715-v22-shape-cards"></script>
-  <script src="advisor-engine.js?v=20260715-v22-shape-cards"></script>
+  <script src="product-rules.js?v=20260715-v24-gallery-icons"></script>
+  <script src="advisor-engine.js?v=20260715-v24-gallery-icons"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -7068,8 +7043,8 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="configurator-workflow-v2.js?v=20260715-v22-shape-cards"></script>
-  <script src="advisor-v2.js?v=20260715-v22-shape-cards"></script>
+  <script src="configurator-workflow-v2.js?v=20260715-v24-gallery-icons"></script>
+  <script src="advisor-v2.js?v=20260715-v24-gallery-icons"></script>
 </body>
 
 </html>

@@ -9,6 +9,7 @@ var vm = require('node:vm');
 var root = path.resolve(__dirname, '..');
 var html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 var advisor = fs.readFileSync(path.join(root, 'advisor-v2.js'), 'utf8');
+var icons = fs.readFileSync(path.join(root, 'diskoov-icons.js'), 'utf8');
 var advisorCss = fs.readFileSync(path.join(root, 'advisor-v2.css'), 'utf8');
 var advisorWorkflowCss = fs.readFileSync(path.join(root, 'advisor-workflow-v7.css'), 'utf8');
 var configuratorWorkflow = fs.readFileSync(path.join(root, 'configurator-workflow-v2.js'), 'utf8');
@@ -353,14 +354,14 @@ test('l accueil utilise le portrait officiel et des pictogrammes propres aux fam
   assert.equal(fs.existsSync(path.join(root, portraitPath)), true);
   assert.ok(fs.statSync(path.join(root, portraitPath)).size < 50 * 1024, 'le portrait doit rester léger');
   assert.match(advisor, new RegExp(portraitPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(advisor, /cover: '<path d="M12 7h40l8 16H4L12 7Z"/);
-  assert.match(advisor, /shutter: '<rect x="6" y="5" width="52" height="31"/);
-  assert.match(advisor, /shelter: '<path d="M5 39V24C5 14 13 6 23 6/);
-  assert.match(advisor, /deck: '<path d="m32 7 29 11-29 10L3 18 32 7Z"/);
-  assert.match(advisor, /automatic: '<path d="M8 4v16M5 7l3-3 3 3M16 20V4/);
-  assert.match(advisor, /economy: '<path d="M17 7\.5A6 6 0 1 0 17 16\.5/);
-  assert.match(advisor, /compass: '<circle cx="12" cy="12" r="9"/);
-  assert.match(advisor, /certified: '<path d="M12 3 5 6v5/);
+  assert.match(icons, /cover:\s*\{ viewBox: '0 0 64 48'/);
+  assert.match(icons, /shutter:\s*\{ viewBox: '0 0 64 48'/);
+  assert.match(icons, /shelter:\s*\{ viewBox: '0 0 64 48'/);
+  assert.match(icons, /deck:\s*\{ viewBox: '0 0 64 48'/);
+  assert.match(icons, /automatic:\s*\{ body: '<path d="M8 3\.5v17/);
+  assert.match(icons, /economy:\s*\{ body: '<path d="M17\.8 7\.2A6\.8 6\.8/);
+  assert.match(icons, /compass:\s*\{ body: '<circle cx="12" cy="12" r="9"/);
+  assert.match(icons, /certified:\s*'shield'/);
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-footer\s*\{\s*display:\s*none/);
   assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-path > div,[\s\S]*?grid-template-columns:\s*34px minmax\(0, 1fr\)/);
   assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-proof-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
@@ -523,13 +524,27 @@ test('les formes libres conservent uniquement les études produit documentées',
 });
 
 test('les pictogrammes métier utilisent des proportions dédiées et des contours cohérents', function () {
-  assert.match(advisor, /isPoolShape \? '0 0 124 68' : isProtectionFamily \? '0 0 64 48'/);
-  assert.equal((html.match(/viewBox="0 0 64 44"/g) || []).length, 3);
+  assert.match(icons, /'shape-rect':\s*\{ viewBox: '0 0 124 68'/);
+  assert.match(icons, /'basin-rect':\s*\{ viewBox: '0 0 64 44'/);
+  assert.equal((html.match(/data-diskoov-icon="basin-/g) || []).length, 3);
   assert.doesNotMatch(advisorWorkflowCss, /advisor-icon--deck \* \{[^}]*stroke-width:/);
-  assert.match(advisor, /shelter: '<path[^']*M3 39h55/);
+  assert.match(icons, /shelter:[\s\S]*?M3 39h57/);
+  assert.match(advisor, /window\.DiskoovIcons\.render/);
   assert.match(advisorCss, /\.advisor-compare-family-icon svg\s*\{[^}]*width:\s*20px[^}]*stroke-width:\s*1\.3/);
 });
 
+test('les galeries produit evitent les photos floues et les doublons visibles', function () {
+  assert.match(advisor, /function productGalleryImages\(item\)/);
+  assert.match(advisor, /volet_hs:\s*\['assets\/produits\/volets-hors-sol\/volet-hors-sol-escalier-solaire\.webp', 'assets\/produits\/conseiller\/volet-hors-sol\.webp'\]/);
+  assert.match(advisor, /volet_immerge:\s*\['assets\/produits\/conseiller\/volet-immerge\.webp', 'assets\/produits\/volets-immerges\/volet-immerge-blanc\.jpg'\]/);
+  ['enroulement-hors-sol.jpg', 'tablier-hors-sol.jpg', 'fond-bassin-caillebotis-1.jpg', 'volet-immerge-ouvert.jpg', 'rolling-up.jpg'].forEach(function (asset) {
+    assert.match(advisor, new RegExp(asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "': true"));
+  });
+  assert.match(advisor, /advisor-detail-gallery--single/);
+  assert.match(advisor, /var thumbnailImages = gallery\.slice\(1\)/);
+  assert.doesNotMatch(advisor, /gallery\.map\(function \(image, index\)/);
+  assert.match(advisorWorkflowCss, /\.advisor-detail-gallery--single\s*\{[^}]*grid-template-rows:\s*minmax\(0, 62%\) minmax\(0, 38%\)/);
+});
 test('le configurateur garde une grille fidèle sans casser les petits écrans', function () {
   assert.match(configuratorWorkflowCss, /column-gap:\s*clamp\(64px, 5\.25vw, 88px\)/);
   assert.match(configuratorWorkflowCss, /@media \(min-width: 1181px\) and \(max-width: 1440px\)[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(240px, \.72fr\)/);
