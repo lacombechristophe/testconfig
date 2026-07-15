@@ -10,7 +10,7 @@
 
   var stages = ['basin', 'installation', 'options', 'contact'];
   var stageSections = {
-    basin: ['s-shape', 's-dim', 's-libre', 's-stair'],
+    basin: ['s-shape', 's-dim', 's-libre', 's-stair', 'config-basin-note'],
     installation: ['s-pool-photo', 's-periph', 's-equipment', 's-cm', 's-sm', 's-oth', 's-product-detail'],
     options: ['s-mem', 's-hab', 's-co', 's-so', 's-tl', 's-product-detail'],
     contact: ['s-frm']
@@ -22,7 +22,7 @@
     contact: 'Vos coordonnées'
   };
   var stageCopy = {
-    basin: 'Les mesures approximatives suffisent pour commencer.',
+    basin: 'Estimation après vérification du projet.',
     installation: 'Les contraintes de pose sont vérifiées avant devis.',
     options: 'Choisissez seulement les options utiles à votre projet.',
     contact: 'Vos coordonnées servent uniquement à reprendre votre projet avec vous.'

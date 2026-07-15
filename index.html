@@ -2457,7 +2457,7 @@
         min-height: 124px;
         flex: none;
         width: 100%;
-        transition: height .22s ease, min-height .22s ease;
+        transition: opacity .18s ease, transform .18s ease;
       }
 
       .root.mobile-compact .vis {
@@ -2878,9 +2878,9 @@
     }
   </style>
 
-  <link rel="stylesheet" href="advisor-v2.css?v=20260714-v18-final-redesign">
-  <link rel="stylesheet" href="advisor-workflow-v7.css?v=20260714-v18-final-redesign">
-  <link rel="stylesheet" href="configurator-workflow-v2.css?v=20260714-v18-final-redesign">
+  <link rel="stylesheet" href="advisor-v2.css?v=20260715-v21-final-qa">
+  <link rel="stylesheet" href="advisor-workflow-v7.css?v=20260715-v21-final-qa">
+  <link rel="stylesheet" href="configurator-workflow-v2.css?v=20260715-v21-final-qa">
 
   <noscript>
     <style>
@@ -2971,9 +2971,9 @@
       </div>
 
       <div class="config-visual-trust" aria-hidden="true">
-        <span><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg><b>Compatibilité<small>vérifiée avant devis</small></b></span>
-        <span><svg viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/></svg><b>Pose<small>étudiée avec vous</small></b></span>
-        <span><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3v-7a4 4 0 0 1-1-2.6V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v8Z"/></svg><b>Accompagnement<small>par un conseiller</small></b></span>
+        <span><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg><b>Sécurité<small>adaptée au bassin</small></b></span>
+        <span><svg viewBox="0 0 24 24"><path d="m4 20 8.5-8.5M14 4l6 6M16.5 2.5l5 5-3 3-5-5 3-3Z"/><path d="M5 5.5 8.5 9 5 12.5 1.5 9 5 5.5Z"/></svg><b>Esthétique<small>finitions choisies avec vous</small></b></span>
+        <span><svg viewBox="0 0 24 24"><path d="M9.4 3.5 10 1h4l.6 2.5 2 .8 2.2-1.3 2.2 2.2-1.3 2.2.8 2L23 10v4l-2.5.6-.8 2 1.3 2.2-2.2 2.2-2.2-1.3-2 .8L14 23h-4l-.6-2.5-2-.8L5.2 21 3 18.8l1.3-2.2-.8-2L1 14v-4l2.5-.6.8-2L3 5.2 5.2 3l2.2 1.3 2-.8Z"/><circle cx="12" cy="12" r="3.2"/></svg><b>Faisabilité<small>validée avant devis</small></b></span>
       </div>
 
       <div class="config-success-visual" aria-hidden="true">
@@ -3025,62 +3025,57 @@
           <div class="shape-grid" role="radiogroup" aria-labelledby="lbl-shape" aria-describedby="shape-hint">
             <button type="button" class="shape-btn" id="sh-rect" role="radio" aria-checked="false" tabindex="0"
               onclick="selShape('rect')">
-              <svg viewBox="0 0 48 36">
-                <rect x="6" y="5" width="36" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <rect x="8" y="7" width="32" height="22" rx="1" fill="none" stroke="currentColor" stroke-width=".6"
-                  opacity=".35" />
-                <line x1="16" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width=".5" opacity=".2" />
-                <line x1="14" y1="18" x2="34" y2="18" stroke="currentColor" stroke-width=".5" opacity=".15" />
-                <line x1="16" y1="22" x2="32" y2="22" stroke="currentColor" stroke-width=".5" opacity=".2" />
+              <svg viewBox="0 0 64 44">
+                <rect x="13" y="9" width="38" height="26" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M18 16h28M18 21h28M18 26h28" fill="none" stroke="currentColor" stroke-width="1"
+                  opacity=".28" stroke-linecap="round" />
               </svg>
               <span>Rectangle</span>
             </button>
             <button type="button" class="shape-btn" id="sh-oval" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('oval')">
-              <svg viewBox="0 0 48 36">
-                <ellipse cx="24" cy="18" rx="18" ry="13" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <ellipse cx="24" cy="18" rx="15" ry="10" fill="none" stroke="currentColor" stroke-width=".6"
-                  opacity=".35" />
-                <path d="M14 16 Q24 12, 34 16" fill="none" stroke="currentColor" stroke-width=".5" opacity=".2" />
-                <path d="M12 20 Q24 16, 36 20" fill="none" stroke="currentColor" stroke-width=".5" opacity=".15" />
+              <svg viewBox="0 0 64 44">
+                <ellipse cx="32" cy="22" rx="20" ry="13" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <ellipse cx="32" cy="22" rx="16" ry="9" fill="none" stroke="currentColor" stroke-width="1"
+                  opacity=".28" />
               </svg>
               <span>Ovale / ronde</span>
             </button>
             <button type="button" class="shape-btn" id="sh-libre" role="radio" aria-checked="false" tabindex="-1"
               onclick="selShape('libre')">
-              <svg viewBox="0 0 48 36">
-                <path d="M10 28 C8 18, 12 7, 22 6 C32 5, 38 10, 39 18 C40 26, 34 31, 24 30 C14 29, 10 28, 10 28Z"
+              <svg viewBox="0 0 64 44">
+                <path d="M13 29C10 20 15 10 24 9c7-1 10 4 16 4 8 0 12 6 9 13-3 8-13 10-22 8-7-1-11-2-14-5Z"
                   fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M13 26 C12 19, 15 10, 22 9 C29 8, 35 12, 36 18 C37 24, 32 28, 24 27 C16 26, 13 26, 13 26Z"
-                  fill="none" stroke="currentColor" stroke-width=".6" opacity=".35" />
-                <line x1="18" y1="17" x2="30" y2="15" stroke="currentColor" stroke-width=".5" opacity=".15" />
-                <line x1="16" y1="21" x2="32" y2="19" stroke="currentColor" stroke-width=".5" opacity=".2" />
+                <path d="M18 27c-2-6 2-12 8-13 5-1 8 3 13 3 5 0 8 4 6 8-2 5-9 7-16 5-5-1-8-1-11-3Z"
+                  fill="none" stroke="currentColor" stroke-width="1" opacity=".28" />
               </svg>
               <span>Forme libre</span>
             </button>
           </div>
           <p class="shape-hint" id="shape-hint">Choisissez la forme qui se rapproche le plus de votre bassin.</p>
+          <div class="config-dimension-presets">
+            <div class="sh">
+              <h2 class="sl" id="lbl-dim"><span class="config-dim-heading-wide">Dimensions rapides</span><span
+                  class="config-dim-heading-small">Dimensions</span>
+                <span class="tip-wrap">
+                  <i class="ic" tabindex="0" role="button" aria-label="Information sur les dimensions">i</i>
+                  <span class="tip" role="tooltip">Mesures intérieures nettes du bassin, hors margelles</span>
+                </span>
+              </h2>
+            </div>
+            <div class="dim-presets" role="group" aria-label="Dimensions fréquentes">
+              <button type="button" class="dim-pre on" onclick="setPreset(8,4,this)" aria-label="8 mètres par 4 mètres">8
+                × 4 m</button>
+              <button type="button" class="dim-pre" onclick="setPreset(10,5,this)" aria-label="10 mètres par 5 mètres">10
+                × 5 m</button>
+              <button type="button" class="dim-pre" onclick="setPreset(12,6,this)" aria-label="12 mètres par 6 mètres">12
+                × 6 m</button>
+            </div>
+          </div>
         </div>
 
         <!-- DIMENSIONS -->
         <div class="s" id="s-dim" role="group" aria-labelledby="lbl-dim">
-          <div class="sh">
-            <h2 class="sl" id="lbl-dim">Dimensions
-              <span class="tip-wrap">
-                <i class="ic" tabindex="0" role="button" aria-label="Information sur les dimensions">i</i>
-                <span class="tip" role="tooltip">Mesures intérieures nettes du bassin, hors margelles</span>
-              </span>
-              <span class="surface-tag" id="surface-tag">32 m²</span>
-            </h2>
-          </div>
-          <div class="dim-presets" role="group" aria-label="Dimensions fréquentes">
-            <button type="button" class="dim-pre on" onclick="setPreset(8,4,this)" aria-label="8 mètres par 4 mètres">8
-              × 4 m</button>
-            <button type="button" class="dim-pre" onclick="setPreset(10,5,this)" aria-label="10 mètres par 5 mètres">10
-              × 5 m</button>
-            <button type="button" class="dim-pre" onclick="setPreset(12,6,this)" aria-label="12 mètres par 6 mètres">12
-              × 6 m</button>
-          </div>
           <div class="dr">
             <label class="dl" for="d-l">Longueur intérieure</label>
             <div class="dinr">
@@ -3106,6 +3101,10 @@
                 onclick="stepD('d-w',+0.5,2,12)">+</button>
               <span class="du" aria-hidden="true">m</span>
             </div>
+          </div>
+          <div class="config-surface-card" aria-live="polite">
+            <span>Surface calculée</span>
+            <strong class="surface-tag" id="surface-tag">Forme à choisir</strong>
           </div>
         </div>
 
@@ -3183,51 +3182,44 @@
               <button type="button" class="stair-btn" id="stb-droit" role="radio" aria-checked="false"
                 onclick="selStairType('droit')">
                 <svg viewBox="0 0 44 32">
-                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"
-                    opacity=".3" />
-                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width=".6"
-                    stroke-dasharray="3 2" />
-                  <rect x="14" y="2" width="16" height="10" rx="1.5" fill="none" stroke="currentColor"
-                    stroke-width="1.4" />
-                  <line x1="16" y1="5" x2="28" y2="5" stroke="currentColor" stroke-width=".8" opacity=".5" />
-                  <line x1="16" y1="7.5" x2="28" y2="7.5" stroke="currentColor" stroke-width=".8" opacity=".4" />
-                  <line x1="16" y1="10" x2="28" y2="10" stroke="currentColor" stroke-width=".8" opacity=".3" />
+                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1"
+                    stroke-dasharray="3 2" opacity=".42" />
+                  <path d="M14 4V2h16v10H14V4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                  <path d="M16.5 5h11M16.5 8h11M16.5 11h11" fill="none" stroke="currentColor" stroke-width="1"
+                    opacity=".45" stroke-linecap="round" />
                 </svg>
                 <span>Droit</span>
               </button>
               <button type="button" class="stair-btn" id="stb-roman" role="radio" aria-checked="false"
                 onclick="selStairType('roman')">
                 <svg viewBox="0 0 44 32">
-                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width=".6"
-                    stroke-dasharray="3 2" />
-                  <ellipse cx="22" cy="4" rx="10" ry="7" fill="none" stroke="currentColor" stroke-width="1.4" />
-                  <ellipse cx="22" cy="4" rx="7" ry="5" fill="none" stroke="currentColor" stroke-width=".7"
-                    opacity=".4" />
-                  <ellipse cx="22" cy="4" rx="4" ry="3" fill="none" stroke="currentColor" stroke-width=".7"
-                    opacity=".25" />
+                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1"
+                    stroke-dasharray="3 2" opacity=".42" />
+                  <path d="M12 5a10 7 0 0 1 20 0v2H12V5Z" fill="none" stroke="currentColor" stroke-width="1.5" />
+                  <path d="M15 6a7 5 0 0 1 14 0M18 6a4 3 0 0 1 8 0" fill="none" stroke="currentColor"
+                    stroke-width="1" opacity=".42" stroke-linecap="round" />
                 </svg>
                 <span>Roman</span>
               </button>
               <button type="button" class="stair-btn" id="stb-angle" role="radio" aria-checked="false"
                 onclick="selStairType('angle')">
                 <svg viewBox="0 0 44 32">
-                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width=".6"
-                    stroke-dasharray="3 2" />
-                  <polygon points="4,4 16,4 4,16" fill="none" stroke="currentColor" stroke-width="1.4"
-                    stroke-linejoin="round" />
-                  <line x1="6" y1="8" x2="11" y2="4" stroke="currentColor" stroke-width=".7" opacity=".4" />
-                  <line x1="6" y1="12" x2="14" y2="4" stroke="currentColor" stroke-width=".7" opacity=".3" />
+                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1"
+                    stroke-dasharray="3 2" opacity=".42" />
+                  <path d="M4 4h13L4 17V4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                  <path d="M7 8.5 11.5 4M7 13l9-9" fill="none" stroke="currentColor" stroke-width="1"
+                    opacity=".42" stroke-linecap="round" />
                 </svg>
                 <span>Angle</span>
               </button>
               <button type="button" class="stair-btn" id="stb-autre" role="radio" aria-checked="false"
                 onclick="selStairType('autre')">
                 <svg viewBox="0 0 44 32">
-                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width=".6"
-                    stroke-dasharray="3 2" />
-                  <circle cx="22" cy="16" r="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5" />
+                  <rect x="4" y="4" width="36" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="1"
+                    stroke-dasharray="3 2" opacity=".42" />
+                  <circle cx="22" cy="16" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
                   <text x="22" y="19" text-anchor="middle" fill="currentColor" font-size="10" font-weight="600"
-                    font-family="Inter,sans-serif" opacity=".6">?</text>
+                    font-family="Inter,sans-serif">?</text>
                 </svg>
                 <span>Autre</span>
               </button>
@@ -3300,6 +3292,14 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="config-basin-note" id="config-basin-note" role="note">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 10v6M12 7h.01"></path>
+          </svg>
+          <span>Vos mesures peuvent être approximatives. Diskoov les confirme avant devis.</span>
         </div>
 
         <!-- ÉQUIPEMENT PÉRIPHÉRIQUE -->
@@ -3856,8 +3856,8 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="product-rules.js?v=20260714-v18-final-redesign"></script>
-  <script src="advisor-engine.js?v=20260714-v18-final-redesign"></script>
+  <script src="product-rules.js?v=20260715-v21-final-qa"></script>
+  <script src="advisor-engine.js?v=20260715-v21-final-qa"></script>
   <script>
     /* ─────────────────────────────────────────────────────────
       MISE EN PROD — checklist :
@@ -6741,12 +6741,17 @@
       S.dossierId = '';
 
       /* Reset shape */
-      ['rect', 'oval', 'libre'].forEach(function (k) { el('sh-' + k).classList.toggle('on', k === 'rect'); el('sh-' + k).setAttribute('aria-checked', String(k === 'rect')); });
+      ['rect', 'oval', 'libre'].forEach(function (k) {
+        var shapeButton = el('sh-' + k);
+        shapeButton.classList.remove('on');
+        shapeButton.setAttribute('aria-checked', 'false');
+        shapeButton.tabIndex = k === 'rect' ? 0 : -1;
+      });
       el('s-dim').style.display = '';
       conceal('s-libre');
-      document.querySelectorAll('.dim-pre').forEach(function (b, i) { b.classList.toggle('on', i === 0); });
-      S.len = 8; S.wid = 4;
-      el('d-l').value = 8; el('d-w').value = 4;
+      document.querySelectorAll('.dim-pre').forEach(function (button) { button.classList.remove('on'); });
+      S.len = 0; S.wid = 0;
+      el('d-l').value = ''; el('d-w').value = '';
       /* Reset stairs */
       el('st-no').classList.add('on'); el('st-no').setAttribute('aria-pressed', 'true');
       el('st-yes').classList.remove('on'); el('st-yes').setAttribute('aria-pressed', 'false');
@@ -7063,8 +7068,8 @@
     initCookieConsent();
     retryPendingLeads();
   </script>
-  <script src="configurator-workflow-v2.js?v=20260714-v18-final-redesign"></script>
-  <script src="advisor-v2.js?v=20260714-v18-final-redesign"></script>
+  <script src="configurator-workflow-v2.js?v=20260715-v21-final-qa"></script>
+  <script src="advisor-v2.js?v=20260715-v21-final-qa"></script>
 </body>
 
 </html>

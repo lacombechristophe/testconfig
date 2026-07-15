@@ -88,6 +88,7 @@
       + '    <div class="advisor-visual-welcome">'
       + '      <div class="advisor-visual-welcome-kicker"><span aria-hidden="true"></span><b data-visual-catalog-kicker>Comprenez. Comparez. Choisissez.</b></div>'
       + '      <div class="advisor-visual-welcome-title" data-visual-catalog-title>4 familles de protections pour votre piscine</div>'
+      + '      <p class="advisor-visual-welcome-text" data-visual-catalog-text>Comparez les protections selon votre piscine et vos priorités.</p>'
       + '      <div class="advisor-visual-families" role="list" aria-label="Familles de protections Diskoov">'
       + '        <div role="listitem"><span>' + icon('cover') + '</span><strong>Couverture</strong><small>Sécurité et<br>préservation</small></div>'
       + '        <div role="listitem"><span>' + icon('shutter') + '</span><strong>Volet</strong><small>Sécurité et<br>confort au quotidien</small></div>'
@@ -636,11 +637,13 @@
       : state.dimensionsKnown === false
         ? '<div class="advisor-dimensions-later" role="note">' + icon('measure') + '<span><strong>Vous pourrez les ajouter ensuite.</strong><small>Sans dimensions, nous comparerons les familles sans confirmer qu’un modèle convient à votre bassin.</small></span></div>'
         : '<div class="advisor-dimensions-later advisor-dimensions-later--prompt" role="note">' + icon('measure') + '<span><strong>Connaissez-vous les dimensions ?</strong><small>Des mesures approximatives suffisent.</small></span></div>';
+    var dimensionChoice = state.dimensionsKnown === null
+      ? '<fieldset class="advisor-fieldset advisor-dimension-mode"><legend class="advisor-sr-only">Avez-vous les dimensions ?</legend><span class="advisor-dimension-mode-label" aria-hidden="true">Avez-vous les dimensions ?</span><div class="advisor-segmented" role="radiogroup" aria-label="Disponibilité des dimensions">'
+        + dimensionModeButton(true, 'Oui') + dimensionModeButton(false, 'Pas encore') + '</div></fieldset>'
+      : '<div class="advisor-dimension-switch-row"><button type="button" class="advisor-dimension-switch" data-action="dimensions-known" data-value="' + (state.dimensionsKnown ? 'false' : 'true') + '">' + (state.dimensionsKnown ? 'Je n’ai pas les mesures' : 'Ajouter mes mesures') + '</button></div>';
     var dimensionStep = state.shapeConfirmed
       ? '<div class="advisor-pool-disclosure">'
-        + '<fieldset class="advisor-fieldset advisor-dimension-mode"><legend class="advisor-sr-only">Avez-vous les dimensions ?</legend><span class="advisor-dimension-mode-label" aria-hidden="true">Avez-vous les dimensions ?</span><div class="advisor-segmented" role="radiogroup" aria-label="Disponibilité des dimensions">'
-        + dimensionModeButton(true, 'Oui') + dimensionModeButton(false, 'Pas encore')
-        + '</div></fieldset>'
+        + dimensionChoice
         + dimensionsControls
         + (state.dimensionsKnown === true ? '<p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p><div class="advisor-pool-reassurance" role="list"><span role="listitem">' + icon('measure') + '<b>Mesures approximatives acceptées</b></span><span role="listitem">' + icon('lock') + '<b>Aucune coordonnée demandée ici</b></span></div>' : '')
         + '</div>'
@@ -819,16 +822,6 @@
     return '';
   }
 
-  function familyImageNote(family) {
-    var labels = {
-      covers: 'Exemple : couverture Oré',
-      shutters: 'Exemple : volet hors-sol',
-      shelters: 'Exemple : abri télescopique',
-      deck: 'Projet sur mesure'
-    };
-    return labels[family && family.id] ? '<span class="advisor-media-note">' + labels[family.id] + '</span>' : '';
-  }
-
   function primaryResultTemplate(item) {
     var benefits = commercialBenefits(item);
     var status = resultStatusLabel(item, 0);
@@ -898,7 +891,7 @@
 
   function benefitIconNames(item) {
     var map = {
-      ore_compact: ['automatic', 'pool', 'measure'], ore_essential: ['season', 'automatic', 'measure'],
+      ore_compact: ['motor', 'low-protection', 'snowflake'], ore_essential: ['season', 'automatic', 'certified'],
       auto: ['automatic', 'aesthetics', 'measure'], semi: ['cover', 'economy', 'measure'],
       eden: ['measure', 'automatic', 'aesthetics'], bab: ['shield', 'economy', 'measure'],
       volet_hs: ['automatic', 'install', 'measure'], volet_immerge: ['aesthetics', 'mechanism', 'measure'],
@@ -913,7 +906,8 @@
     var descriptions = className === 'advisor-detail-benefits' ? detailBenefitDescriptions(item) : [];
     return '<div class="advisor-benefits' + (className ? ' ' + className : '') + '">'
       + benefits.map(function (benefit, index) {
-        return '<span>' + icon(icons[index] || 'check') + '<span><b>' + escapeHtml(benefit) + '</b>'
+        var iconName = /NF\s*P90-308/i.test(benefit) ? 'certified' : (icons[index] || 'check');
+        return '<span>' + icon(iconName) + '<span><b>' + escapeHtml(benefit) + '</b>'
           + (descriptions[index] ? '<small>' + escapeHtml(descriptions[index]) + '</small>' : '') + '</span></span>';
       }).join('') + '</div>';
   }
@@ -930,7 +924,7 @@
 
   function commercialBenefits(item) {
     var map = {
-      ore_compact: ['Couverture motorisée', 'Pour bassin compact', 'Pose étudiée avec vous'],
+      ore_compact: ['Motorisée', 'Protection basse', 'Usage 4 saisons'],
       ore_essential: ['Protection 4 saisons', 'Confort motorisé', 'Conforme NF P90-308'],
       auto: ['Fonctionnement automatique', 'Étude du bassin', 'Finition à choisir'],
       semi: ['Manipulation assistée', 'Étude du bassin', 'Finition à choisir'],
@@ -946,7 +940,7 @@
 
   function detailBenefitDescriptions(item) {
     var map = {
-      ore_compact: ['Ouverture et fermeture motorisées.', 'Plage connue : 3 à 7 × 2,5 à 3,5 m.', 'Support, accès et alimentation sont vérifiés.'],
+      ore_compact: ['Ouverture et fermeture automatisées.', 'Limite l’évaporation et sécurise le bassin.', 'Protège le bassin toute l’année.'],
       ore_essential: ['Une protection pensée pour rester en place toute l’année.', 'Un usage motorisé au quotidien.', 'Niveau de sécurité documenté pour ce modèle.'],
       auto: ['Le principe de fonctionnement du modèle automatique.', 'Dimensions et abords sont étudiés avant proposition.', 'Options et habillage sont définis avec vous.'],
       semi: ['Une aide à la manipulation selon la configuration retenue.', 'Dimensions et abords sont étudiés avant proposition.', 'Options et habillage sont définis avec vous.'],
@@ -1142,7 +1136,11 @@
   }
 
   function detailSellingReasonsTemplate(item) {
-    var reasons = [
+    var reasons = item && item.id === 'ore_compact' ? [
+      ['touch', 'Ouverture simplifiée', 'La motorisation facilite l’ouverture au quotidien.'],
+      ['eye-off', 'Discrète une fois fermée', 'La couverture s’intègre harmonieusement à votre bassin.'],
+      ['shield', 'Protège le bassin au quotidien', 'Limite les impuretés, sécurise et réduit l’évaporation.']
+    ] : [
       ['automatic', 'Au quotidien', comparisonOperation(item)],
       ['aesthetics', 'Autour du bassin', comparisonPresence(item)],
       ['install', 'Avant le devis', comparisonCheck(item)]
@@ -1156,14 +1154,14 @@
 
   function detailConfirmationTemplate(item) {
     var map = {
-      ore_compact: [['measure', 'Place pour le support', 'L’espace disponible et la stabilité du support sont vérifiés.'], ['automatic', 'Alimentation électrique', 'Le raccordement nécessaire est confirmé avec vous.'], ['install', 'Accès et abords', 'La pose et l’accès au chantier sont étudiés.']],
+      ore_compact: [['tape', 'Espace pour le support', 'Vérifions la place disponible pour le support d’enroulement.'], ['bolt', 'Alimentation électrique', 'Une prise à portée du câble fourni de 10 m est nécessaire.'], ['access', 'Accès et abords du bassin', 'À valider pour l’installation et la maintenance.']],
       ore_essential: [['mechanism', 'Emplacement du mécanisme', 'La zone d’enroulement est validée selon le bassin.'], ['measure', 'Support et margelles', 'Les niveaux et la stabilité sont vérifiés.'], ['install', 'Accès au chantier', 'Les conditions de pose sont confirmées avant devis.']],
-      auto: [['measure', 'Dimensions du bassin', 'Les mesures et la forme sont vérifiées.'], ['automatic', 'Alimentation', 'Le raccordement est défini selon la configuration.'], ['install', 'Pose et options', 'Le chantier et les finitions sont confirmés.']],
+      auto: [['measure', 'Dimensions du bassin', 'Les mesures et la forme sont vérifiées.'], ['power', 'Alimentation', 'Le raccordement est défini selon la configuration.'], ['install', 'Pose et options', 'Le chantier et les finitions sont confirmés.']],
       semi: [['manual', 'Manipulation', 'Le fonctionnement retenu est précisé avec vous.'], ['measure', 'Dimensions du bassin', 'Les mesures et la forme sont vérifiées.'], ['install', 'Pose et options', 'Le chantier et les finitions sont confirmés.']],
       eden: [['measure', 'Définition du projet', 'Les limites et dimensions sont précisées pendant l’étude.'], ['aesthetics', 'Finitions', 'Les choix esthétiques sont cadrés avec vous.'], ['install', 'Conditions de pose', 'Le support et les accès sont vérifiés.']],
       bab: [['manual', 'Manipulation manuelle', 'L’usage quotidien doit vous convenir.'], ['measure', 'Ancrages', 'Leur position est validée autour du bassin.'], ['install', 'Escalier et abords', 'Les particularités du bassin sont vérifiées.']],
-      volet_hs: [['shutter', 'Place pour l’axe', 'L’axe et ses supports restent visibles sur la margelle.'], ['automatic', 'Alimentation', 'Le raccordement est confirmé selon le projet.'], ['install', 'Escalier et implantation', 'Les contraintes du bassin sont vérifiées.']],
-      volet_immerge: [['mechanism', 'Intégration au bassin', 'Les travaux nécessaires sont définis selon le projet.'], ['automatic', 'Alimentation', 'Le raccordement est confirmé avec vous.'], ['install', 'Escalier et accès', 'L’implantation complète est vérifiée.']],
+      volet_hs: [['shutter', 'Place pour l’axe', 'L’axe et ses supports restent visibles sur la margelle.'], ['power', 'Alimentation', 'Le raccordement est confirmé selon le projet.'], ['install', 'Escalier et implantation', 'Les contraintes du bassin sont vérifiées.']],
+      volet_immerge: [['mechanism', 'Intégration au bassin', 'Les travaux nécessaires sont définis selon le projet.'], ['power', 'Alimentation', 'Le raccordement est confirmé avec vous.'], ['install', 'Escalier et accès', 'L’implantation complète est vérifiée.']],
       masterdeck: [['space', 'Usage du plancher', 'Les usages et charges admissibles sont confirmés.'], ['measure', 'Dimensions et finitions', 'La structure est dimensionnée sur mesure.'], ['install', 'Accès au chantier', 'Les conditions de réalisation sont étudiées.']]
     };
     var facts = item && item.family === 'shelter'
@@ -1177,7 +1175,7 @@
 
   function productGalleryImages(item) {
     var extras = {
-      ore_compact: ['assets/produits/ore/ore-ouverte.jpg', 'assets/produits/ore/ore-fermee.jpg', 'assets/produits/ore/encombrements-60-80-45cm.jpg'],
+      ore_compact: ['assets/produits/conseiller/ore-ouverte.webp', 'assets/produits/conseiller/ore-encombrements.webp'],
       ore_essential: ['assets/produits/ore/ore-ouverte.jpg', 'assets/produits/ore/ore-fermee.jpg', 'assets/produits/ore/decoupe-bloc-filtration.jpg'],
       bab: ['assets/produits/bab/couverture-a-barres.jpg', 'assets/produits/bab/rolling-up.jpg'],
       volet_hs: ['assets/produits/volets-hors-sol/enroulement-hors-sol.jpg', 'assets/produits/volets-hors-sol/tablier-hors-sol.jpg', 'assets/produits/volets-hors-sol/volet-hors-sol-escalier-solaire.jpg'],
@@ -1191,11 +1189,11 @@
     (extras[item && item.id] || []).forEach(function (image) {
       if (images.indexOf(image) === -1) images.push(image);
     });
-    return images.slice(0, 4);
+    return images.slice(0, 3);
   }
 
   function detailFamilyCatalogTemplate(item) {
-    return '<div class="advisor-detail-catalog"><span class="advisor-detail-catalog-kicker">' + escapeHtml(prospectFamilyLabel(item)) + '</span><strong>4 familles de protections<br>pour votre piscine</strong><div role="list"><span role="listitem">' + icon('cover') + '<b>Couverture</b></span><span role="listitem">' + icon('shutter') + '<b>Volet</b></span><span role="listitem">' + icon('shelter') + '<b>Abri</b></span><span role="listitem">' + icon('deck') + '<b>Terrasse mobile</b></span></div><div class="advisor-detail-catalog-facts"><span><b>Plus de 13 ans</b><small>d’expérience piscine</small></span><span><b>3 fabricants</b><small>partenaires</small></span><span><b>Suivi du projet</b><small>avec un conseiller</small></span></div></div>';
+    return '<div class="advisor-detail-catalog"><span class="advisor-detail-catalog-kicker">' + escapeHtml(prospectFamilyLabel(item)) + '</span><strong>4 familles de protections<br>pour votre piscine</strong><div role="list"><span role="listitem">' + icon('cover') + '<b>Couverture</b></span><span role="listitem">' + icon('shutter') + '<b>Volet</b></span><span role="listitem">' + icon('shelter') + '<b>Abri</b></span><span role="listitem">' + icon('deck') + '<b>Terrasse mobile</b></span></div><div class="advisor-detail-catalog-facts"><span><i aria-hidden="true">' + icon('shield') + '</i><b>Plus de 13 ans<small>d’expérience piscine</small></b></span><span><i aria-hidden="true">' + icon('users') + '</i><b>3 fabricants<small>partenaires</small></b></span><span><i aria-hidden="true">' + icon('message') + '</i><b>Suivi du projet<small>avec un conseiller</small></b></span></div></div>';
   }
 
   function selectDetailImage(target) {
@@ -1366,7 +1364,7 @@
   function directFamilyDefinitions() {
     return [
       {
-        id: 'covers', icon: 'cover', title: 'Couvertures de piscine', eyebrow: 'Motorisées ou manuelles', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden', 'bab'], image: 'ore_essential',
+        id: 'covers', icon: 'cover', title: 'Couvertures de piscine', eyebrow: 'Motorisées ou manuelles', products: ['ore_compact', 'ore_essential', 'auto', 'semi', 'eden', 'bab'], image: 'ore_compact',
         text: 'Des solutions motorisées ou manuelles, selon votre bassin et votre quotidien.', summary: 'Motorisées ou manuelles · Protection basse', bestFor: 'Vous voulez comparer le fonctionnement, l’implantation et les contraintes de chaque modèle.', check: 'La place, le support, l’alimentation et la pose sont vérifiés avant proposition.',
         proofs: [['Fonctionnement', 'Défini selon le modèle retenu'], ['Implantation', 'Vérifiée avec les abords du bassin'], ['À prévoir', 'Support, dégagement et alimentation']]
       },
@@ -1392,16 +1390,16 @@
     return '<div class="advisor-screen">'
       + '<div class="advisor-step-label">Explorer les solutions</div>'
       + '<h1 class="advisor-title">Explorez les protections Diskoov.</h1>'
-      + '<p class="advisor-subtitle">Comparez les quatre familles avant de choisir le modèle adapté.</p>'
+      + '<p class="advisor-subtitle">Comparez les quatre grandes familles avant de choisir un modèle.</p>'
       + '<div class="advisor-family-list">'
       + families.map(function (family, index) {
         var item = engine.findCandidate(family.image);
-        var actionLabel = family.products.length > 1 ? 'Voir les modèles' : 'Découvrir ce produit';
+        var actionLabel = family.products.length > 1 ? 'Voir les modèles' : 'Découvrir';
         var media = item && item.image
           ? '<div class="advisor-family-media advisor-product-media--' + safeClass(item.id) + '"><img src="' + escapeHtml(item.image) + '" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>'
           : '<div class="advisor-family-media advisor-direct-media--fallback" aria-hidden="true">' + icon('shield') + '</div>';
         return '<article class="advisor-family-item advisor-family-item--' + safeClass(family.id) + '" style="--advisor-order:' + index + '">' + media
-          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.summary || family.bestFor) + '</p></div>'
+          + '<div class="advisor-family-copy"><span class="advisor-direct-category">' + icon(family.icon) + '<span>' + escapeHtml(family.eyebrow) + '</span></span><h2>' + escapeHtml(family.title) + '</h2><p>' + escapeHtml(family.summary) + '</p></div>'
           + '<dl class="advisor-family-signals">' + familySignalTemplate(family, 0) + familySignalTemplate(family, 2) + '</dl>'
           + familyProgressiveDetails(family)
           + '<button type="button" class="advisor-direct-main" data-action="direct-family" data-value="' + family.id + '">' + actionLabel + ' <span aria-hidden="true">→</span></button></article>';
@@ -1410,7 +1408,7 @@
   }
 
   function directFamilyComparisonTemplate() {
-    return '<section class="advisor-family-comparison" aria-labelledby="advisor-family-comparison-title"><h2 id="advisor-family-comparison-title">Comparez selon vos priorités</h2><div><span>' + icon('automatic') + '</span><strong>Ouverture</strong><small>Manuelle ou motorisée selon le modèle</small></div><div><span>' + icon('aesthetics') + '</span><strong>Présence autour du bassin</strong><small>De la protection basse à la structure télescopique</small></div><div><span>' + icon('measure') + '</span><strong>Implantation</strong><small>Place disponible vérifiée avec vous</small></div><div><span>' + icon('user') + '</span><strong>Avant devis</strong><small>Compatibilité et pose confirmées</small></div></section>';
+    return '<section class="advisor-family-comparison" aria-labelledby="advisor-family-comparison-title"><h2 id="advisor-family-comparison-title">Comparez selon vos priorités</h2><div><span>' + icon('comfort') + '</span><strong>Confort</strong><small>Utilisation au quotidien</small></div><div><span>' + icon('users') + '</span><strong>Présence autour du bassin</strong><small>Impact visuel et accès libre</small></div><div><span>' + icon('space') + '</span><strong>Espace nécessaire</strong><small>Encombrement et dégagement</small></div><div><span>' + icon('measure') + '</span><strong>Étude sur mesure</strong><small>Projet adapté à votre bassin</small></div></section>';
   }
 
   function directProductsTemplate(family) {
@@ -1450,7 +1448,7 @@
 
   function familySignalIconNames(family) {
     var map = {
-      covers: ['automatic', 'cover', 'install'],
+      covers: ['gear', 'user', 'install'],
       'bar-cover': ['manual', 'cover', 'install'],
       shutters: ['automatic', 'shutter', 'install'],
       shelters: ['shelter', 'measure', 'install'],
@@ -1477,9 +1475,41 @@
   }
 
   function modelSellingTemplate(item) {
-    var benefits = commercialBenefits(item);
-    return '<div class="advisor-model-selling"><span>' + icon('check') + '<span><b>Bénéfice</b><small>' + escapeHtml(benefits[0] || comparisonOperation(item)) + '</small></span></span>'
-      + '<span>' + icon('install') + '<span><b>À vérifier</b><small>' + escapeHtml(comparisonCheck(item)) + '</small></span></span></div>';
+    var icons = modelSellingIconNames(item);
+    return '<div class="advisor-model-selling"><span>' + icon(icons[0]) + '<span><b>Bénéfice</b><small>' + escapeHtml(modelSellingBenefit(item)) + '</small></span></span>'
+      + '<span>' + icon(icons[1]) + '<span><b>À vérifier</b><small>' + escapeHtml(comparisonCheck(item)) + '</small></span></span></div>';
+  }
+
+  function modelSellingBenefit(item) {
+    var map = {
+      ore_compact: 'Solution compacte et simple à vivre au quotidien.',
+      ore_essential: 'Design discret et intégration harmonieuse autour du bassin.',
+      auto: 'Protection efficace et ouverture automatisée.',
+      semi: 'Ouverture assistée et protection basse.',
+      eden: 'Finition discrète étudiée selon votre bassin.',
+      bab: 'Solution manuelle, sans alimentation électrique.',
+      volet_hs: 'Ouverture automatisée sans travaux dans le bassin.',
+      volet_immerge: 'Mécanisme intégré pour préserver la plage.',
+      masterdeck: 'Sécurise le bassin et libère un espace utilisable.'
+    };
+    if (item && item.family === 'shelter') return 'Prolonge la saison et protège le bassin.';
+    return map[item && item.id] || comparisonOperation(item);
+  }
+
+  function modelSellingIconNames(item) {
+    var map = {
+      ore_compact: ['low-protection', 'measure'],
+      ore_essential: ['eye', 'measure'],
+      auto: ['motor', 'measure'],
+      semi: ['manual', 'measure'],
+      eden: ['aesthetics', 'measure'],
+      bab: ['certified', 'measure'],
+      volet_hs: ['automatic', 'power'],
+      volet_immerge: ['eye', 'install'],
+      masterdeck: ['space', 'measure']
+    };
+    if (item && item.family === 'shelter') return ['shelter', 'measure'];
+    return map[item && item.id] || ['check', 'measure'];
   }
 
   function modelPositioning(item) {
@@ -1514,8 +1544,11 @@
     var footerNote = state.screen === 'results'
       ? 'Vous pouvez encore modifier vos réponses. Diskoov confirme la pose et les accès avec vous.'
       : 'Vos réponses servent à préparer les recommandations. Votre projet sera confirmé avant le devis.';
-    return '<div class="advisor-footer-note">' + footerNote + '</div><div class="advisor-footer-actions">'
-      + '<button type="button" class="advisor-button advisor-button--text" data-action="back">← ' + backLabel + '</button>'
+    var isResults = state.screen === 'results';
+    var canCompare = isResults && state.results && state.results.recommendations && state.results.recommendations.length > 1;
+    return '<div class="advisor-footer-note">' + footerNote + '</div><div class="advisor-footer-actions' + (isResults ? ' advisor-footer-actions--results' : '') + '">'
+      + (canCompare ? '<button type="button" class="advisor-button advisor-button--secondary advisor-results-compare" data-action="compare" aria-expanded="' + state.compare + '" aria-controls="advisor-results-comparison">' + icon('balance') + '<span>' + (state.compare ? 'Masquer le comparatif' : 'Comparer les solutions') + '</span></button>' : '')
+      + '<button type="button" class="advisor-button advisor-button--text' + (isResults ? ' advisor-results-back' : '') + '" data-action="back"' + (isResults ? ' aria-label="Modifier mes réponses"' : '') + '>← ' + (isResults ? '<span class="advisor-results-back-long">Modifier mes réponses</span><span class="advisor-results-back-short" aria-hidden="true">Modifier</span>' : backLabel) + '</button>'
       + (recommended ? '<button type="button" class="advisor-button" data-action="choose" data-product="' + recommended.id + '" aria-label="Préparer mon devis pour ' + escapeHtml(recommended.title) + '">Préparer mon devis <span aria-hidden="true">→</span></button>' : '')
       + (showNext ? '<button type="button" class="advisor-button" data-action="next"' + (nextDisabled ? ' disabled' : '') + '>' + nextLabel + ' <span aria-hidden="true">→</span></button>' : '')
       + '</div>';
@@ -1542,7 +1575,7 @@
     var help = shell.querySelector('.advisor-help');
     if (!help) return;
     if (state.screen === 'direct') {
-      help.innerHTML = icon('aesthetics') + '<span>Mode guidé</span>';
+      help.innerHTML = icon('compass') + '<span>Mode guidé</span>';
       help.setAttribute('data-action', 'guided');
       help.setAttribute('aria-label', 'Revenir au conseiller guidé');
       return;
@@ -1565,14 +1598,20 @@
       priorities: { kicker: 'Vos priorités', title: 'Choisissez ce qui compte vraiment.', text: 'Deux choix suffisent pour orienter la comparaison.', meta: 'Toutes les familles restent accessibles.', image: 'assets/produits/conseiller/volet-hors-sol.webp' },
       pool: { kicker: 'Votre piscine', title: 'Décrivez votre piscine, simplement.', text: 'La forme et deux mesures approximatives permettent une première vérification.', meta: 'Les abords et la pose seront confirmés avec vous.', image: 'assets/produits/conseiller/ore-ouverte.webp' },
       results: { kicker: 'Vos solutions', title: primary ? prospectFamilyLabel(primary) : 'Les protections à comparer.', text: primary ? productBestFor(primary) : 'Comparez les bénéfices et les contraintes avant de choisir.', meta: 'Un conseiller confirme la compatibilité avant devis.', image: primary && primary.image ? primary.image : 'assets/produits/conseiller/ore-fermee.webp' },
-      direct: { kicker: 'Les protections Diskoov', title: '4 façons de protéger votre piscine.', text: 'Couverture, volet, abri ou terrasse mobile : comparez ce qui change au quotidien.', meta: 'Compatibilité et pose confirmées avant devis.', image: WELCOME_VISUAL_SMALL }
+      direct: { kicker: 'Les protections Diskoov', title: '4 façons de protéger votre piscine.', text: 'Comparez le confort, la présence autour du bassin et les contraintes principales.', meta: 'Compatibilité et pose confirmées avant devis.', image: 'assets/produits/conseiller/ore-fermee.webp' }
     };
     var copy = copies[state.screen] || copies.welcome;
     if (state.screen === 'direct' && state.directFamily) {
       var family = directFamilyDefinitions().filter(function (entry) { return entry.id === state.directFamily; })[0];
       var familyItem = family && engine.findCandidate(family.image);
       if (family) {
-        copy = {
+        copy = family.id === 'covers' ? {
+          kicker: 'Couvertures de piscine',
+          title: 'Trois technologies, des usages différents.',
+          text: 'Comparez le fonctionnement, l’implantation et les points à vérifier.',
+          meta: family.check,
+          image: familyItem && familyItem.image ? familyItem.image : copies.direct.image
+        } : {
           kicker: family.eyebrow,
           title: family.title,
           text: family.bestFor,
@@ -1587,8 +1626,10 @@
     shell.querySelector('[data-visual-meta]').textContent = copy.meta;
     var catalogKicker = shell.querySelector('[data-visual-catalog-kicker]');
     var catalogTitle = shell.querySelector('[data-visual-catalog-title]');
+    var catalogText = shell.querySelector('[data-visual-catalog-text]');
     if (catalogKicker) catalogKicker.textContent = state.screen === 'direct' ? 'Les protections Diskoov' : 'Comprenez. Comparez. Choisissez.';
-    if (catalogTitle) catalogTitle.textContent = state.screen === 'direct' ? '4 façons de protéger votre piscine' : '4 familles de protections pour votre piscine';
+    if (catalogTitle) catalogTitle.textContent = state.screen === 'direct' ? '4 façons de protéger votre piscine.' : '4 familles de protections pour votre piscine';
+    if (catalogText) catalogText.textContent = state.screen === 'direct' ? 'Comparez le confort, la présence autour du bassin et les contraintes principales.' : 'Comparez les protections selon votre piscine et vos priorités.';
     var visualImage = shell.querySelector('[data-visual-image]');
     if (visualImage && visualImage.getAttribute('src') !== copy.image) swapVisualImage(visualImage, copy.image);
   }
@@ -1843,7 +1884,7 @@
     button.type = 'button';
     button.className = 'advisor-entry-button';
     button.setAttribute('data-advisor-entry', '');
-    button.textContent = 'Être conseillé';
+    button.innerHTML = icon('user') + '<span>Être conseillé</span>';
     button.addEventListener('click', function () { openAdvisor('welcome', false); });
     header.appendChild(button);
   }
@@ -2071,38 +2112,57 @@
       user: '<circle cx="12" cy="8" r="3"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/>',
       clean: '<path d="M7 3v7M3.5 6.5h7M17 4v4M15 6h4"/><path d="M4 15c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1M4 19c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1"/>',
       safety: '<path d="M12 3 5 6v5c0 4.5 2.7 7.8 7 10 4.3-2.2 7-5.5 7-10V6l-7-3Z"/>',
-      season: '<path d="M4 15c3-7 13-9 16 0M6 18h12M12 3v4M4.2 7l3 2M19.8 7l-3 2"/>',
+      season: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
       aesthetics: '<path d="M5 19c6 0 11-5 14-14-9 3-14 8-14 14Z"/><path d="M5 19c3-4 6-7 10-10"/>',
-      automatic: '<path d="M7 7h10v10H7z"/><path d="m10 14 4-4M10 10h4v4"/>',
-      space: '<path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/>',
-      economy: '<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.5-1.5-.8-2.5-.8-1.7 0-3 1-3 2.3s1.1 2 3 2.3c1.7.3 2.7 1 2.7 2.2 0 1.4-1.3 2.4-3 2.4-1.1 0-2.2-.4-3-1M12 6v12"/>',
+      automatic: '<path d="M8 4v16M5 7l3-3 3 3M16 20V4M13 17l3 3 3-3"/>',
+      space: '<path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/>',
+      economy: '<path d="M17 7.5A6 6 0 1 0 17 16.5M5.5 10h8M5.5 14h8"/>',
+      gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+      comfort: '<path d="M7 13V7a3 3 0 0 1 6 0v6M4 13h13a3 3 0 0 1 3 3v1H8a4 4 0 0 1-4-4Z"/><path d="M7 17v4M18 17v4"/>',
+      compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
+      motor: '<rect x="5" y="7" width="14" height="11" rx="2"/><path d="M9 7V4h6v3M8 10h8M8 13h8M8 16h5M3 9H1v7h2M21 9h2v7h-2"/>',
+      'low-protection': '<path d="M12 3 6 5.7v4.4c0 3.7 2.2 6.6 6 8.6 3.8-2 6-4.9 6-8.6V5.7L12 3Z"/><path d="M4 20c1.5-1 3-1 4.5 0s3 1 4.5 0 3-1 4.5 0 2.5 1 2.5 1"/>',
+      snowflake: '<path d="M12 2v20M4 6l16 12M20 6 4 18M9 4l3 3 3-3M9 20l3-3 3 3M4 10l4 1-1-4M20 14l-4-1 1 4M17 7l-1 4 4-1M7 17l1-4-4 1"/>',
+      touch: '<path d="M8 11V6a2 2 0 0 1 4 0v5M12 10V7a2 2 0 0 1 4 0v4M16 10V9a2 2 0 0 1 4 0v5c0 5-3 8-8 8h-1c-3 0-5-1-7-4l-2-3a2 2 0 0 1 3-2l3 2"/>',
+      eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>',
+      'eye-off': '<path d="M3 3l18 18M10.6 6.2A11 11 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-3 3.7M6.3 6.3C3.5 8.1 2 12 2 12s3.5 6 10 6c1 0 2-.2 2.8-.4M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+      tape: '<circle cx="9" cy="11" r="6"/><circle cx="9" cy="11" r="2"/><path d="M9 17h10v4H9M13 17v2M17 17v2"/>',
+      bolt: '<path d="M13 2 5 14h6l-1 8 9-13h-6V2Z"/>',
+      access: '<path d="M4 22c2-5 5-7 8-7s6-2 8-7"/><path d="M6 15V8M3 10c0-2 1-4 3-4s3 2 3 4c0 2-1 3-3 3s-3-1-3-3ZM18 10V4M15 6c0-2 1-4 3-4s3 2 3 4c0 2-1 3-3 3s-3-1-3-3Z"/>',
       check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.3 2.3 4.8-5"/>',
       measure: '<path d="m5 17 12-12 2 2L7 19l-2-2Z"/><path d="m10 12 2 2M13 9l2 2M7 15l2 2"/>',
       pool: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M6 10c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0M6 14c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0"/>',
       install: '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-3 2.5-2.5Z"/>',
       mechanism: '<circle cx="8" cy="12" r="4"/><circle cx="8" cy="12" r="1"/><path d="M12 12h8M17 9v6"/>',
+      power: '<path d="M9 3v6M15 3v6M7 8h10v2a5 5 0 0 1-5 5v6M9 21h6"/>',
       manual: '<path d="M18 11V6a2 2 0 0 0-4 0v4M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M6 14v-2a2 2 0 0 0-4 0v4a6 6 0 0 0 6 6h4a8 8 0 0 0 8-8v-3a2 2 0 0 0-4 0v1"/>',
       move: '<path d="m18 8 4 4-4 4M6 8l-4 4 4 4M2 12h20"/>',
-      cover: '<path d="M5 5.5h14l3 5.5H2l3-5.5Z"/><path d="M2 16c1.25 0 1.25 1.8 2.5 1.8S5.75 16 7 16s1.25 1.8 2.5 1.8S10.75 16 12 16s1.25 1.8 2.5 1.8S15.75 16 17 16s1.25 1.8 2.5 1.8S20.75 16 22 16"/>',
+      cover: '<path d="M12 7h40l8 16H4L12 7Z"/><path d="M4 33c4 0 4 4 8 4s4-4 8-4 4 4 8 4 4-4 8-4 4 4 8 4 4-4 8-4 4 4 8 4"/>',
       bars: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 8h16M4 12h16M4 16h16"/>',
-      shutter: '<rect x="2" y="3.5" width="20" height="16" rx="1.3"/><path d="M4 7h16M4 10.3h16M4 13.6h16M4 16.9h16M4 20.5v-1M20 20.5v-1"/>',
-      shelter: '<path d="M2.5 19v-6.5a6.5 6.5 0 0 1 13 0V19H2.5Z"/><path d="M9 19V9.5a6 6 0 0 1 12 0V19H9Z"/><path d="M2 19h20"/>',
-      deck: '<path d="m12 2 11 5.5L12 13 1 7.5 12 2Z"/><path d="m1 11.5 11 5.5 11-5.5M1 16l11 5.5L23 16"/>',
+      shutter: '<rect x="6" y="5" width="52" height="31" rx="2.5"/><path d="M11 11h42M11 17h42M11 23h42M11 29h42"/><path d="M6 41c3.25 0 3.25-3 6.5-3s3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3 3.25-3 6.5-3 3.25 3 6.5 3"/>',
+      shelter: '<path d="M5 39V24C5 14 13 6 23 6s18 8 18 18v15"/><path d="M23 39V21c0-8 7-15 15-15s15 7 15 15v18"/><path d="M3 39h55"/>',
+      deck: '<path d="m32 7 29 11-29 10L3 18 32 7Z"/><path d="M3 25l29 10 29-10"/><path d="M3 32l29 9 29-9"/>',
       lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>',
       verified: '<path fill="currentColor" stroke="none" d="m12 2.2 2.1 1.2 2.4-.2 1.2 2.1 2.1 1.2-.2 2.4 1.2 2.1-1.2 2.1.2 2.4-2.1 1.2-1.2 2.1-2.4-.2-2.1 1.2-2.1-1.2-2.4.2-1.2-2.1-2.1-1.2.2-2.4L3.2 12l1.2-2.1-.2-2.4 2.1-1.2 1.2-2.1 2.4.2L12 2.2Z"/><path stroke="#fff" stroke-width="1.8" d="m8.6 12 2.1 2.1 4.7-4.7"/>',
+      certified: '<path d="M12 3 5 6v5c0 4.4 2.7 7.7 7 10 4.3-2.3 7-5.6 7-10V6l-7-3Z"/><path d="m8.7 12 2.1 2.1 4.7-4.7"/>',
+      route: '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 5h4a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8"/><path d="m15 15 2 2-2 2"/>',
       users: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 4.1a3 3 0 0 1 0 5.8"/>',
       message: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3v-7a4 4 0 0 1-1-2.6V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v8Z"/>',
       target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/>',
       compare: '<path d="M4 7h11M4 12h16M4 17h8"/><path d="m16 4 3 3-3 3"/>',
+      balance: '<path d="M12 3v18M4 6h16M8 21h8"/><path d="m7 6-4 8h8L7 6Zm10 0-4 8h8l-4-8Z"/><path d="M3 14c.7 2 2 3 4 3s3.3-1 4-3M13 14c.7 2 2 3 4 3s3.3-1 4-3"/>',
       'arrow-right': '<path d="M5 12h14M13 6l6 6-6 6"/>',
       star: '<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.6-4.4 6.3-.9L12 2.8Z"/>',
-      'shape-rect': '<rect x="3" y="6" width="18" height="12" rx="2"/>',
-      'shape-oval': '<ellipse cx="12" cy="12" rx="9" ry="6"/>',
-      'shape-free': '<path d="M4 9c1-4 5-6 9-5 2 .5 3 2 5 2 3 0 4 3 3 6-1 4-4 7-9 7-5 0-9-2-9-6 0-2 0-3 1-4Z"/>',
+      'shape-rect': '<rect x="7" y="5" width="110" height="58" rx="3"/>',
+      'shape-oval': '<ellipse cx="62" cy="34" rx="49" ry="30"/>',
+      'shape-free': '<path d="M21 21C27 7 45 3 62 9c12 4 16 9 29 8 13-1 20 10 16 24-5 16-19 23-42 20-23 3-43-4-47-17-2-8-1-16 3-23Z"/>',
       zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4M10.5 7.5v6M7.5 10.5h6"/>',
       document: '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 11h6M9 15h6M9 19h4"/>',
       unsure: '<circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 0 1 4.6 1c0 1.7-2.4 2-2.4 3.5M12 17h.01"/>'
     };
-    return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.unsure) + '</svg>';
+    var isPoolShape = name.indexOf('shape-') === 0;
+    var isProtectionFamily = ['cover', 'shutter', 'shelter', 'deck'].indexOf(name) !== -1;
+    var viewBox = isPoolShape ? '0 0 124 68' : isProtectionFamily ? '0 0 64 48' : '0 0 24 24';
+    return '<svg class="advisor-icon advisor-icon--' + safeClass(name) + '" viewBox="' + viewBox + '" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths[name] || paths.unsure) + '</svg>';
   }
 }());

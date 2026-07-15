@@ -12,6 +12,7 @@ var advisor = fs.readFileSync(path.join(root, 'advisor-v2.js'), 'utf8');
 var advisorCss = fs.readFileSync(path.join(root, 'advisor-v2.css'), 'utf8');
 var advisorWorkflowCss = fs.readFileSync(path.join(root, 'advisor-workflow-v7.css'), 'utf8');
 var configuratorWorkflow = fs.readFileSync(path.join(root, 'configurator-workflow-v2.js'), 'utf8');
+var configuratorWorkflowCss = fs.readFileSync(path.join(root, 'configurator-workflow-v2.css'), 'utf8');
 var api = fs.readFileSync(path.join(root, 'api', 'send-email.ts'), 'utf8');
 
 test('tous les scripts intégrés à la page restent syntaxiquement valides', function () {
@@ -105,6 +106,8 @@ test('les actions du détail produit restent parfaitement alignées', function (
   assert.match(advisorWorkflowCss, /\.advisor-detail-footer\s*\{[^}]*align-items:\s*start;/);
   assert.match(advisorWorkflowCss, /\.advisor-detail-footer\s*>\s*\.advisor-info-button\s*\{[^}]*min-height:\s*54px;/);
   assert.match(advisorWorkflowCss, /\.advisor-detail-offer\s*\{[^}]*align-self:\s*center;/);
+  assert.match(advisorWorkflowCss, /@media \(min-width: 961px\) and \(max-width: 1320px\)[\s\S]*?\.advisor-detail-footer\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) minmax\(220px, 1\.2fr\)/);
+  assert.match(advisorWorkflowCss, /@media \(min-width: 961px\) and \(max-width: 1320px\)[\s\S]*?\.advisor-detail-footer \.advisor-detail-offer\s*\{[^}]*display:\s*none/);
 });
 
 test('la vue des solutions précède le produit principal et le comparatif reste facultatif', function () {
@@ -194,6 +197,8 @@ test('la forme du bassin doit être confirmée dans les deux parcours', function
   assert.match(html, /confirmed: shapeConfirmed === true/);
   assert.match(html, /shapeGrid\.addEventListener\('keydown'/);
   assert.match(html, /b\.tabIndex = S\.shapeConfirmed \? \(selected \? 0 : -1\)/);
+  assert.match(html, /\/\* Reset shape \*\/[\s\S]*?shapeButton\.classList\.remove\('on'\)[\s\S]*?S\.len = 0; S\.wid = 0/);
+  assert.doesNotMatch(html, /\/\* Reset shape \*\/[\s\S]{0,420}classList\.toggle\('on', k === 'rect'\)/);
 });
 
 test('la forme ovale utilise un libellé non ambigu', function () {
@@ -348,10 +353,14 @@ test('l accueil utilise le portrait officiel et des pictogrammes propres aux fam
   assert.equal(fs.existsSync(path.join(root, portraitPath)), true);
   assert.ok(fs.statSync(path.join(root, portraitPath)).size < 50 * 1024, 'le portrait doit rester léger');
   assert.match(advisor, new RegExp(portraitPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(advisor, /cover: '<path d="M5 5\.5h14l3 5\.5H2l3-5\.5Z"/);
-  assert.match(advisor, /shutter: '<rect x="2" y="3\.5" width="20" height="16"/);
-  assert.match(advisor, /shelter: '<path d="M2\.5 19v-6\.5a6\.5 6\.5/);
-  assert.match(advisor, /deck: '<path d="m12 2 11 5\.5L12 13 1 7\.5 12 2Z"/);
+  assert.match(advisor, /cover: '<path d="M12 7h40l8 16H4L12 7Z"/);
+  assert.match(advisor, /shutter: '<rect x="6" y="5" width="52" height="31"/);
+  assert.match(advisor, /shelter: '<path d="M5 39V24C5 14 13 6 23 6/);
+  assert.match(advisor, /deck: '<path d="m32 7 29 11-29 10L3 18 32 7Z"/);
+  assert.match(advisor, /automatic: '<path d="M8 4v16M5 7l3-3 3 3M16 20V4/);
+  assert.match(advisor, /economy: '<path d="M17 7\.5A6 6 0 1 0 17 16\.5/);
+  assert.match(advisor, /compass: '<circle cx="12" cy="12" r="9"/);
+  assert.match(advisor, /certified: '<path d="M12 3 5 6v5/);
   assert.match(advisorCss, /\.advisor-shell\[data-screen='welcome'\] \.advisor-footer\s*\{\s*display:\s*none/);
   assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-path > div,[\s\S]*?grid-template-columns:\s*34px minmax\(0, 1fr\)/);
   assert.match(advisorCss, /@media \(min-width: 961px\) and \(max-width: 1100px\)[\s\S]*?\.advisor-welcome-proof-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
@@ -412,7 +421,9 @@ test('les listes produit aident a choisir avant de demander une etude', function
   assert.match(advisor, /function directUnavailableCopy\(item\)/);
   assert.doesNotMatch(advisor, /Hors plage (?:actuelle|connue)/);
   assert.match(advisor, /advisor-media-zoom/);
-  assert.doesNotMatch(advisor, /familyImageNote\(family\) \+ '<\/div>'/);
+  assert.doesNotMatch(advisor, /familyImageNote\(family\)/);
+  assert.match(advisor, /class="advisor-family-media advisor-product-media--/);
+  assert.doesNotMatch(advisor, /Exemple : (?:couverture Oré|volet hors-sol|abri télescopique)/);
   assert.match(advisor, /Projet sur mesure/);
   assert.doesNotMatch(advisor, /Visuel de gamme · à confirmer/);
   assert.match(advisorCss, /\.advisor-family-media\s*\{[\s\S]*?position:\s*relative/);
@@ -472,6 +483,8 @@ test('le passage au configurateur garde un langage prospect', function () {
 
 test('les preuves commerciales restent limitees aux affirmations documentees', function () {
   assert.match(advisor, /Pose incluse lorsque Diskoov fournit et installe la couverture/);
+  assert.match(advisor, /câble fourni de 10 m/);
+  assert.doesNotMatch(advisor, /prise à proximité du local technique/i);
   assert.match(advisor, /bab:\s*'Conçue selon la norme NF P90-308'/);
   assert.doesNotMatch(advisor + html, /garantie (?:de )?3 ans/i);
   assert.match(advisor, /La pose est étudiée et chiffrée selon le chantier/);
@@ -507,4 +520,31 @@ test('les formes libres conservent uniquement les études produit documentées',
   assert.match(advisor, /\['eden', 'volet_hs', 'volet_immerge'\]\.indexOf\(item\.id\)/);
   assert.match(html, /var CUSTOM_SHAPE_PRODUCTS = \{\s*eden: true,\s*volet_hs: true,\s*volet_immerge: true/);
   assert.doesNotMatch(html, /var CUSTOM_SHAPE_PRODUCTS = \{[^}]*masterdeck: true/);
+});
+
+test('les pictogrammes métier utilisent des proportions dédiées et des contours cohérents', function () {
+  assert.match(advisor, /isPoolShape \? '0 0 124 68' : isProtectionFamily \? '0 0 64 48'/);
+  assert.equal((html.match(/viewBox="0 0 64 44"/g) || []).length, 3);
+  assert.doesNotMatch(advisorWorkflowCss, /advisor-icon--deck \* \{[^}]*stroke-width:/);
+  assert.match(advisor, /shelter: '<path[^']*M3 39h55/);
+  assert.match(advisorCss, /\.advisor-compare-family-icon svg\s*\{[^}]*width:\s*20px[^}]*stroke-width:\s*1\.3/);
+});
+
+test('le configurateur garde une grille fidèle sans casser les petits écrans', function () {
+  assert.match(configuratorWorkflowCss, /column-gap:\s*clamp\(64px, 5\.25vw, 88px\)/);
+  assert.match(configuratorWorkflowCss, /@media \(min-width: 1181px\) and \(max-width: 1440px\)[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\) minmax\(240px, \.72fr\)/);
+  assert.match(configuratorWorkflowCss, /@media \(max-width: 360px\)[\s\S]*?\.configurator-v2 \.ph-sum\s*\{[^}]*display:\s*none/);
+  assert.match(configuratorWorkflowCss, /@media \(max-width: 360px\)[\s\S]*?\.config-stage-back::after\s*\{[^}]*content:\s*'← Retour'/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.guided-summary-row\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.tg\.g4 \.tb\s*\{[^}]*flex-basis:\s*calc\(50% - 5px\)/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.shape-btn\.on::after\s*\{[^}]*content:\s*''[^}]*top:\s*8px[^}]*right:\s*8px/);
+  assert.match(configuratorWorkflowCss, /@media \(max-width: 820px\)[\s\S]*?\.configurator-v2 \.di,[\s\S]*?\.configurator-v2 \.cbr\s*\{[^}]*min-height:\s*44px/);
+  assert.match(advisorWorkflowCss, /@media \(max-width: 960px\)[\s\S]*?\.advisor-dimension-switch\s*\{[^}]*min-height:\s*44px/);
+});
+
+test('les choix fonces gardent un contraste lisible et le statut projet suit la nouvelle palette', function () {
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.pc\.on \.pc-n\s*\{[^}]*color:\s*#fff/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.pc\.on \.pc-p,[\s\S]*?color:\s*rgba\(255, 255, 255, \.78\)/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.rule-status\.blocked\s*\{[^}]*border-left-color:\s*var\(--config-cyan\)[^}]*background:\s*#f7f9fc/);
+  assert.match(configuratorWorkflowCss, /\.configurator-v2 \.missing-list span\s*\{[^}]*background:\s*#edf2f7[^}]*color:\s*#405675/);
 });
