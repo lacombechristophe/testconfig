@@ -471,7 +471,15 @@ test('la nouvelle experience garde une motion courte et accessible', function ()
 test('la piscine revele les dimensions apres la forme et reste empilee sur mobile', function () {
   assert.match(advisor, /var dimensionStep = state\.shapeConfirmed/);
   assert.match(advisor, /class="advisor-pool-disclosure"/);
+  assert.match(advisor, /class="advisor-fieldset advisor-dimensions-fieldset"/);
   assert.match(advisor, /Deux mesures suffisent/);
+  assert.match(advisor, /function poolPreviewWidth\(ratio\)[\s\S]*?Math\.min\(420, 220 \* ratio\)/);
+  assert.match(advisor, /decreaseDisabled[\s\S]*?increaseDisabled[\s\S]*?disabled/);
+  assert.match(advisor, /function updateDimensionStepperState\(field\)[\s\S]*?decrease\.disabled[\s\S]*?increase\.disabled/);
+  assert.match(advisor, /addEventListener\('input'[\s\S]*?updateDimensionStepperState\(field\)/);
+  assert.match(advisorWorkflowCss, /\.advisor-shell\[data-screen='pool'\] \.advisor-pool-stage\s*\{[\s\S]*?height:\s*282px;[\s\S]*?overflow:\s*hidden/);
+  assert.match(advisorWorkflowCss, /\.advisor-shell\[data-screen='pool'\] \.advisor-pool-preview\s*\{[\s\S]*?min-height:\s*344px;[\s\S]*?grid-template-rows:\s*auto 282px/);
+  assert.match(advisorWorkflowCss, /\.advisor-dimension-stepper > button:disabled\s*\{/);
   assert.match(advisorCss, /@media \(max-width: 680px\)[\s\S]*?\.advisor-pool-layout\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
 });
 

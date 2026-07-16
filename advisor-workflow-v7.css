@@ -579,6 +579,19 @@
   gap: 12px;
 }
 
+.advisor-shell[data-screen='pool'] .advisor-dimensions-fieldset {
+  padding: 16px;
+  border: 1px solid #d7e0ea;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.advisor-shell[data-screen='pool'] .advisor-dimensions-fieldset > .advisor-legend {
+  margin-bottom: 12px;
+  color: #173e72;
+  font-size: 12px;
+}
+
 .advisor-shell[data-screen='pool'] .advisor-dim-x,
 .advisor-shell[data-screen='pool'] .advisor-surface {
   display: none;
@@ -609,6 +622,13 @@
   font-size: 22px;
   cursor: pointer;
   transition: background-color var(--advisor-motion-state) var(--advisor-ease-out), transform var(--advisor-motion-fast) var(--advisor-ease-out);
+}
+
+.advisor-dimension-stepper > button:disabled {
+  background: #f6f8fb;
+  color: #9aa9bb;
+  cursor: not-allowed;
+  opacity: .72;
 }
 
 .advisor-dimension-stepper .advisor-input-wrap {
@@ -651,8 +671,16 @@
 }
 
 .advisor-shell[data-screen='pool'] .advisor-dimension-feedback {
-  margin: 0;
+  margin: 12px 0 0;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: #edf3f8;
+  color: #405575;
   font-size: 11px;
+}
+
+.advisor-shell[data-screen='pool'] .advisor-dimension-feedback.is-error {
+  background: #fff3f1;
 }
 
 .advisor-pool-reassurance {
@@ -707,10 +735,13 @@
 }
 
 .advisor-shell[data-screen='pool'] .advisor-pool-stage {
-  min-height: 255px;
-  padding: 35px 36px;
-  border: 0;
-  background: #fff;
+  height: 282px;
+  min-height: 282px;
+  padding: 16px 52px 40px 16px;
+  overflow: hidden;
+  border: 1px solid #d7e0ea;
+  border-radius: 8px;
+  background: #f7fbfd;
 }
 
 .advisor-shell[data-screen='pool'] .advisor-pool-shape {
@@ -720,6 +751,14 @@
   background-color: #aee7f4;
   background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, .45) 0 4%, transparent 5%), radial-gradient(circle at 70% 65%, rgba(255, 255, 255, .35) 0 3%, transparent 4%);
   background-size: 48px 42px, 62px 54px;
+}
+
+.advisor-shell[data-screen='pool'] .advisor-pool-shape--oval {
+  border-radius: 50%;
+}
+
+.advisor-shell[data-screen='pool'] .advisor-pool-shape--libre {
+  border-radius: 43% 57% 39% 61% / 55% 38% 62% 45%;
 }
 
 .advisor-shell[data-screen='pool'] .advisor-pool-preview > p {
@@ -2267,7 +2306,7 @@
 }
 
 @media (hover: hover) {
-  .advisor-dimension-stepper > button:hover {
+  .advisor-dimension-stepper > button:not(:disabled):hover {
     background: #e2edf7;
   }
 
@@ -2276,7 +2315,7 @@
   }
 }
 
-.advisor-dimension-stepper > button:active,
+.advisor-dimension-stepper > button:not(:disabled):active,
 .advisor-detail-thumbnails button:active {
   transform: scale(.96);
 }
@@ -2439,14 +2478,15 @@
 }
 
 .advisor-shell[data-screen='pool'] .advisor-pool-preview {
-  height: 300px;
-  min-height: 0;
+  height: auto;
+  min-height: 344px;
+  grid-template-rows: auto 282px;
   align-self: start;
 }
 
 .advisor-shell[data-screen='pool'] .advisor-pool-stage {
-  min-height: 246px;
-  padding: 28px 36px 34px;
+  min-height: 282px;
+  padding: 16px 52px 40px 16px;
 }
 
 .advisor-shell[data-screen='results'] .advisor-primary-actions {
@@ -3000,13 +3040,14 @@
   }
 
   .advisor-shell[data-screen='pool'] .advisor-pool-stage {
-    min-height: 246px;
-    place-items: start;
-    padding: 13px 0 0;
+    height: 282px;
+    min-height: 282px;
+    place-items: center;
+    padding: 16px 52px 40px 16px;
   }
 
   .advisor-shell[data-screen='pool'] .advisor-pool-shape {
-    width: min(100%, 450px);
+    max-width: 100%;
   }
 }
 

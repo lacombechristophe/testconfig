@@ -3791,11 +3791,70 @@ button.advisor-direct-media img {
 
 .advisor-study-item {
   display: grid;
+  grid-template-columns: 148px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 122px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--advisor-line);
+}
+
+.advisor-study-item--group {
+  grid-template-columns: 148px minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.advisor-study-media {
+  width: 148px;
+  aspect-ratio: 3 / 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--advisor-paper);
+  outline: 1px solid rgba(0, 0, 0, .1);
+  outline-offset: -1px;
+}
+
+.advisor-study-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.advisor-study-media--fallback {
+  color: var(--advisor-brand);
+}
+
+.advisor-study-media--fallback svg {
+  width: 36px;
+  height: 36px;
+}
+
+.advisor-study-copy,
+.advisor-study-group,
+.advisor-study-variant > div {
+  min-width: 0;
+}
+
+.advisor-study-group {
+  display: grid;
+  align-content: center;
+}
+
+.advisor-study-variant {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 18px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--advisor-line);
+  padding: 5px 0;
+}
+
+.advisor-study-variant + .advisor-study-variant {
+  margin-top: 8px;
+  padding-top: 13px;
+  border-top: 1px solid var(--advisor-line);
 }
 
 .advisor-study-item h3 {
@@ -3811,6 +3870,12 @@ button.advisor-direct-media img {
   color: var(--advisor-muted-strong);
   font-size: 12px;
   line-height: 1.45;
+}
+
+.advisor-study-item > .advisor-info-button,
+.advisor-study-variant .advisor-info-button {
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .advisor-detail-study-status {
@@ -3866,15 +3931,35 @@ details[open] > summary .advisor-disclosure-hide {
 }
 
 @media (max-width: 720px) {
-  .advisor-studies-head,
-  .advisor-study-item {
+  .advisor-studies-head {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-items: stretch;
   }
 
-  .advisor-study-item .advisor-info-button {
+  .advisor-study-item,
+  .advisor-study-item--group {
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+  }
+
+  .advisor-study-media {
+    width: 104px;
+  }
+
+  .advisor-study-item > .advisor-info-button {
+    grid-column: 2;
+  }
+
+  .advisor-study-item .advisor-info-button,
+  .advisor-study-variant .advisor-info-button {
     justify-self: start;
+  }
+
+  .advisor-study-variant {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
   }
 
   .advisor-family-item {

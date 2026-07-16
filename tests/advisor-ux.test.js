@@ -26,7 +26,13 @@ test('la copie sans préférence reste neutre et les études sont séparées du 
   assert.match(advisor, /hasRankedPriorities\(\)[\s\S]*?'À étudier en priorité'[\s\S]*?'Solution à comparer'/);
   assert.match(advisor, /function studiesTemplate\(products\)/);
   assert.match(advisor, /Autres solutions à étudier/);
-  assert.match(advisor, /Piste non classée/);
+  assert.match(advisor, /class="advisor-study-media"/);
+  assert.match(advisor, /advisor-study-item advisor-study-item--group/);
+  assert.match(advisor, /variants\.length > 1/);
+  assert.match(advisor, /Voir ce modèle/);
+  assert.doesNotMatch(advisor, /Sans classement|Découvrir cette piste/);
+  assert.match(advisor, /Compatibilité à confirmer/);
+  assert.doesNotMatch(advisor, /Piste non classée/);
 });
 
 test('le comparatif mobile conserve cinq critères de décision', function () {

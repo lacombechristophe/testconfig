@@ -179,7 +179,9 @@
 
     shell.addEventListener('input', function (event) {
       if (event.target.matches('[data-field]')) {
-        state[event.target.getAttribute('data-field')] = parseDimensionValue(event.target.value);
+        var field = event.target.getAttribute('data-field');
+        state[field] = parseDimensionValue(event.target.value);
+        updateDimensionStepperState(field);
         updateSurfaceLabel();
         updateDimensionFeedback();
         updateFooterOnly();
@@ -438,8 +440,8 @@
   function stepAdvisorDimension(target) {
     var field = target.getAttribute('data-field');
     var delta = Number(target.getAttribute('data-delta')) || 0;
-    var limits = field === 'length' ? { min: 3, max: 20, fallback: 8 } : { min: 2, max: 12, fallback: 4 };
-    if (!limits || (field !== 'length' && field !== 'width')) return;
+    var limits = dimensionLimits(field);
+    if (!limits) return;
     var current = Number(state[field]);
     if (!Number.isFinite(current)) current = limits.fallback;
     state[field] = Math.max(limits.min, Math.min(limits.max, Math.round((current + delta) * 2) / 2));
@@ -448,8 +450,29 @@
     requestAnimationFrame(function () {
       var selector = '[data-action="step-dimension"][data-field="' + field + '"][data-delta="' + target.getAttribute('data-delta') + '"]';
       var next = body.querySelector(selector);
-      if (next) next.focus({ preventScroll: true });
+      if (next && !next.disabled) next.focus({ preventScroll: true });
+      else {
+        var input = body.querySelector('[data-field="' + field + '"]');
+        if (input) input.focus({ preventScroll: true });
+      }
     });
+  }
+
+  function dimensionLimits(field) {
+    if (field === 'length') return { min: 3, max: 20, fallback: 8 };
+    if (field === 'width') return { min: 2, max: 12, fallback: 4 };
+    return null;
+  }
+
+  function updateDimensionStepperState(field) {
+    var limits = dimensionLimits(field);
+    if (!limits) return;
+    var value = state[field];
+    var numericValue = value === null || value === '' ? null : Number(value);
+    var decrease = body.querySelector('[data-action="step-dimension"][data-field="' + field + '"][data-delta="-0.5"]');
+    var increase = body.querySelector('[data-action="step-dimension"][data-field="' + field + '"][data-delta="0.5"]');
+    if (decrease) decrease.disabled = numericValue !== null && numericValue <= limits.min;
+    if (increase) increase.disabled = numericValue !== null && numericValue >= limits.max;
   }
 
   function updatePriorityDom() {
@@ -628,12 +651,14 @@
 
   function poolTemplate() {
     var dimensionsControls = state.dimensionsKnown === true
-      ? '<fieldset class="advisor-fieldset"><legend class="advisor-legend">Dimensions intérieures</legend>'
+      ? '<fieldset class="advisor-fieldset advisor-dimensions-fieldset"><legend class="advisor-legend">Dimensions intérieures</legend>'
         + '<div class="advisor-dimensions">'
         + inputDimension('length', 'Longueur intérieure', state.length, 3, 20)
         + '<span class="advisor-dim-x" aria-hidden="true">×</span>'
         + inputDimension('width', 'Largeur intérieure', state.width, 2, 12)
-        + '</div><div class="advisor-surface" data-advisor-surface>' + surfaceText() + '</div></fieldset>'
+        + '</div><div class="advisor-surface" data-advisor-surface>' + surfaceText() + '</div>'
+        + '<p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p>'
+        + '<div class="advisor-pool-reassurance" role="list"><span role="listitem">' + icon('measure') + '<b>Mesures approximatives acceptées</b></span><span role="listitem">' + icon('lock') + '<b>Aucune coordonnée demandée ici</b></span></div></fieldset>'
       : state.dimensionsKnown === false
         ? '<div class="advisor-dimensions-later" role="note">' + icon('measure') + '<span><strong>Vous pourrez les ajouter ensuite.</strong><small>Sans dimensions, nous comparerons les familles sans confirmer qu’un modèle convient à votre bassin.</small></span></div>'
         : '<div class="advisor-dimensions-later advisor-dimensions-later--prompt" role="note">' + icon('measure') + '<span><strong>Connaissez-vous les dimensions ?</strong><small>Des mesures approximatives suffisent.</small></span></div>';
@@ -645,7 +670,6 @@
       ? '<div class="advisor-pool-disclosure">'
         + dimensionChoice
         + dimensionsControls
-        + (state.dimensionsKnown === true ? '<p class="advisor-dimension-feedback" id="advisor-dimension-feedback" data-dimension-feedback aria-live="polite">' + dimensionFeedbackText() + '</p><div class="advisor-pool-reassurance" role="list"><span role="listitem">' + icon('measure') + '<b>Mesures approximatives acceptées</b></span><span role="listitem">' + icon('lock') + '<b>Aucune coordonnée demandée ici</b></span></div>' : '')
         + '</div>'
       : '';
     return '<div class="advisor-screen">'
@@ -689,10 +713,11 @@
   function poolPreviewTemplate() {
     var shapeLabels = { rect: 'Rectangle', oval: 'Ovale / ronde', libre: 'Forme libre' };
     var ratio = poolPreviewRatio();
+    var previewWidth = poolPreviewWidth(ratio);
     return '<figure class="advisor-pool-preview" aria-label="Aperçu du bassin déclaré">'
       + '<figcaption><span>' + icon('measure') + '</span><div><strong>Votre bassin</strong><small>Mesures intérieures déclarées</small></div></figcaption>'
       + '<div class="advisor-pool-stage">'
-      + '<div class="advisor-pool-shape advisor-pool-shape--' + safeClass(state.shape) + '" data-pool-shape style="aspect-ratio:' + ratio + ' / 1">'
+      + '<div class="advisor-pool-shape advisor-pool-shape--' + safeClass(state.shape) + '" data-pool-shape style="width:min(100%, ' + previewWidth + 'px);aspect-ratio:' + ratio + ' / 1">'
       + '<span class="advisor-pool-length"><b data-pool-length>' + numberLabel(state.length) + ' m</b><small>longueur</small></span>'
       + '<span class="advisor-pool-width"><b data-pool-width>' + numberLabel(state.width) + ' m</b><small>largeur</small></span>'
       + '</div></div>'
@@ -705,6 +730,10 @@
     return Math.max(1.2, Math.min(3, Math.round((state.length / state.width) * 100) / 100));
   }
 
+  function poolPreviewWidth(ratio) {
+    return Math.round(Math.min(420, 220 * ratio));
+  }
+
   function shapeButton(value, label) {
     var selected = state.shapeConfirmed && state.shape === value;
     var firstTabStop = !state.shapeConfirmed && value === 'rect';
@@ -714,11 +743,14 @@
 
   function inputDimension(field, label, value, min, max) {
     var inputValue = value === null || value === '' || !Number.isFinite(Number(value)) ? '' : value;
+    var numericValue = inputValue === '' ? null : Number(inputValue);
     var invalid = shouldValidateDimension(field) && !isDimensionValueValid(value, min, max);
+    var decreaseDisabled = numericValue !== null && numericValue <= min;
+    var increaseDisabled = numericValue !== null && numericValue >= max;
     return '<div class="advisor-field"><label for="advisor-' + field + '">' + label + '</label><div class="advisor-dimension-stepper">'
-      + '<button type="button" data-action="step-dimension" data-field="' + field + '" data-delta="-0.5" aria-label="Diminuer ' + label.toLowerCase() + ' de 50 centimètres">−</button>'
+      + '<button type="button" data-action="step-dimension" data-field="' + field + '" data-delta="-0.5" aria-label="Diminuer ' + label.toLowerCase() + ' de 50 centimètres"' + (decreaseDisabled ? ' disabled' : '') + '>−</button>'
       + '<div class="advisor-input-wrap"><input id="advisor-' + field + '" name="pool_' + field + '" data-field="' + field + '" type="number" inputmode="decimal" autocomplete="off" min="' + min + '" max="' + max + '" step="0.5" value="' + inputValue + '" aria-describedby="advisor-dimension-feedback" aria-invalid="' + invalid + '"><span class="advisor-input-unit">m</span></div>'
-      + '<button type="button" data-action="step-dimension" data-field="' + field + '" data-delta="0.5" aria-label="Augmenter ' + label.toLowerCase() + ' de 50 centimètres">+</button></div></div>';
+      + '<button type="button" data-action="step-dimension" data-field="' + field + '" data-delta="0.5" aria-label="Augmenter ' + label.toLowerCase() + ' de 50 centimètres"' + (increaseDisabled ? ' disabled' : '') + '>+</button></div></div>';
   }
 
   function resultsTemplate() {
@@ -772,11 +804,32 @@
 
   function studiesTemplate(products) {
     if (!products.length) return '';
+    var coversealRendered = false;
+    var items = products.map(function (item) {
+      if (item.id === 'auto' || item.id === 'semi') {
+        if (coversealRendered) return '';
+        coversealRendered = true;
+        var variants = products.filter(function (candidate) { return candidate.id === 'auto' || candidate.id === 'semi'; });
+        if (variants.length > 1) {
+          return '<article class="advisor-study-item advisor-study-item--group">'
+            + studyMediaTemplate(item)
+            + '<div class="advisor-study-group">' + productCategoryTemplate(item, true)
+            + variants.map(function (variant) {
+              return '<div class="advisor-study-variant"><div><h3>' + escapeHtml(variant.title) + '</h3><p>' + escapeHtml(variant.studyReason || variant.description) + '</p></div><button type="button" class="advisor-info-button" data-action="details" data-product="' + variant.id + '">Voir ce modèle</button></div>';
+            }).join('')
+            + '</div></article>';
+        }
+      }
+      return '<article class="advisor-study-item">' + studyMediaTemplate(item) + '<div class="advisor-study-copy">' + productCategoryTemplate(item, true) + '<h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.studyReason || item.description) + '</p></div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Voir ce modèle</button></article>';
+    }).join('');
     return '<section class="advisor-studies" aria-labelledby="advisor-studies-title">'
-      + '<div class="advisor-studies-head"><div><span class="advisor-section-kicker">Sans classement</span><h2 id="advisor-studies-title">Autres solutions à étudier</h2></div><p>Ces pistes demandent une étude dédiée avant de pouvoir conclure sur leur compatibilité.</p></div>'
-      + '<div class="advisor-study-list">' + products.map(function (item) {
-        return '<article class="advisor-study-item"><div>' + productCategoryTemplate(item, true) + '<h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.studyReason || item.description) + '</p></div><button type="button" class="advisor-info-button" data-action="details" data-product="' + item.id + '">Découvrir cette piste</button></article>';
-      }).join('') + '</div></section>';
+      + '<div class="advisor-studies-head"><div><span class="advisor-section-kicker">Étude personnalisée</span><h2 id="advisor-studies-title">Autres solutions à étudier</h2></div><p>Une étude complémentaire permettra de confirmer si ces solutions conviennent à votre bassin.</p></div>'
+      + '<div class="advisor-study-list">' + items + '</div></section>';
+  }
+
+  function studyMediaTemplate(item) {
+    if (!item || !item.image) return '<span class="advisor-study-media advisor-study-media--fallback" aria-hidden="true">' + icon(familyIconName(item)) + '</span>';
+    return '<span class="advisor-study-media" aria-hidden="true"><img src="' + escapeHtml(item.image) + '" alt="" width="240" height="160" loading="lazy" decoding="async"></span>';
   }
 
   function hasRankedPriorities() {
@@ -1113,7 +1166,7 @@
       ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>' + escapeHtml(blockedCopy.title) + '</strong><p>' + escapeHtml(blockedCopy.text) + '</p></div>'
       : '';
     var studyNotice = studyOnly
-      ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>Piste non classée</strong><p>' + escapeHtml(item.studyReason || 'Une étude dédiée est nécessaire avant de conclure sur la compatibilité.') + '</p></div>'
+      ? '<div class="advisor-detail-section advisor-detail-section--blocked"><strong>Compatibilité à confirmer</strong><p>' + escapeHtml(item.studyReason || 'Une étude dédiée est nécessaire avant de conclure sur la compatibilité.') + '</p></div>'
       : '';
     var actionControl = studyOnly
       ? '<span class="advisor-detail-study-status">' + escapeHtml(actionLabel) + '</span>'
@@ -1983,7 +2036,11 @@
     var shape = shell.querySelector('[data-pool-shape]');
     if (lengthLabel) lengthLabel.textContent = numberLabel(state.length) + ' m';
     if (widthLabel) widthLabel.textContent = numberLabel(state.width) + ' m';
-    if (shape) shape.style.aspectRatio = poolPreviewRatio() + ' / 1';
+    if (shape) {
+      var ratio = poolPreviewRatio();
+      shape.style.width = 'min(100%, ' + poolPreviewWidth(ratio) + 'px)';
+      shape.style.aspectRatio = ratio + ' / 1';
+    }
   }
 
   function surfaceText() {
