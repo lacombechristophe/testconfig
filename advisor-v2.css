@@ -668,11 +668,18 @@
 }
 
 .advisor-google-stars {
+  width: max-content;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
   gap: 2px;
   color: var(--advisor-brass-dark);
+  line-height: 0;
 }
 
 .advisor-google-stars svg {
+  display: block;
+  flex: 0 0 auto;
   width: 14px;
   height: 14px;
   fill: currentColor;
@@ -753,11 +760,6 @@
   font-size: 11px;
   font-weight: 750;
   line-height: 1.3;
-}
-
-.advisor-google-link > span > span {
-  display: inline-block;
-  transition: transform .18s cubic-bezier(.22, 1, .36, 1);
 }
 
 .advisor-welcome-path {
@@ -4918,10 +4920,6 @@ details[open] > summary .advisor-disclosure-hide {
 @media (hover: hover) {
   .advisor-google-link:hover {
     color: var(--advisor-water-dark);
-  }
-
-  .advisor-google-link:hover > span > span {
-    transform: translate(2px, -2px);
   }
 
   .advisor-help:hover,

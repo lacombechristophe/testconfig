@@ -379,6 +379,9 @@ test('la note Google est sourcee, datee et facile a actualiser', function () {
   assert.match(advisor, /data-action="google-reviews"/);
   assert.match(advisor, /advisor_google_reviews_open/);
   assert.match(advisorCss, /\.advisor-google-stars svg\s*\{[\s\S]*?fill:\s*currentColor/);
+  assert.match(advisorCss, /\.advisor-google-stars\s*\{[\s\S]*?width:\s*max-content;[\s\S]*?display:\s*inline-flex;[\s\S]*?flex-wrap:\s*nowrap/);
+  assert.match(advisorCss, /\.advisor-google-stars svg\s*\{[\s\S]*?display:\s*block;[\s\S]*?flex:\s*0 0 auto/);
+  assert.doesNotMatch(advisorCss, /\.advisor-google-link > span > span\s*\{[\s\S]*?display:\s*inline-block/);
   assert.match(advisorCss, /\.advisor-google-link:focus-visible/);
 });
 
