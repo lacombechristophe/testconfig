@@ -123,5 +123,6 @@ test('les primitives et metadonnees suivent la direction Diskoov', function () {
   assert.match(html, /imagesrcset="assets\/produits\/conseiller\/ore-fermee-800\.webp 800w, assets\/produits\/conseiller\/ore-fermee\.webp 1400w"/);
   assert.equal(fs.existsSync(path.join(root, 'assets', 'produits', 'conseiller', 'ore-fermee-800.webp')), true);
   assert.match(html, /id="visual-lightbox-img"[\s\S]{0,180}width="1" height="1"/);
+  assert.match(html, /\.visual-lightbox-img\s*\{[\s\S]*?width:\s*auto;[\s\S]*?height:\s*auto;[\s\S]*?object-fit:\s*contain/);
   assert.equal(fs.existsSync(path.join(root, 'assets', 'produits', 'conseiller', 'ore-fermee.webp')), true);
 });
